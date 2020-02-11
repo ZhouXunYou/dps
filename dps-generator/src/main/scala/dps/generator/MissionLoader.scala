@@ -129,7 +129,7 @@ class MissionLoader(val so: SessionOperation) {
   
   private def getOperationParams(operationGroupConfigId: String): List[OperationParam] = {
     var operationParams = List[OperationParam]()
-    val operationParamValueDatas = so.executeQuery("select opd.*,mogp.operation_param_value from b_mission_operation_group_param mogp inner join s_operation_param_def opd on mogp.operation_param_def_id = opd.id  where mogp.operation_group_config_id = ?", Array(operationGroupConfigId))
+    val operationParamValueDatas = so.executeQuery("select opd.*,mop.operation_param_value from b_mission_operation_param mop inner join s_operation_param_def opd on mop.operation_param_def_id = opd.id  where mop.operation_group_config_id = ?", Array(operationGroupConfigId))
     operationParamValueDatas.foreach(operationParamValueData => {
       val operationParamName = operationParamValueData.get("operation_param_name").get.asInstanceOf[String]
       val operationParamCode = operationParamValueData.get("operation_param_code").get.asInstanceOf[String]
