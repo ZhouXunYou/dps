@@ -22,7 +22,8 @@
 		<junit.version>4.12</junit.version>
 		<spark.version>2.2.0</spark.version>
 		<freemarker.version>2.3.29</freemarker.version>
-		<jackson.version>2.9.4</jackson.version>
+		<!-- jackson 版本与 spark 依赖的版本一致，否则会导致版本冲突 -->
+		<jackson.version>2.6.5</jackson.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 	</properties>
 
@@ -59,22 +60,6 @@
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
 			</dependency>
-
-			<!-- <dependency> -->
-			<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
-			<!-- <artifactId>jackson-core</artifactId> -->
-			<!-- <version>${jackson.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
-			<!-- <artifactId>jackson-databind</artifactId> -->
-			<!-- <version>${jackson.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
-			<!-- <artifactId>jackson-annotations</artifactId> -->
-			<!-- <version>${jackson.version}</version> -->
-			<!-- </dependency> -->
 		</dependencies>
 	</dependencyManagement>
 

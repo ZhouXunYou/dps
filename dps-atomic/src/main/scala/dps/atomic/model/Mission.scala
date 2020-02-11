@@ -1,6 +1,5 @@
 package dps.atomic.model
 
-import scala.collection.mutable.Map
 import scala.collection.immutable.List
 class Mission {
   var id: String = _
@@ -9,7 +8,7 @@ class Mission {
   var missionType: String = _
   var missionTypeCode: String = _
   var missionParams: Array[MissionParam] = _
-  var datasources: List[Datasource] = List()
-  var operationGroups: List[OperationGroup] = List()
+  var datasources: List[Datasource] = _
+  var operationGroups: List[OperationGroup] = _
 
 }

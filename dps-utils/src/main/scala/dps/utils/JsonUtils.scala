@@ -1,11 +1,14 @@
 package dps.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 
 object JsonUtils {
-  val om = new ObjectMapper
+
+  val mapper = new ObjectMapper() with ScalaObjectMapper
+  mapper.registerModule(DefaultScalaModule)
   def output(value: Any): String = {
-    println(om.writeValueAsString(value))
-    return om.writerWithDefaultPrettyPrinter().writeValueAsString(value)
+    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value)
   }
 }
