@@ -5,5 +5,5 @@ import scala.collection.mutable.Map
 class Datasource {
   var datasourceName:String = _
   var implementClass:String = _
-  var params:Map[String,String] = Map()
+  var params:Map[String,String] = _
 }

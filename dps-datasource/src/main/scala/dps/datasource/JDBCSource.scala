@@ -4,8 +4,8 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import dps.datasource.annotations.Params
 import dps.datasource.annotations.ParamDefine
-
-class JDBCSource(val sparkContext: SparkContext, override val params: Map[String, String]) extends DataSource(params) {
+import scala.collection.mutable.Map
+class JDBCSource(override val sparkContext: SparkContext, override val params: Map[String, String]) extends DataSource(sparkContext,params) {
   val url = params.get("url").get
   val user = params.get("user").get
   val password = params.get("password").get

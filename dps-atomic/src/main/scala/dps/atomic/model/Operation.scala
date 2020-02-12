@@ -6,4 +6,6 @@ class Operation {
   var template: String = _
   var classQualifiedName: String = _
   var operationParams: List[OperationParam] = _
+  var inVariableKey:String = _
+  var outVariableKey:String = _
 }
