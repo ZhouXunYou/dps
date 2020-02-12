@@ -11,6 +11,11 @@ import java.util.Optional
 
 class SourceGenerator(val mission: Mission) {
   val srcPath = Array("src","main","scala").mkString(File.separator)
+  
+  /**
+	 * 生成代码
+	 * @param rootPath - 代码输出的根目录
+	 */
   def produce(rootPath: String) {
     val cfg = new Configuration(Configuration.VERSION_2_3_23);
     cfg.setDefaultEncoding("UTF-8")
@@ -38,13 +43,17 @@ class SourceGenerator(val mission: Mission) {
         import java.util.{HashMap => JavaHashMap }
         val templateParams:JavaMap[String,String] = new JavaHashMap
         operation.operationParams.foreach(operationParam=>{
-          templateParams.put(operationParam.operationParamCode, Optional.ofNullable(operationParam.operationParamValue).orElse(operationParam.operationParamDefaultValue))
+          val param = operationParam._2
+          templateParams.put(operationParam._1, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
         })
         template.process(templateParams, out)
         out.close()
       })
     })
   }
+  /**
+	 * 生成代码，输出路径为当前的类加载路径
+	 */
   def produce(){
     val rootPath = this.getClass.getClassLoader.getResource("").getFile
     produce(rootPath)
