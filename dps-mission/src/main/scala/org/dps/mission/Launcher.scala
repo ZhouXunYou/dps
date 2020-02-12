@@ -14,7 +14,7 @@ object Launcher {
   def main(args: Array[String]): Unit = {
     val params = RunParam.parserArgements(args)
     val missionCode = params.get("--missionName").get
-    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
+    val so = new SessionOperation(params.get("--driver").get, params.get("--url").get, params.get("--user").get, params.get("--password").get)
     val ml = new MissionLoader(so)
     val mission = ml.getMission(missionCode)
     
