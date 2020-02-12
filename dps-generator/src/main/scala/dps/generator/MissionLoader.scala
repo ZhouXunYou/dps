@@ -12,7 +12,6 @@ import dps.atomic.model.OperationParam
 import dps.atomic.model.DatasourceParam
 
 class MissionLoader(val so: SessionOperation) {
-
   def getMission(missionName: String): Mission = {
 
     val missionDatas = so.executeQuery(

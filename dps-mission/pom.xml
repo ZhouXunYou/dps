@@ -30,6 +30,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>dps-atomic</groupId>
+			<artifactId>dps-atomic</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>dps-datasource</groupId>
 			<artifactId>dps-datasource</artifactId>
 			<version>${project.version}</version>

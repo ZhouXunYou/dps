@@ -13,7 +13,7 @@ object Test {
     val ml = new MissionLoader(so)
     val mission = ml.getMission("test")
     val sg = new SourceGenerator(mission)
-    sg.produce("d:\\outfile")
+    sg.produce("E:\\workspace\\scala.workspace\\dps\\dps-mission","E:\\workspace\\scala.workspace\\dps\\dps-atomic\\src\\main\\resources")
     println(JsonUtils.output(mission))
     
 //    val mapper = new ObjectMapper() with ScalaObjectMapper

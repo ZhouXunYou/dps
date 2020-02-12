@@ -29,14 +29,21 @@ object Launcher {
     mission.missionParams.foreach(missionParam=>{
       sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
+    sparkConf.setMaster("local[*]")
+    sparkConf.setAppName("test")
     val sparkContext = new SparkContext(sparkConf)
     val missionVariables = Map[String,Any]()
     mission.datasources.foreach(datasource=>{
+      
+      val datasourceInstanceParams = Map[String,String]()
+      datasource.params.foreach(param=>{
+        datasourceInstanceParams.put(param._1, param._2.paramValue)
+      })
       val datasourceInstance = Class.forName(datasource.implementClass)
         .getConstructor(classOf[SparkContext],classOf[Map[String,String]])
-        .newInstance(sparkContext,datasource.params)
+        .newInstance(sparkContext,datasourceInstanceParams)
         .asInstanceOf[DataSource]
-      missionVariables.put(datasource.datasourceName, datasourceInstance.read())
+      missionVariables.put(datasource.datasourceVariableKey, datasourceInstance.read())
     })
     
     mission.operationGroups.foreach(operationGroup=>{

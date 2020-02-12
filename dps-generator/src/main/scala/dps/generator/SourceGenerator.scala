@@ -16,11 +16,11 @@ class SourceGenerator(val mission: Mission) {
 	 * 生成代码
 	 * @param rootPath - 代码输出的根目录
 	 */
-  def produce(rootPath: String) {
+  def produce(outputRootPath: String,templatePath:String) {
     val cfg = new Configuration(Configuration.VERSION_2_3_23);
     cfg.setDefaultEncoding("UTF-8")
     cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
-    val baseDir = new File(rootPath)
+    val baseDir = new File(templatePath)
     if(!baseDir.exists()){
       baseDir.mkdirs()
     }
@@ -33,7 +33,7 @@ class SourceGenerator(val mission: Mission) {
         val classPackage = pathNames.slice(0, pathNames.length-1)
         val packagePath = classPackage.mkString(File.separator)
         val scalaFileName = pathNames.slice(pathNames.length - 1, pathNames.length).apply(0).concat(".scala")
-        val dir = new File(rootPath.concat(File.separator).concat(srcPath).concat(File.separator).concat(packagePath))
+        val dir = new File(outputRootPath.concat(File.separator).concat(srcPath).concat(File.separator).concat(packagePath))
         if(!dir.exists()){
           dir.mkdirs()
         }
@@ -54,9 +54,9 @@ class SourceGenerator(val mission: Mission) {
   /**
 	 * 生成代码，输出路径为当前的类加载路径
 	 */
-  def produce(){
-    val rootPath = this.getClass.getClassLoader.getResource("").getFile
-    produce(rootPath)
+  def produce(templatePath:String){
+    val outputRootPath = this.getClass.getClassLoader.getResource("").getFile
+    produce(outputRootPath,templatePath)
   }
   
 }
