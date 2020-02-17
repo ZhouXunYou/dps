@@ -16,24 +16,10 @@ import scala.collection.mutable.Map
 object DatasourceUtils {
   private val packageName = "dps.datasource"
   def main(args: Array[String]): Unit = {
-//    universe.typeof
     getDatasources().foreach(datasource=>{
-//      println(datasource.getName)
       val datasourceInstance = datasource.getConstructor(classOf[SparkContext],classOf[Map[String,String]]).newInstance(null,Map[String,String]()).asInstanceOf[DataSource]
       initDatasource(datasourceInstance)
-//      val datasourceDefine = .defin()
-//      println(JsonUtils.output(datasourceDefin))
-//      val d = typeOf[datasource]
-//      datasource.getAnnotation(Params.)
-//      datasource.getAnnotations.foreach(annotation=>{
-//        println(annotation.annotationType().getName)
-//      })
-//      println(datasource.getName)
     })
-//    val a = Map("a"->"b")
-//    
-//    
-//    new FileSource
   }
   def initDatasource(datasource:DataSource){
     val define = datasource.define()
@@ -62,7 +48,4 @@ object DatasourceUtils {
     })
     datasources.reverse.toArray
   }
-//  def getDatasourceParams(datasource: Class[_]): Array[ParamDefine] = {
-//    Array()
-//  }
 }

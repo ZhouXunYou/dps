@@ -1,12 +1,14 @@
 package dps.atomic.util
 
 import java.io.File
-import dps.atomic.impl.AbstractAction
-import org.apache.spark.SparkContext
+
 import scala.collection.mutable.Map
-import dps.utils.JsonUtils
-import dps.atomic.define.AtomOperationDefine
+
+import org.apache.spark.SparkContext
+
 import data.process.util.SessionOperation
+import dps.atomic.define.AtomOperationDefine
+import dps.atomic.impl.AbstractAction
 
 object AtomOperationUtil {
   
@@ -14,12 +16,12 @@ object AtomOperationUtil {
   def main(args: Array[String]): Unit = {
     getAtomOperations.foreach(atomOperationClass=>{
       val action = atomOperationClass.getConstructor(classOf[SparkContext],classOf[String],classOf[String],classOf[Map[String,Any]]).newInstance(null,null,null,Map()).asInstanceOf[AbstractAction]
-//      println(JsonUtils.output(action.define()))
       initAtomOperationDefin(action.define())
     })
   }
   def initAtomOperationDefin(define:AtomOperationDefine){
     val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
+//    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
     val operationParams = Array[Any](define.id,define.operationName,define.operationCode,define.template)
     so.executeUpdate("insert into s_operation_def(id,operation_name,operation_code,template) values (?,?,?,?)", operationParams)
     define.operationParams.foreach(operationParam=>{
