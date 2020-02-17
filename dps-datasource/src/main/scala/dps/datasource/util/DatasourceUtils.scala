@@ -2,16 +2,12 @@ package dps.datasource.util
 
 import java.io.File
 
-import scala.collection.immutable.List
-
-import dps.datasource.DataSource
-import dps.datasource.FileSource
-import java.util.UUID
-import dps.utils.JsonUtils
-import data.process.util.SessionOperation
-import org.apache.spark.SparkContext
-import dps.datasource.define.DatasourceDefine
 import scala.collection.mutable.Map
+
+import org.apache.spark.SparkContext
+
+import data.process.util.SessionOperation
+import dps.datasource.DataSource
 
 object DatasourceUtils {
   private val packageName = "dps.datasource"
@@ -24,6 +20,7 @@ object DatasourceUtils {
   def initDatasource(datasource:DataSource){
     val define = datasource.define()
     val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
+//    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
     val datasourceParams = Array[Any](define.id,define.datasourceName,datasource.getClass.getName)
     so.executeUpdate("insert into s_datasource_define(id,datasource_name,datasource_class) values (?,?,?)", datasourceParams)
     define.datasourceDefinParams.foreach(datasourceDefinParam=>{
