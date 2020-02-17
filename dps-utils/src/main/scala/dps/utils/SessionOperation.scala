@@ -13,7 +13,15 @@ class SessionOperation {
     Class.forName(driver)
     this.conn = DriverManager.getConnection(url, user, password)
   }
-
+  def executeUpdate(sql:String, params:Array[Any]){
+    println("execute update")
+    println(s"\tSQL: ${sql}\n\tparams:${params.mkString(",")}")
+    val prepareStatement = this.conn.prepareStatement(sql)
+    for (i <- 0 until params.length) {
+      prepareStatement.setObject(i + 1, params.apply(i))
+    }
+    prepareStatement.executeUpdate()
+  }
   def executeQuery(sql: String, params: Array[Any]): List[Map[String, Any]] = {
     println("execute query")
     println(s"\tSQL: ${sql}\n\tparams:${params.mkString(",")}")

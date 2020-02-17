@@ -2,6 +2,8 @@ package dps.atomic.impl
 import scala.collection.mutable.Map
 import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext
+import dps.atomic.define.AtomOperationDefine
+import dps.atomic.define.AtomOperationParamDefine
 
 class RDDString2Map(override val sparkContext:SparkContext,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext,inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
@@ -25,5 +27,23 @@ class RDDString2Map(override val sparkContext:SparkContext,override val inputVar
     map.put("key1", array.apply(1))
     //返回
     return map
+  }
+  def define: AtomOperationDefine = {
+    val params = Map(
+      "sourceCode"->new AtomOperationParamDefine("String Process Code","""
+    //将字符串按指定的符号分隔
+    val array = line.split(",")
+    //初始化Map对象
+    val map = Map[String, Any]()
+    //为map对象赋值
+    map.put("key0", array.apply(0))
+    map.put("key1", array.apply(1))
+    //返回
+    return map""",true,"3")
+    )
+
+    val atomOperation = new AtomOperationDefine("String RDD to Map RDD","rddString2Map","RDDString2Dataset.flt",params.toMap)
+    atomOperation.id = "rdd_string_2_map"
+    return atomOperation
   }
 }

@@ -12,11 +12,7 @@ class ${className}(override val sparkContext:SparkContext,override val inputVari
     })
     this.variables.put(outputVariableKey, result);
   }
-  /**
-   * @param line: 入参为 Rdd 的每一行数据，类型为 String
-   * @return 将字符串变形后的 Map 对象
-   */
-  private def processStringLine(line: String): Map[String, Any] = {
+  private def processStringLine(line: String): Tuple2[String,String] = {
     ${sourceCode}
   }
 }

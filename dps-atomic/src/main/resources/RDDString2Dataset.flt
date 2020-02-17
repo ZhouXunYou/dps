@@ -6,17 +6,22 @@ import dps.atomic.impl.AbstractAction
 
 class ${className}(override val sparkContext:SparkContext,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext,inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
+    val viewName = params.get("viewName").get
     val rdd = this.pendingData.asInstanceOf[RDD[String]]
     val result = rdd.map(line => {
-      processStringLine(line)
+      buildRow(line)
     })
-    this.variables.put(outputVariableKey, result);
+    var schema = StructType(specifyTableFields())
+    val dataframe = new SQLContext(sparkContext).createDataFrame(result, schema)
+    dataframe.createOrReplaceTempView(viewName)
+    this.variables.put(outputVariableKey, dataframe);
   }
-  /**
-   * @param line: 入参为 Rdd 的每一行数据，类型为 String
-   * @return 将字符串变形后的 Map 对象
-   */
-  private def processStringLine(line: String): Map[String, Any] = {
-    ${sourceCode}
+
+  private def specifyTableFields(): List[StructField] = {
+  	${buildTableFieldCode}
+  }
+
+  private def buildRow(line: String): Row = {
+  	${buildTableRowCode}
   }
 }

@@ -32,7 +32,8 @@ class SourceGenerator(val mission: Mission) {
         val pathNames = operation.classQualifiedName.split("\\.")
         val classPackage = pathNames.slice(0, pathNames.length-1)
         val packagePath = classPackage.mkString(File.separator)
-        val scalaFileName = pathNames.slice(pathNames.length - 1, pathNames.length).apply(0).concat(".scala")
+        val className = pathNames.slice(pathNames.length - 1, pathNames.length).apply(0)
+        val scalaFileName = className.concat(".scala")
         val dir = new File(outputRootPath.concat(File.separator).concat(srcPath).concat(File.separator).concat(packagePath))
         if(!dir.exists()){
           dir.mkdirs()
@@ -46,6 +47,8 @@ class SourceGenerator(val mission: Mission) {
           val param = operationParam._2
           templateParams.put(operationParam._1, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
         })
+        templateParams.put("packagePath", classPackage.mkString("."))
+        templateParams.put("className", className)
         template.process(templateParams, out)
         out.close()
       })
