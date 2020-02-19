@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dps</groupId>
 	<artifactId>dps</artifactId>
@@ -13,16 +15,17 @@
 		<encoding>UTF-8</encoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		
+
 		<scala.version>2.11.11</scala.version>
 		<scala.compat.version>2.11</scala.compat.version>
 		<spec2.version>4.2.0</spec2.version>
 		<junit.version>4.12</junit.version>
 		<spark.version>2.2.0</spark.version>
 		<freemarker.version>2.3.29</freemarker.version>
-		<!-- jackson °æ±¾Óë spark ÒÀÀµµÄ°æ±¾Ò»ÖÂ£¬·ñÔò»áµ¼ÖÂ°æ±¾³åÍ» -->
+		<!-- jackson ï¿½æ±¾ï¿½ï¿½ spark ï¿½ï¿½ï¿½ï¿½ï¿½Ä°æ±¾Ò»ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½áµ¼ï¿½Â°æ±¾ï¿½ï¿½Í» -->
 		<jackson.version>2.6.5</jackson.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
+		<mysql.version>5.1.48</mysql.version>
 	</properties>
 
 
@@ -58,6 +61,11 @@
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>${mysql.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -66,8 +74,8 @@
 		<module>dps-atomic</module>
 		<module>dps-utils</module>
 		<module>dps-generator</module>
-    <module>dps-mission</module>
-  </modules>
+		<module>dps-mission</module>
+	</modules>
 
 	<build>
 		<sourceDirectory>src/main/scala</sourceDirectory>
