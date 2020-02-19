@@ -22,6 +22,8 @@ object AtomOperationUtil {
   def initAtomOperationDefin(define:AtomOperationDefine){
     val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
 //    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
+    so.executeUpdate("truncate table s_operation_param_def", Array())
+    so.executeUpdate("truncate table s_operation_def", Array())
     val operationParams = Array[Any](define.id,define.operationName,define.operationCode,define.template)
     so.executeUpdate("insert into s_operation_def(id,operation_name,operation_code,template) values (?,?,?,?)", operationParams)
     define.operationParams.foreach(operationParam=>{

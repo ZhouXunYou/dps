@@ -21,6 +21,9 @@ object DatasourceUtils {
     val define = datasource.define()
     val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
 //    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
+    
+    so.executeUpdate("truncate table s_datasource_param_define", Array())
+    so.executeUpdate("truncate table s_datasource_define", Array())
     val datasourceParams = Array[Any](define.id,define.datasourceName,datasource.getClass.getName)
     so.executeUpdate("insert into s_datasource_define(id,datasource_name,datasource_class) values (?,?,?)", datasourceParams)
     define.datasourceDefinParams.foreach(datasourceDefinParam=>{
