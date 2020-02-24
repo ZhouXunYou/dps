@@ -71,7 +71,7 @@ class RDDMap2Dataset(override val sparkContext: SparkContext, override val input
     )""",true,"3")
     )
 
-    val atomOperation = new AtomOperationDefine("Map RDD to Dataset","rddMap2Dataset","RDDString2Dataset.flt",params.toMap)
+    val atomOperation = new AtomOperationDefine("String RDD to Dataset","rddString2Dataset","RDDString2Dataset.flt",params.toMap)
     atomOperation.id = "rdd_string_2_dataset"
     return atomOperation
   }
