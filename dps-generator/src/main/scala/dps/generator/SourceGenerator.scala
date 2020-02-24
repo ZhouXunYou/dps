@@ -29,28 +29,30 @@ class SourceGenerator(val mission: Mission) {
     mission.operationGroups.foreach(operationGroup=>{
       operationGroup.operations.foreach(operation=>{
         val template = cfg.getTemplate(operation.template);
-        val pathNames = operation.classQualifiedName.split("\\.")
-        val classPackage = pathNames.slice(0, pathNames.length-1)
-        val packagePath = classPackage.mkString(File.separator)
-        val className = pathNames.slice(pathNames.length - 1, pathNames.length).apply(0)
-        val scalaFileName = className.concat(".scala")
-        val dir = new File(outputRootPath.concat(File.separator).concat(srcPath).concat(File.separator).concat(packagePath))
-        if(!dir.exists()){
-          dir.mkdirs()
+        if(template!=null && !"".equals(template)){
+          val pathNames = operation.classQualifiedName.split("\\.")
+          val classPackage = pathNames.slice(0, pathNames.length-1)
+          val packagePath = classPackage.mkString(File.separator)
+          val className = pathNames.slice(pathNames.length - 1, pathNames.length).apply(0)
+          val scalaFileName = className.concat(".scala")
+          val dir = new File(outputRootPath.concat(File.separator).concat(srcPath).concat(File.separator).concat(packagePath))
+          if(!dir.exists()){
+            dir.mkdirs()
+          }
+          val operationClassFile = new File(dir,scalaFileName)
+          val out = new OutputStreamWriter(new FileOutputStream(operationClassFile));
+          import java.util.{Map => JavaMap }
+          import java.util.{HashMap => JavaHashMap }
+          val templateParams:JavaMap[String,String] = new JavaHashMap
+          operation.operationParams.foreach(operationParam=>{
+            val param = operationParam._2
+            templateParams.put(operationParam._1, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
+          })
+          templateParams.put("packagePath", classPackage.mkString("."))
+          templateParams.put("className", className)
+          template.process(templateParams, out)
+          out.close()
         }
-        val operationClassFile = new File(dir,scalaFileName)
-        val out = new OutputStreamWriter(new FileOutputStream(operationClassFile));
-        import java.util.{Map => JavaMap }
-        import java.util.{HashMap => JavaHashMap }
-        val templateParams:JavaMap[String,String] = new JavaHashMap
-        operation.operationParams.foreach(operationParam=>{
-          val param = operationParam._2
-          templateParams.put(operationParam._1, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
-        })
-        templateParams.put("packagePath", classPackage.mkString("."))
-        templateParams.put("className", className)
-        template.process(templateParams, out)
-        out.close()
       })
     })
   }
