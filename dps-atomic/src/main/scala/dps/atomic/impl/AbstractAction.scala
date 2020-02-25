@@ -16,7 +16,10 @@ abstract class AbstractAction(val sparkContext: SparkContext, val inputVariableK
     "integer" -> DataTypes.IntegerType,
     "long"->DataTypes.LongType,
     "float"->DataTypes.FloatType,
-    "double"->DataTypes.DoubleType
+    "double"->DataTypes.DoubleType,
+    "date"->DataTypes.DateType,
+    "time"->DataTypes.TimestampType
+    
   )
   /**
    * @param fieldName		字段名

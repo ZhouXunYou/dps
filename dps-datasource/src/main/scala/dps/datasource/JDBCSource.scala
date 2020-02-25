@@ -15,11 +15,7 @@ class JDBCSource(override val sparkContext: SparkContext, override val params: M
     val tableAlias = params.get("tableAlias").getOrElse(null)
     val driver = params.get("driver").get
     val dataset = new SQLContext(sparkContext).read.format("jdbc").option("driver", driver).option("url", url).option("dbtable", tableName).option("user", user).option("password", password).load()
-    if (tableAlias == null) {
-      dataset.createOrReplaceTempView(tableName)
-    } else {
-      dataset.createOrReplaceTempView(tableAlias)
-    }
+    dataset.createOrReplaceTempView(params.get("tableAlias").getOrElse(tableName))
     dataset
   }
 

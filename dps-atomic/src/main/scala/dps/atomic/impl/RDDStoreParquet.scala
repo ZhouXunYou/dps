@@ -21,7 +21,7 @@ class RDDStoreParquet(override val sparkContext: SparkContext, override val inpu
       "partitionNum"->new AtomOperationParamDefine("Partition Size","1",false,"1"),
       "path"->new AtomOperationParamDefine("path","hdfs://${host}:${port}/${warehouse}",true,"1")
     )
-    val atomOperation = new AtomOperationDefine("RDD Store Hive","rddStoreHive",null,params.toMap)
+    val atomOperation = new AtomOperationDefine("RDD Store Parquet","rddStoreParuet","RDDStoreParquet.flt",params.toMap)
     atomOperation.id = "rdd_store_parquet"
     return atomOperation
   }

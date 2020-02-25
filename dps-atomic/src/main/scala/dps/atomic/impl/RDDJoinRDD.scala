@@ -18,7 +18,7 @@ class RDDJoinRDD (override val sparkContext: SparkContext, override val inputVar
       "leftVariableKey"->new AtomOperationParamDefine("Left RDD","Left RDD Variable Key",true,"1"),
       "rightVariableKey"->new AtomOperationParamDefine("Right RDD","Right RDD Variable Key",true,"1")    
     )
-    val atomOperation = new AtomOperationDefine("RDD Join","rddJoin",null,params.toMap)
+    val atomOperation = new AtomOperationDefine("RDD Join","rddJoin","RDDJoinRDD.flt",params.toMap)
     atomOperation.id = "rdd_join"
     return atomOperation
   }

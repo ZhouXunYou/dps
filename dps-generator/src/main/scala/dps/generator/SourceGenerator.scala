@@ -28,8 +28,10 @@ class SourceGenerator(val mission: Mission) {
     cfg.setTemplateLoader(fileTemplateLoader)
     mission.operationGroups.foreach(operationGroup=>{
       operationGroup.operations.foreach(operation=>{
-        val template = cfg.getTemplate(operation.template);
-        if(template!=null && !"".equals(template)){
+        val templatName = operation.template
+        if(templatName!=null && !"".equals(templatName)){
+          val template = cfg.getTemplate(templatName);
+        
           val pathNames = operation.classQualifiedName.split("\\.")
           val classPackage = pathNames.slice(0, pathNames.length-1)
           val packagePath = classPackage.mkString(File.separator)

@@ -27,7 +27,7 @@ class RDDStoreDatabase(override val sparkContext: SparkContext, override val inp
       "user"->new AtomOperationParamDefine("User","user",true,"1"),
       "password"->new AtomOperationParamDefine("Password","*******",true,"1")
     )
-    val  atomOperation = new AtomOperationDefine("RDD Store Database","rddStoreDatabase",null,params.toMap)
+    val  atomOperation = new AtomOperationDefine("RDD Store Database","rddStoreDatabase","RDDStoreDatabase.flt",params.toMap)
     atomOperation.id = "rdd_store_database"
     return atomOperation
   }

@@ -1,14 +1,17 @@
 package org.dps.mission
 
+import java.util.Optional
+
+import scala.collection.mutable.Map
+
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+
 import data.process.util.RunParam
 import data.process.util.SessionOperation
-import dps.generator.MissionLoader
-import org.apache.spark.SparkConf
-import java.util.Optional
-import org.apache.spark.SparkContext
-import dps.datasource.DataSource
-import scala.collection.mutable.Map
 import dps.atomic.impl.AbstractAction
+import dps.datasource.DataSource
+import dps.generator.MissionLoader
 
 object Launcher {
   def main(args: Array[String]): Unit = {
@@ -45,7 +48,6 @@ object Launcher {
         .asInstanceOf[DataSource]
       missionVariables.put(datasource.datasourceVariableKey, datasourceInstance.read())
     })
-    
     mission.operationGroups.foreach(operationGroup=>{
       operationGroup.operations.foreach(operation=>{
         val actionInstance = Class.forName(operation.classQualifiedName)
@@ -61,7 +63,6 @@ object Launcher {
         actionInstance.doIt(operationParams)
       })
     })
-    
     
   }
 }
