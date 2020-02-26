@@ -19,7 +19,6 @@ abstract class AbstractAction(val sparkContext: SparkContext, val inputVariableK
     "double"->DataTypes.DoubleType,
     "date"->DataTypes.DateType,
     "time"->DataTypes.TimestampType
-    
   )
   /**
    * @param fieldName		字段名

@@ -1,0 +1,11 @@
+package ${packagePath}
+import org.dps.mission.CompleteAction
+import dps.atomic.model.Mission
+import dps.utils.SessionOperation
+class ${missionCode}CompleteAction extends CompleteAction {
+<#if finishedCode??>
+  override def finished(mission:Mission,sessionOperation:SessionOperation){
+    ${finishedCode}
+  }
+</#if>
+}

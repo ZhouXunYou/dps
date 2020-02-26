@@ -1,6 +1,6 @@
 package dps.generator
 
-import data.process.util.SessionOperation
+import dps.utils.SessionOperation
 import dps.atomic.model.Mission
 import dps.atomic.model.Datasource
 import dps.atomic.model.OperationGroup

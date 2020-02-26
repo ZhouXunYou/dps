@@ -7,8 +7,8 @@ import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
-import data.process.util.RunParam
-import data.process.util.SessionOperation
+import dps.utils.RunParam
+import dps.utils.SessionOperation
 import dps.atomic.impl.AbstractAction
 import dps.datasource.DataSource
 import dps.generator.MissionLoader
@@ -63,6 +63,7 @@ object Launcher {
         actionInstance.doIt(operationParams)
       })
     })
-    
+    val completeAction =  Class.forName(s"${mission.missionCode}CompleteAction").newInstance().asInstanceOf[CompleteAction]
+    completeAction.finished(mission,so)
   }
 }

@@ -6,7 +6,7 @@ import scala.collection.mutable.Map
 
 import org.apache.spark.SparkContext
 
-import data.process.util.SessionOperation
+import dps.utils.SessionOperation
 import dps.datasource.DataSource
 
 object DatasourceUtils {
