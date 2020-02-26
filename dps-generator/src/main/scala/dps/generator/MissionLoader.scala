@@ -25,7 +25,7 @@ class MissionLoader(val so: SessionOperation) {
       mission.missionCode = missionName
       mission.missionType = missionData.get("mission_type").get.toString()
       mission.missionTypeCode = missionData.get("mission_type_code").get.asInstanceOf[String]
-
+      mission.finishedCode = missionData.get("finished_code").get.asInstanceOf[String]
       mission.missionParams = getMissionParams(mission.id)
       mission.datasources = getMissionDatasources(mission.id)
       mission.operationGroups = getOperationGroups(mission.id)

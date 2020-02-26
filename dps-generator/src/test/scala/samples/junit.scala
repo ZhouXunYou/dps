@@ -14,7 +14,7 @@ class AppTest {
   val ml = new MissionLoader(so)
   @Test
   def testMissioJsonOutput {
-    val mission = ml.getMission("LogStoreTask")
+    val mission = ml.getMission("test")
     val missionJson = JsonUtils.output(mission)
     assertNotNull(missionJson)
     println(missionJson)
@@ -22,7 +22,7 @@ class AppTest {
   
   @Test
   def testMissioOutputSource {
-    val mission = ml.getMission("LogStoreTask")
+    val mission = ml.getMission("test")
     val sg = new SourceGenerator(mission)
     sg.produce("E:\\workspace\\scala.workspace\\dps\\dps-mission","E:\\workspace\\scala.workspace\\dps\\dps-atomic\\src\\main\\resources")
   }

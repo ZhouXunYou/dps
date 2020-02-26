@@ -10,5 +10,5 @@ class Mission {
   var missionParams: Array[MissionParam] = _
   var datasources: List[Datasource] = _
   var operationGroups: List[OperationGroup] = _
-
+  var finishedCode:String = _
 }
