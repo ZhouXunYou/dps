@@ -8,6 +8,7 @@ import java.io.File
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.util.Optional
+import dps.utils.Common
 
 class SourceGenerator(val mission: Mission) {
   val srcPath = Array("src","main","scala").mkString(File.separator)
@@ -57,6 +58,19 @@ class SourceGenerator(val mission: Mission) {
         }
       })
     })
+    import java.util.{Map => JavaMap }
+    import java.util.{HashMap => JavaHashMap }
+    val completeActionTemplate = cfg.getTemplate("CompleteAction.flt");
+    val completeActionTemplateParams:JavaMap[String,String] = new JavaHashMap
+    
+    completeActionTemplateParams.put("packagePath", "dps.mission.action")
+    completeActionTemplateParams.put("missionCode", Common.getHumpName(mission.missionCode))
+    completeActionTemplateParams.put("finishedCode", mission.finishedCode)
+    
+    val dir = new File(outputRootPath.concat(File.separator).concat(srcPath).concat(File.separator).concat(Array("dps","mission","action").mkString(File.separator)))
+    val missionClassFile = new File(dir,s"${Common.getHumpName(mission.missionCode)}CompleteAction.scala")
+    val out = new OutputStreamWriter(new FileOutputStream(missionClassFile));
+    completeActionTemplate.process(completeActionTemplateParams, out)
   }
   /**
 	 * 生成代码，输出路径为当前的类加载路径

@@ -47,7 +47,6 @@ class ${className}(override val sparkContext: SparkContext, override val inputVa
       return getTime(startTime)
     }
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    //    TimeUnit.
     val date = sdf.parse(startTime)
     val calendar = Calendar.getInstance
     calendar.setTime(date)
@@ -90,15 +89,15 @@ class ${className}(override val sparkContext: SparkContext, override val inputVa
     val params = Map(
       "driver" -> new AtomOperationParamDefine("JDBC Driver", "org.postgresql.Driver", true, "1"),
       "url" -> new AtomOperationParamDefine("JDBC URL", "jdbc:postgresql://ip:port/database", true, "1"),
-      "querySQL" -> new AtomOperationParamDefine("Query SQL", "select * from dual", true, "3"),
+      "sql" -> new AtomOperationParamDefine("Query SQL", "select * from dual", true, "3"),
       "user" -> new AtomOperationParamDefine("User", "user", true, "1"),
       "password" -> new AtomOperationParamDefine("Password", "*******", true, "1"),
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
       "stratTime" -> new AtomOperationParamDefine("Strat Time", "yyyy-MM-dd HH:mm:ss", false, "1"),
       "interval" -> new AtomOperationParamDefine("Interval", "1", false, "1"),
-      "timeunit" -> new AtomOperationParamDefine("Time Unit", "DAYS,HOURS,MINUTES,SECONDS", false, "1"))
-    val atomOperation = new AtomOperationDefine("Exceute SQL", "executeSQL", "ExecuteSQL.flt", params.toMap)
-    atomOperation.id = "execute_sql"
+      "timeunit" -> new AtomOperationParamDefine("Time Unit", ",DAYS,HOURS,MINUTES,SECONDS", false, "2"))
+    val atomOperation = new AtomOperationDefine("JDBC Query", "jdbcQuery", "JDBCQuery.flt", params.toMap)
+    atomOperation.id = "jdbc_query"
     return atomOperation
   }
 

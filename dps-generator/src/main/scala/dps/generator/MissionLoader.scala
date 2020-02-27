@@ -15,7 +15,7 @@ class MissionLoader(val so: SessionOperation) {
   def getMission(missionName: String): Mission = {
 
     val missionDatas = so.executeQuery(
-      "select m.id,m.mission_name,md.mission_type,md.mission_type_code from b_mission m inner join s_mission_def md on m.mission_def_id = md.id where m.mission_code = ?",
+      "select m.id,m.mission_name,md.mission_type,md.mission_type_code,m.finished_code from b_mission m inner join s_mission_def md on m.mission_def_id = md.id where m.mission_code = ?",
       Array(missionName))
     if (missionDatas != null && missionDatas.length == 1) {
       val mission = new Mission
@@ -25,7 +25,7 @@ class MissionLoader(val so: SessionOperation) {
       mission.missionCode = missionName
       mission.missionType = missionData.get("mission_type").get.toString()
       mission.missionTypeCode = missionData.get("mission_type_code").get.asInstanceOf[String]
-      mission.finishedCode = missionData.get("finished_code").get.asInstanceOf[String]
+      mission.finishedCode = missionData.get("finished_code").getOrElse("").asInstanceOf[String]
       mission.missionParams = getMissionParams(mission.id)
       mission.datasources = getMissionDatasources(mission.id)
       mission.operationGroups = getOperationGroups(mission.id)
@@ -41,10 +41,12 @@ class MissionLoader(val so: SessionOperation) {
     var missionParams = List[MissionParam]()
     missionParamDatas.foreach(missionParamData => {
       val missionParam = new MissionParam
+      val id = missionParamData.get("id").get
       val paramCode = missionParamData.get("param_code").get
       val paramValue = missionParamData.get("mission_param_value").get
       val defaultValue = missionParamData.get("default_value").get
       val required = missionParamData.get("required").get
+      missionParam.id = id.toString()
       missionParam.paramName = paramCode.toString()
       if(paramValue!=null){
         missionParam.paramValue = paramValue.toString()
@@ -76,19 +78,22 @@ class MissionLoader(val so: SessionOperation) {
     datasourceDatas.foreach(datasourceData => {
       val seqId = datasourceData.get("seq_id").get
       val datasource = new Datasource
+      datasource.id = seqId.toString()
       datasource.datasourceName = datasourceData.get("datasource_name").get.toString()
       datasource.implementClass = datasourceData.get("datasource_class").get.toString()
       datasource.datasourceVariableKey = datasourceData.get("datasource_variable_key").get.toString()
       val datasourceParamDatas = so.executeQuery(
-        "select mpd.*,mdpv.param_value from b_mission_datasource_param_value mdpv inner join s_datasource_param_define mpd on mdpv.datasource_param_def_id = mpd.id where mdpv.mission_datasource_seq_id = ?",
+        "select mdpv.id,mpd.datasource_id,mpd.datasource_param_code,mpd.datasource_param_name,mpd.datasource_param_default_value,mdpv.param_value from b_mission_datasource_param_value mdpv inner join s_datasource_param_define mpd on mdpv.datasource_param_def_id = mpd.id where mdpv.mission_datasource_seq_id = ?",
         Array(seqId))
       val datasourceParams = Map[String,DatasourceParam]()
       datasourceParamDatas.foreach(datasourceParamData => {
+        val id = datasourceParamData.get("id").get.asInstanceOf[String]
         val key = datasourceParamData.get("datasource_param_code").get.asInstanceOf[String]
         val name = datasourceParamData.get("datasource_param_name").get.asInstanceOf[String]
         val value = datasourceParamData.get("param_value").get.asInstanceOf[String]
         val defaultValue = datasourceParamData.get("datasource_param_default_value").get.asInstanceOf[String]
         val datasourceParam = new DatasourceParam
+        datasourceParam.id = id
         datasourceParam.paramName = name
         datasourceParam.paramValue = value
         datasourceParam.paramDefaultValue = defaultValue
@@ -108,6 +113,7 @@ class MissionLoader(val so: SessionOperation) {
     operationGroupDatas.foreach(operationGroupData => {
     	val operationGroupId = operationGroupData.get("id").get.asInstanceOf[String]
       val operationGroup = new OperationGroup
+      operationGroup.id = operationGroupId
       operationGroup.operationGroupName  = operationGroupData.get("operation_group_name").get.asInstanceOf[String]
       operationGroup.operationGroupDesc = operationGroupData.get("operation_group_desc").getOrElse("").asInstanceOf[String]
     	operationGroup.operations = getGroupOperations(operationGroupId)
@@ -129,6 +135,7 @@ class MissionLoader(val so: SessionOperation) {
       val inVariableKey = operationData.get("in_variable_key").get.asInstanceOf[String]
       val outVariableKey = operationData.get("out_variable_key").get.asInstanceOf[String]
       val operation = new Operation
+      operation.id = id
       operation.operationName = operationName
       operation.operationCode = operationCode
       operation.template = template
@@ -142,15 +149,17 @@ class MissionLoader(val so: SessionOperation) {
   }
   
   private def getOperationParams(operationGroupConfigId: String): Map[String,OperationParam] = {
-    val operationParamValueDatas = so.executeQuery("select opd.*,mop.operation_param_value from b_mission_operation_param mop inner join s_operation_param_def opd on mop.operation_param_def_id = opd.id  where mop.operation_group_config_id = ?", Array(operationGroupConfigId))
+    val operationParamValueDatas = so.executeQuery("select mop.id,opd.operation_def_id,opd.operation_param_name,opd.operation_param_code,opd.operation_param_default_value,opd.required,opd.param_type,mop.operation_param_value from b_mission_operation_param mop inner join s_operation_param_def opd on mop.operation_param_def_id = opd.id  where mop.operation_group_config_id = ?", Array(operationGroupConfigId))
     
     val operationParams = Map[String,OperationParam]()
     operationParamValueDatas.foreach(operationParamValueData => {
+      val id = operationParamValueData.get("id").get.asInstanceOf[String]
       val operationParamName = operationParamValueData.get("operation_param_name").get.asInstanceOf[String]
       val operationParamCode = operationParamValueData.get("operation_param_code").get.asInstanceOf[String]
       val operationParamDefaultValue = operationParamValueData.get("operation_param_default_value").get.asInstanceOf[String]
       val operationParamValue = operationParamValueData.get("operation_param_value").get.asInstanceOf[String]
       val operationParam = new OperationParam
+      operationParam.id = id;
       operationParam.operationParamName = operationParamName
       operationParam.operationParamDefaultValue = operationParamDefaultValue
       operationParam.operationParamValue = operationParamValue

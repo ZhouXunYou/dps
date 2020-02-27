@@ -5,7 +5,7 @@ import dps.utils.SessionOperation
 
 abstract class CompleteAction {
   def finished(mission:Mission,sessionOperation:SessionOperation){
-    import java.lang.{Long => JavaLong}
-    val a :JavaLong = 1
+//    mission.id
+//    sessionOperation.executeUpdate(, params)
   }
 }
