@@ -97,7 +97,7 @@ class JDBCQuery(override val sparkContext: SparkContext, override val inputVaria
       "user" -> new AtomOperationParamDefine("User", "user", true, "1"),
       "password" -> new AtomOperationParamDefine("Password", "*******", true, "1"),
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
-      "startTime" -> new AtomOperationParamDefine("Strat Time", "yyyy-MM-dd HH:mm:ss", false, "1"),
+      "startTime" -> new AtomOperationParamDefine("Start Time", "yyyy-MM-dd HH:mm:ss", false, "1"),
       "interval" -> new AtomOperationParamDefine("Interval", "1", false, "1"),
       "timeunit" -> new AtomOperationParamDefine("Time Unit", ",DAYS,HOURS,MINUTES,SECONDS", false, "2"))
     val atomOperation = new AtomOperationDefine("JDBC Query", "jdbcQuery", "JDBCQuery.flt", params.toMap)

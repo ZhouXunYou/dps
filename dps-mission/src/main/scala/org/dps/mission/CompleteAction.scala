@@ -18,7 +18,7 @@ abstract class CompleteAction {
     calendar.setTime(value)
     calendar.add(Calendar.HOUR_OF_DAY, Math.abs(Integer.valueOf(interval.operationParamValue)))
     sessionOperation.executeUpdate("update b_mission_operation_param set operation_param_value = ? where id = ?", Array(sdf.format(calendar.getTime),startTime.id))
-    println("mission finished")
+    println(s"mission ${mission.missionCode} finished")
   }
   def getOperationParam(mission: Mission, operationParamCode: String): OperationParam = {
     mission.operationGroups.foreach(operationGroup => {
@@ -30,6 +30,6 @@ abstract class CompleteAction {
         })
       })
     })
-    return null;
+    return null
   }
 }
