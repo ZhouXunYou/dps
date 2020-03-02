@@ -1,6 +1,6 @@
 package dps.atomic.impl
 
-import data.process.atomic.Action
+import dps.atomic.Action
 import scala.collection.mutable.Map
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.types.DataTypes
