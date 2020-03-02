@@ -47,7 +47,7 @@ class RDDString2Dataset(override val sparkContext: SparkContext, override val in
       map.get("key3").get.asInstanceOf[JavaLong] //第三列数据
     )
   }
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
       "buildTableFieldCode" -> new AtomOperationParamDefine("Build Table Field Code", """

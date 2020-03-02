@@ -16,7 +16,7 @@ class RDDStoreParquet(override val sparkContext: SparkContext, override val inpu
     val path = params.get("path").get
     dataset.coalesce(paramPartitionNumValue).write.mode(SaveMode.Append).parquet(path)
   }
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "partitionNum"->new AtomOperationParamDefine("Partition Size","1",false,"1"),
       "path"->new AtomOperationParamDefine("path","hdfs://${host}:${port}/${warehouse}",true,"1")

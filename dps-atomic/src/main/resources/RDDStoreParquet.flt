@@ -17,13 +17,4 @@ class ${className} (override val sparkContext: SparkContext, override val inputV
     val path = params.get("path").get
     dataset.coalesce(paramPartitionNumValue).write.mode(SaveMode.Append).parquet(path)
   }
-  def define: AtomOperationDefine = {
-    val params = Map(
-      "partitionNum"->new AtomOperationParamDefine("Partition Size","1",false,"1"),
-      "path"->new AtomOperationParamDefine("path","hdfs://${host}:${port}/${warehouse}",true,"1")
-    )
-    val atomOperation = new AtomOperationDefine("RDD Store Parquet","rddStoreParuet","RDDStoreParquet.flt",params.toMap)
-    atomOperation.id = "rdd_store_parquet"
-    return atomOperation
-  }
 }

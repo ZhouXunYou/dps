@@ -13,7 +13,7 @@ class RDDJoinRDD (override val sparkContext: SparkContext, override val inputVar
     //e.g: left = (a:b,c,d),right = (a:e,f,g),result = (a:b,c,d,e,f,g)
     leftRDD.join(rightRDD)
   }
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "leftVariableKey"->new AtomOperationParamDefine("Left RDD","Left RDD Variable Key",true,"1"),
       "rightVariableKey"->new AtomOperationParamDefine("Right RDD","Right RDD Variable Key",true,"1")    

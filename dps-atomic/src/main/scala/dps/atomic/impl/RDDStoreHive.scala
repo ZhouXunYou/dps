@@ -17,7 +17,7 @@ class RDDStoreHive(override val sparkContext: SparkContext, override val inputVa
     val table = params.get("table").get
     df.write.mode(SaveMode.Append).insertInto(table)
   }
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "table"->new AtomOperationParamDefine("Hive Table Name","Table Name",true,"1")
     )

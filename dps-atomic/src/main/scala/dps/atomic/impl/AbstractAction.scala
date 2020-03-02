@@ -9,7 +9,9 @@ import dps.atomic.define.AtomOperationDefine
 
 abstract class AbstractAction(val sparkContext: SparkContext, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
   var pendingData: Any = variables.get(inputVariableKey).getOrElse(null)
-  def define():AtomOperationDefine
+  def define():AtomOperationDefine={
+    return null
+  }
   var typeMapping = Map(
     "string" -> DataTypes.StringType,
     "int" -> DataTypes.IntegerType,

@@ -19,7 +19,7 @@ class RDDStoreDatabase(override val sparkContext: SparkContext, override val inp
       .option("user", params.get("user").get)
       .option("password", params.get("password").get).mode(SaveMode.Append).save();
   }
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "driver"->new AtomOperationParamDefine("JDBC Driver","org.postgresql.Driver",true,"1"),
       "url"->new AtomOperationParamDefine("JDBC URL","jdbc:postgresql://ip:port/database",true,"1"),

@@ -48,7 +48,7 @@ class RDDMap2Dataset(override val sparkContext: SparkContext, override val input
     )
   }
 
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
       "buildTableFieldCode" -> new AtomOperationParamDefine("Build Table Field Code", """

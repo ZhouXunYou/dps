@@ -26,7 +26,7 @@ class RDDString2Tuple(override val sparkContext:SparkContext,override val inputV
     return tuple
   }
   
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "sourceCode"->new AtomOperationParamDefine("String Process Code","""
     //将字符串按指定的符号分隔
