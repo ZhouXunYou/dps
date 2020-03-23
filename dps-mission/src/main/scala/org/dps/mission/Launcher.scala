@@ -64,6 +64,6 @@ object Launcher {
       })
     })
     val completeAction =  Class.forName(s"dps.mission.action.${mission.missionCode}CompleteAction").newInstance().asInstanceOf[CompleteAction]
-    completeAction.finished(mission,so)
+    completeAction.finished(mission,params)
   }
 }

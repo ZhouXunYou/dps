@@ -3,10 +3,10 @@ package org.dps.mission
 import dps.atomic.model.Mission
 import dps.utils.SessionOperation
 import dps.atomic.model.OperationParam
-
+import scala.collection.mutable.Map
 
 abstract class CompleteAction {
-  def finished(mission: Mission, sessionOperation: SessionOperation) {
+  def finished(mission: Mission,runParam:Map[String,String]) {
     import java.text.SimpleDateFormat
     import java.util.Calendar
     val startTime = getOperationParam(mission,"startTime")
@@ -17,8 +17,9 @@ abstract class CompleteAction {
     val calendar = Calendar.getInstance
     calendar.setTime(value)
     calendar.add(Calendar.HOUR_OF_DAY, Math.abs(Integer.valueOf(interval.operationParamValue)))
-    sessionOperation.executeUpdate("update b_mission_operation_param set operation_param_value = ? where id = ?", Array(sdf.format(calendar.getTime),startTime.id))
+//    sessionOperation.executeUpdate("update b_mission_operation_param set operation_param_value = ? where id = ?", Array(sdf.format(calendar.getTime),startTime.id))
     println(s"mission ${mission.missionCode} finished")
+    
   }
   def getOperationParam(mission: Mission, operationParamCode: String): OperationParam = {
     mission.operationGroups.foreach(operationGroup => {
