@@ -84,7 +84,4 @@ object Launcher {
     val completeAction =  Class.forName(s"dps.mission.action.${mission.missionCode}CompleteAction").newInstance().asInstanceOf[CompleteAction]
     completeAction.finished(mission,params)
   }
-  def checkRunnable(runParams:Map[String,String]){
-    
-  }
 }
