@@ -10,7 +10,8 @@ import dps.generator.SourceGenerator
 @Test
 class AppTest {
 //  val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99/dps", "postgres", "postgres")
-  val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
+  
+  val so = new SessionOperation("org.postgresql.Driver", "39.98.141.108","16632", "postgres", "1qaz#EDC","postgres","dps")
   val ml = new MissionLoader(so)
   @Test
   def testMissioJsonOutput {

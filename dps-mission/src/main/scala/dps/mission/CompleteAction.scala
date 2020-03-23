@@ -1,7 +1,6 @@
-package org.dps.mission
+package dps.mission
 
 import dps.atomic.model.Mission
-import dps.utils.SessionOperation
 import dps.atomic.model.OperationParam
 import scala.collection.mutable.Map
 

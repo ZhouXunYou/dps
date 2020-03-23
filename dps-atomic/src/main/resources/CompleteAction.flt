@@ -1,5 +1,5 @@
 package ${packagePath}
-import org.dps.mission.CompleteAction
+import dps.mission.CompleteAction
 import dps.atomic.model.Mission
 import dps.utils.SessionOperation
 import dps.atomic.model.OperationParam
