@@ -36,7 +36,6 @@ class JDBCQuery(override val sparkContext: SparkContext, override val inputVaria
       .load();
     dataset.createOrReplaceTempView(params.get("viewName").get)
     variables.put(outputVariableKey, dataset)
-    //    sqlContext.sql(sqlText)
   }
   def getTime(paramValue: String): String = {
     if (paramValue == null || "".equals(paramValue.trim())) {
