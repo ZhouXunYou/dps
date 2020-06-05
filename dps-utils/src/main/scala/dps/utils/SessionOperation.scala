@@ -1,4 +1,4 @@
-package data.process.util
+package dps.utils
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
@@ -8,9 +8,13 @@ import scala.collection.mutable.Map
 
 class SessionOperation {
   private var conn: Connection = _
-  def this(driver: String, url: String, user: String, password: String) {
+  def this(driver: String, ip: String,port:String, user: String, password: String,dbType:String,dbName:String) {
     this()
     Class.forName(driver)
+    val url = dbType.toLowerCase() match{
+      case "mysql" => s"jdbc:mysql://${ip}:${port}/${dbName}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
+      case "postgres" => s"jdbc:postgresql://${ip}:${port}/${dbName}"
+    }
     this.conn = DriverManager.getConnection(url, user, password)
   }
   def executeUpdate(sql:String, params:Array[Any]){

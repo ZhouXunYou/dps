@@ -28,7 +28,7 @@ class RDDString2Map(override val sparkContext:SparkContext,override val inputVar
     //返回
     return map
   }
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "sourceCode"->new AtomOperationParamDefine("String Process Code","""
     //将字符串按指定的符号分隔

@@ -17,12 +17,12 @@ class ExecuteSQL(override val sparkContext:SparkContext, override val inputVaria
     this.variables.put(outputVariableKey, dataset);
   }
 
-  def define: AtomOperationDefine = {
+  override def define: AtomOperationDefine = {
     val params = Map(
       "sql"->new AtomOperationParamDefine("SQL","select * from dual",true,"1"),
       "viewName"->new AtomOperationParamDefine("View Name","View Name",true,"1")    
     )
-    val atomOperation = new AtomOperationDefine("Exceute SQL","executeSQL",null,params.toMap)
+    val atomOperation = new AtomOperationDefine("Exceute SQL","executeSQL","ExecuteSQL.flt",params.toMap)
     atomOperation.id = "execute_sql"
     return atomOperation
   }

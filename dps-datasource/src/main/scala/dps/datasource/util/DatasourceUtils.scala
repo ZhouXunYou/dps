@@ -6,21 +6,26 @@ import scala.collection.mutable.Map
 
 import org.apache.spark.SparkContext
 
-import data.process.util.SessionOperation
+import dps.utils.SessionOperation
 import dps.datasource.DataSource
 
 object DatasourceUtils {
   private val packageName = "dps.datasource"
   def main(args: Array[String]): Unit = {
+    //    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
+//    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
+    
+//    val so = new SessionOperation("com.mysql.jdbc.Driver", "jdbc:mysql://39.98.141.108:16606/dps?useUnicode=true&characterEncoding=UTF-8&useSSL=false", "root", "1qaz#EDC")
+    val so = new SessionOperation("com.mysql.jdbc.Driver", "39.98.141.108","16606", "root", "1qaz#EDC","mysql","dps")
+    so.executeUpdate("truncate table s_datasource_param_define", Array())
+    so.executeUpdate("truncate table s_datasource_define", Array())
     getDatasources().foreach(datasource=>{
       val datasourceInstance = datasource.getConstructor(classOf[SparkContext],classOf[Map[String,String]]).newInstance(null,Map[String,String]()).asInstanceOf[DataSource]
-      initDatasource(datasourceInstance)
+      initDatasource(datasourceInstance,so)
     })
   }
-  def initDatasource(datasource:DataSource){
+  def initDatasource(datasource:DataSource,so:SessionOperation){
     val define = datasource.define()
-    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://39.98.141.108:16632/dps", "postgres", "1qaz#EDC")
-//    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
     val datasourceParams = Array[Any](define.id,define.datasourceName,datasource.getClass.getName)
     so.executeUpdate("insert into s_datasource_define(id,datasource_name,datasource_class) values (?,?,?)", datasourceParams)
     define.datasourceDefinParams.foreach(datasourceDefinParam=>{

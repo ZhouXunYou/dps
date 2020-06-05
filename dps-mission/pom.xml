@@ -40,6 +40,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>dps-utils</groupId>
+			<artifactId>dps-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-sql_${scala.compat.version}</artifactId>
 			<scope>provided</scope>
@@ -54,46 +59,52 @@
 				<!-- see http://davidb.github.com/scala-maven-plugin -->
 				<groupId>net.alchim31.maven</groupId>
 				<artifactId>scala-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<args>
-								<arg>-dependencyfile</arg>
-								<arg>${project.build.directory}/.scala_dependencies</arg>
-							</args>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<!-- Tests will be run with scalatest-maven-plugin instead -->
-					<skipTests>true</skipTests>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.scalatest</groupId>
 				<artifactId>scalatest-maven-plugin</artifactId>
-				<version>2.0.0</version>
-				<configuration>
-					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-					<junitxml>.</junitxml>
-					<filereports>TestSuiteReport.txt</filereports>
-					<!-- Comma separated list of JUnit test class names to execute -->
-					<jUnitClasses>samples.AppTest</jUnitClasses>
-				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>test</id>
+						<phase>package</phase>
 						<goals>
-							<goal>test</goal>
+							<goal>jar</goal>
 						</goals>
+						<configuration>
+							<jarName>${project.name}</jarName>
+							<outputDirectory>${project.build.directory}/${project.name}</outputDirectory>
+							<excludes>
+								<exclude>*.xml</exclude>
+								<exclude>*.properties</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 把依赖的jar包拷到lib目录下 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/${project.name}/lib</outputDirectory>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
