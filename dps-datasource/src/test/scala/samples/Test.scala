@@ -15,14 +15,14 @@ object Test {
     val map = Map[String, String]();
     map.put("duration", "5");
     
-    val s2 = Class.forName("dps.datasource.KafkaSource")
-      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
-      .newInstance(sc, map)
-      .asInstanceOf[DataSource]
-    val rdd = s2.read();
-    rdd.asInstanceOf[RDD[String]].foreach(f=>{
-      println(f)
-    })
-    s2.asInstanceOf[StreamDatasource].start()
+//    val s2 = Class.forName("dps.datasource.KafkaSource")
+//      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
+//      .newInstance(sc, map)
+//      .asInstanceOf[DataSource]
+//    val rdd = s2.read();
+//    rdd.asInstanceOf[RDD[String]].foreach(f=>{
+//      println(f)
+//    })
+//    s2.asInstanceOf[StreamDatasource].start()
   }
 }

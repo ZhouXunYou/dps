@@ -1,19 +1,23 @@
 package dps.datasource
 
-import org.apache.spark.SparkContext
 import scala.collection.mutable.Map
+
+import org.apache.spark.SparkContext
+
+import dps.atomic.Operator
 import dps.datasource.define.DatasourceDefine
 import dps.datasource.define.DatasourceParamDefine
 
-class FileSource(override val sparkContext: SparkContext, override val params: Map[String, String]) extends DataSource(sparkContext, params) {
-  override def read(): Any = {
+class FileSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkContext, params,operator) {
+  override def read(variableKey:String)= {
     val filePath = params.get("path").get
     var partitionNum = sparkContext.defaultMinPartitions
     val paramPartitionNumValue = params.get("partitionNum").get
     if (paramPartitionNumValue != null && !"".equals(paramPartitionNumValue)) {
       partitionNum = paramPartitionNumValue.toInt
     }
-    sparkContext.textFile(filePath, partitionNum)
+    val rdd = sparkContext.textFile(filePath, partitionNum)
+    operator.setVariable(variableKey, rdd);
   }
 
   def define(): DatasourceDefine = {

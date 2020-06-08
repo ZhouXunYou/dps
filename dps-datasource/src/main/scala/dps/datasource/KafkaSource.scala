@@ -16,11 +16,12 @@ import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import scala.annotation.meta.param
 import org.apache.spark.rdd.RDD
+import dps.atomic.Operator
 
-class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String]) extends StreamDatasource(sparkContext, params) {
-  override def read(): Any = {
+class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkContext, params,operator) {
+  override def read(variableKey:String) {
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers"->"192.168.11.200:9092",
+      "bootstrap.servers" -> "192.168.11.200:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "groupName",
@@ -32,14 +33,26 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
       PreferConsistent,
       Subscribe[String, String](topics, kafkaParams))
     var rdds: RDD[String] = sparkContext.emptyRDD[String]
-    stream.foreachRDD(rdd => {
-      val lineRDD = rdd.map(r => {
-        r.value()
+    
+    stream.foreachRDD(records => {
+      records.foreachPartition(recordPartition=>{
+        recordPartition.foreach(record=>{
+          //TODO 设置任务变量
+//          operator.setVariable(variableKey, record)
+//          operator.
+        })
       })
-      lineRDD.foreach(str=>{
-        println(str)
-      })
-      rdds = sparkContext.union(rdds, lineRDD)
+      operator.operation()
+//      val lineRDD = rdd.map(r => {
+//        r.value()
+//      })
+//      lineRDD.foreach(str=>{
+//        println(str)
+//      })
+//      rdds.union(lineRDD)
+//      rdds.foreach(l=>{
+//        println(l)
+//      })
     })
     
     return rdds

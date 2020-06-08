@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import scala.collection.Seq
 import dps.datasource.StreamDatasource
+import dps.atomic.Operator
 
 object Launcher {
   def main(args: Array[String]): Unit = {
@@ -60,26 +61,30 @@ object Launcher {
     mission.datasource.params.foreach(param => {
       datasourceInstanceParams.put(param._1, param._2.paramValue)
     })
+    
+    val operator = new Operator(mission.operationGroups,sparkContext,missionVariables)
+    
     val datasourceInstance = Class.forName(mission.datasource.implementClass)
-      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
-      .newInstance(sparkContext, datasourceInstanceParams)
+      .getConstructor(classOf[SparkContext], classOf[Map[String, String]],classOf[Operator])
+      .newInstance(sparkContext, datasourceInstanceParams,operator)
       .asInstanceOf[DataSource]
-    missionVariables.put(mission.datasource.datasourceVariableKey, datasourceInstance.read())
-    mission.operationGroups.foreach(operationGroup => {
-      operationGroup.operations.foreach(operation => {
-        val actionInstance = Class.forName(operation.classQualifiedName)
-          .getConstructor(classOf[SparkContext], classOf[String], classOf[String], classOf[Map[String, Any]])
-          .newInstance(sparkContext, operation.inVariableKey, operation.outVariableKey, missionVariables)
-          .asInstanceOf[AbstractAction]
-        val operationParams = Map[String, String]()
-        operation.operationParams.foreach(operationParam => {
-          val paramName = operationParam._1
-          val param = operationParam._2
-          operationParams.put(paramName, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
-        })
-        actionInstance.doIt(operationParams)
-      })
-    })
+    datasourceInstance.read(mission.datasource.datasourceVariableKey);
+//    missionVariables.put(mission.datasource.datasourceVariableKey, datasourceInstance.read())
+//    mission.operationGroups.foreach(operationGroup => {
+//      operationGroup.operations.foreach(operation => {
+//        val actionInstance = Class.forName(operation.classQualifiedName)
+//          .getConstructor(classOf[SparkContext], classOf[String], classOf[String], classOf[Map[String, Any]])
+//          .newInstance(sparkContext, operation.inVariableKey, operation.outVariableKey, missionVariables)
+//          .asInstanceOf[AbstractAction]
+//        val operationParams = Map[String, String]()
+//        operation.operationParams.foreach(operationParam => {
+//          val paramName = operationParam._1
+//          val param = operationParam._2
+//          operationParams.put(paramName, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
+//        })
+//        actionInstance.doIt(operationParams)
+//      })
+//    })
     if (datasourceInstance.isInstanceOf[StreamDatasource]) {
       datasourceInstance.asInstanceOf[StreamDatasource].start()
     } else {

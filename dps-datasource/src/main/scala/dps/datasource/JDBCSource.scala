@@ -5,9 +5,10 @@ import org.apache.spark.sql.SQLContext
 import scala.collection.mutable.Map
 import dps.datasource.define.DatasourceDefine
 import dps.datasource.define.DatasourceParamDefine
+import dps.atomic.Operator
 
-class JDBCSource(override val sparkContext: SparkContext, override val params: Map[String, String]) extends DataSource(sparkContext, params) {
-  override def read(): Any = {
+class JDBCSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkContext, params,operator) {
+  override def read(variableKey:String){
     val url = params.get("url").get
     val user = params.get("user").get
     val password = params.get("password").get
@@ -16,7 +17,8 @@ class JDBCSource(override val sparkContext: SparkContext, override val params: M
     val driver = params.get("driver").get
     val dataset = new SQLContext(sparkContext).read.format("jdbc").option("driver", driver).option("url", url).option("dbtable", tableName).option("user", user).option("password", password).load()
     dataset.createOrReplaceTempView(params.get("tableAlias").getOrElse(tableName))
-    dataset
+    operator.setVariable(variableKey, dataset)
+    operator.operation()
   }
 
   def define(): DatasourceDefine = {
