@@ -22,18 +22,19 @@ class AppTest {
   @Test
   def kafka() {
     val sparkConf: SparkConf = new SparkConf().setAppName("Kafka_Receiver").setMaster("local[*]")
+    sparkConf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
     val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sc,Seconds(5))
     
     val kafkaParams=Map[String,Object](
-      "bootstrap.servers"->"192.168.36.244:9092",
+      "bootstrap.servers"->"192.168.11.200:9092",
       "key.deserializer"->classOf[StringDeserializer],
       "value.deserializer"->classOf[StringDeserializer],
       "group.id"->"groupName",
       "auto.offset.reset"->"latest",
       "enable.auto.commit"->(true:java.lang.Boolean)
       )
-    val topics=List("DATAPACKAGE_QUEUE")
+    val topics=List("logstash_test")
     val lines=KafkaUtils.createDirectStream[String,String](
       ssc,
       PreferConsistent,
