@@ -20,24 +20,25 @@ import org.apache.spark.rdd.RDD
 class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String]) extends StreamDatasource(sparkContext, params) {
   override def read(): Any = {
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "localhost:9092,anotherhost:9092",
+      "bootstrap.servers" -> "192.168.36.244:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
-      "group.id" -> "use_a_separate_group_id_for_each_stream",
+      "group.id" -> "groupName",
       "auto.offset.reset" -> "latest",
-      "enable.auto.commit" -> (false: java.lang.Boolean))
-    val topics = Array("topicA", "topicB")
+      "enable.auto.commit" -> (true: java.lang.Boolean))
+    val topics = Array("DATAPACKAGE_QUEUE")
     val stream = KafkaUtils.createDirectStream[String, String](
-      this.streamingContext,
+      streamingContext,
       PreferConsistent,
       Subscribe[String, String](topics, kafkaParams))
-    val rdds:RDD[String] = sparkContext.emptyRDD[String]
-    stream.foreachRDD(rdd=>{
-      val lineRDD = rdd.map(r=>{
+    val rdds: RDD[String] = sparkContext.emptyRDD[String]
+    stream.foreachRDD(rdd => {
+      val lineRDD = rdd.map(r => {
         r.value()
       })
       rdds.union(lineRDD);
     })
+    
     return rdds
   }
   def define(): DatasourceDefine = {
