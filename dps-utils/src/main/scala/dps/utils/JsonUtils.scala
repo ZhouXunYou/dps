@@ -1,8 +1,8 @@
 package dps.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 object JsonUtils {
 

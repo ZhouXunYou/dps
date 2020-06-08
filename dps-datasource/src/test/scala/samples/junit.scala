@@ -26,14 +26,14 @@ class AppTest {
     val ssc = new StreamingContext(sc,Seconds(5))
     
     val kafkaParams=Map[String,Object](
-      "bootstrap.servers"->"192.168.11.200:9092",
+      "bootstrap.servers"->"192.168.36.244:9092",
       "key.deserializer"->classOf[StringDeserializer],
-      "value.deserilazier"->classOf[StringDeserializer],
+      "value.deserializer"->classOf[StringDeserializer],
       "group.id"->"groupName",
       "auto.offset.reset"->"latest",
-      "enable.auto.commit"->(false:java.lang.Boolean)
+      "enable.auto.commit"->(true:java.lang.Boolean)
       )
-    val topics=List("logstash_test")
+    val topics=List("DATAPACKAGE_QUEUE")
     val lines=KafkaUtils.createDirectStream[String,String](
       ssc,
       PreferConsistent,
