@@ -44,6 +44,7 @@ class SessionOperation {
     columnNames = columnNames.reverse
     println(columnNames)
     var datas = List[Map[String, Any]]()
+    
     while (resultSet.next()) {
       val data = Map[String, Any]()
       columnNames.reverse.foreach(columnName => {

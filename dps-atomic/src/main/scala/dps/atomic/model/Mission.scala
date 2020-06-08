@@ -8,7 +8,7 @@ class Mission {
   var missionType: String = _
   var missionTypeCode: String = _
   var missionParams: Array[MissionParam] = _
-  var datasources: List[Datasource] = _
+  var datasource: Datasource = _
   var operationGroups: List[OperationGroup] = _
-  var finishedCode:String = _
+  var finishedCode: String = _
 }
