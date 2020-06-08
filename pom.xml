@@ -25,7 +25,6 @@
 		<jackson.version>2.6.7.1</jackson.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<mysql.version>5.1.48</mysql.version>
-		<kafka.version>2.5.0</kafka.version>
 	</properties>
 
 	<dependencyManagement>
@@ -75,21 +74,10 @@
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.version}</version>
 			</dependency>
-			<!-- kafka -->
-			<dependency>
-			    <groupId>org.apache.kafka</groupId>
-			    <artifactId>kafka_2.12</artifactId>
-			    <version>${kafka.version}</version>
-			</dependency>
 			<dependency>
 			    <groupId>org.apache.spark</groupId>
 			    <artifactId>spark-streaming-kafka-0-10_${scala.compat.version}</artifactId>
 			    <version>${spark.version}</version>
-			</dependency>
-			<dependency>
-			    <groupId>org.apache.kafka</groupId>
-			    <artifactId>kafka-clients</artifactId>
-			    <version>${kafka.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

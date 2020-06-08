@@ -42,20 +42,8 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
 //          operator.
         })
       })
-      operator.operation()
-//      val lineRDD = rdd.map(r => {
-//        r.value()
-//      })
-//      lineRDD.foreach(str=>{
-//        println(str)
-//      })
-//      rdds.union(lineRDD)
-//      rdds.foreach(l=>{
-//        println(l)
-//      })
+//      operator.operation()
     })
-    
-    return rdds
   }
   def define(): DatasourceDefine = {
     null
