@@ -36,8 +36,10 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
       val lineRDD = rdd.map(r => {
         r.value()
       })
-      rdds = sparkContext.union(lineRDD, rdds)
-//      rdds.union(lineRDD);
+      lineRDD.foreach(str=>{
+        println(str)
+      })
+      rdds = sparkContext.union(rdds, lineRDD)
     })
     
     return rdds
