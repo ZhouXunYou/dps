@@ -40,6 +40,16 @@
 				<version>${spark.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-streaming_${scala.compat.version}</artifactId>
+				<version>${spark.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-streaming-kafka-0-10_${scala.compat.version}</artifactId>
+				<version>${spark.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-scala_${scala.compat.version}</artifactId>
 				<version>${jackson.version}</version>
@@ -130,7 +140,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>nexus-releases</id>
@@ -143,5 +153,5 @@
 			<url>http://192.168.11.101:8081/repository/maven-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 </project>
