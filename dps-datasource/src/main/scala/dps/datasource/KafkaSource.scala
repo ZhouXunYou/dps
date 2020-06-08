@@ -38,7 +38,7 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
       })
       rdds.union(lineRDD);
     })
-    rdds
+    return rdds
   }
   def define(): DatasourceDefine = {
     null
