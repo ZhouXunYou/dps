@@ -40,7 +40,14 @@ class AppTest {
       Subscribe[String,String](topics,kafkaParams)
     )
     
-    lines.print()
+    lines.foreachRDD(rdd=>{
+      rdd.map(record=>{
+        val array = record.value().split(",")
+        Map[String,String](array.apply(0)->array.apply(1))
+      }).reduce((a,b)=>{
+        b
+      })
+    })
     
     ssc.start()
     ssc.awaitTermination()
