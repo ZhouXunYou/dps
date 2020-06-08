@@ -14,10 +14,6 @@ object Test {
     import scala.collection.mutable.Map
     val map = Map[String, String]();
     map.put("duration", "5");
-//    val s1 = Class.forName("dps.datasource.FileSource")
-//      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
-//      .newInstance(sc, map)
-//      .asInstanceOf[DataSource]
     
     val s2 = Class.forName("dps.datasource.KafkaSource")
       .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
@@ -28,8 +24,5 @@ object Test {
       println(f)
     })
     s2.asInstanceOf[StreamDatasource].start()
-    
-//    println(s1.isInstanceOf[StreamDatasource])
-//    println(s2.isInstanceOf[StreamDatasource])
   }
 }

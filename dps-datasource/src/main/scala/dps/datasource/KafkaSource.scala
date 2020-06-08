@@ -31,12 +31,13 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
       streamingContext,
       PreferConsistent,
       Subscribe[String, String](topics, kafkaParams))
-    val rdds: RDD[String] = sparkContext.emptyRDD[String]
+    var rdds: RDD[String] = sparkContext.emptyRDD[String]
     stream.foreachRDD(rdd => {
       val lineRDD = rdd.map(r => {
         r.value()
       })
-      rdds.union(lineRDD);
+      rdds = sparkContext.union(lineRDD, rdds)
+//      rdds.union(lineRDD);
     })
     
     return rdds
