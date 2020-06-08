@@ -5,10 +5,10 @@ import org.apache.spark.SparkContext;
 import dps.datasource.define.DatasourceDefine;
 import scala.collection.mutable.Map;
 
-public class KafkaSource extends DataSource {
+public class Kafka2Source extends DataSource {
 
 	
-	public KafkaSource(SparkContext sparkContext, Map<String, String> params) {
+	public Kafka2Source(SparkContext sparkContext, Map<String, String> params) {
 		super(sparkContext, params);
 		// TODO
 	}

@@ -9,6 +9,8 @@ import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
+import dps.datasource.StreamDatasource
+import dps.datasource.DataSource
 
 @Test
 class AppTest {
@@ -41,10 +43,40 @@ class AppTest {
       Subscribe[String,String](topics,kafkaParams)
     )
     
-    lines.print()
+    lines.foreachRDD(rdd=>{
+      rdd.map(record=>{
+        val array = record.value().split(",")
+        Map[String,String](array.apply(0)->array.apply(1))
+      }).reduce((a,b)=>{
+        b
+      })
+    })
     
     ssc.start()
     ssc.awaitTermination()
   }
-
+  @Test
+  def typeTest() {
+    val sparkConf: SparkConf = new SparkConf().setAppName("Kafka_Receiver").setMaster("local[*]")
+    val sc = new SparkContext(sparkConf)
+    import scala.collection.mutable.Map
+    val map = Map[String, String]();
+    map.put("duration", "555555");
+    val s1 = Class.forName("dps.datasource.FileSource")
+      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
+      .newInstance(sc, map)
+      .asInstanceOf[DataSource]
+    
+    val s2 = Class.forName("dps.datasource.KafkaSource")
+      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
+      .newInstance(sc, map)
+      .asInstanceOf[DataSource]
+    
+    println(s1.isInstanceOf[DataSource])
+    println(s2.isInstanceOf[StreamDatasource])
+   
+  }
+  def numTest(){
+    
+  }
 }

@@ -27,7 +27,7 @@ class MissionLoader(val so: SessionOperation) {
       mission.missionTypeCode = missionData.get("mission_type_code").get.asInstanceOf[String]
       mission.finishedCode = missionData.get("finished_code").getOrElse("").asInstanceOf[String]
       mission.missionParams = getMissionParams(mission.id)
-      mission.datasources = getMissionDatasources(mission.id)
+      mission.datasource = getMissionDatasources(mission.id)
       mission.operationGroups = getOperationGroups(mission.id)
       return mission
     } else {
@@ -72,10 +72,11 @@ class MissionLoader(val so: SessionOperation) {
   /**
    * 获取任务数据源
    */
-  private def getMissionDatasources(missionId: String): List[Datasource] = {
+  private def getMissionDatasources(missionId: String): Datasource = {
     var datasources = List[Datasource]()
     val datasourceDatas = so.executeQuery("select mds.id seq_id,dd.*,mds.datasource_variable_key from b_mission_datasource_seq mds inner join s_datasource_define dd on mds.datasource_def_id = dd.id where mds.mission_id = ? order by mds.seq_num", Array(missionId))
-    datasourceDatas.foreach(datasourceData => {
+    if(datasourceDatas.size==1){
+      val datasourceData = datasourceDatas(0)
       val seqId = datasourceData.get("seq_id").get
       val datasource = new Datasource
       datasource.id = seqId.toString()
@@ -100,9 +101,40 @@ class MissionLoader(val so: SessionOperation) {
         datasourceParams.put(key, datasourceParam)
       })
       datasource.params = datasourceParams
-      datasources = datasource :: datasources
-    })
-    datasources.reverse
+      return datasource
+    }
+    System.err.println("not match mission")
+    System.exit(1)
+    null
+//    datasourceDatas.foreach(datasourceData => {
+//      val seqId = datasourceData.get("seq_id").get
+//      val datasource = new Datasource
+//      datasource.id = seqId.toString()
+//      datasource.datasourceName = datasourceData.get("datasource_name").get.toString()
+//      datasource.implementClass = datasourceData.get("datasource_class").get.toString()
+//      datasource.datasourceVariableKey = datasourceData.get("datasource_variable_key").get.toString()
+//      val datasourceParamDatas = so.executeQuery(
+//        "select mdpv.id,mpd.datasource_id,mpd.datasource_param_code,mpd.datasource_param_name,mpd.datasource_param_default_value,mdpv.param_value from b_mission_datasource_param_value mdpv inner join s_datasource_param_define mpd on mdpv.datasource_param_def_id = mpd.id where mdpv.mission_datasource_seq_id = ?",
+//        Array(seqId))
+//      val datasourceParams = Map[String,DatasourceParam]()
+//      datasourceParamDatas.foreach(datasourceParamData => {
+//        val id = datasourceParamData.get("id").get.asInstanceOf[String]
+//        val key = datasourceParamData.get("datasource_param_code").get.asInstanceOf[String]
+//        val name = datasourceParamData.get("datasource_param_name").get.asInstanceOf[String]
+//        val value = datasourceParamData.get("param_value").get.asInstanceOf[String]
+//        val defaultValue = datasourceParamData.get("datasource_param_default_value").get.asInstanceOf[String]
+//        val datasourceParam = new DatasourceParam
+//        datasourceParam.id = id
+//        datasourceParam.paramName = name
+//        datasourceParam.paramValue = value
+//        datasourceParam.paramDefaultValue = defaultValue
+//        datasourceParams.put(key, datasourceParam)
+//      })
+//      datasource.params = datasourceParams
+//      datasources = datasource :: datasources
+//    })
+//    null
+//    datasources.reverse
   }
   /**
    * 获取原子操作组
