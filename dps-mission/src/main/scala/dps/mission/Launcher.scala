@@ -81,7 +81,7 @@ object Launcher {
       })
     })
     if (datasourceInstance.isInstanceOf[StreamDatasource]) {
-      mission.datasource.asInstanceOf[StreamDatasource].start()
+      datasourceInstance.asInstanceOf[StreamDatasource].start()
     } else {
       val completeAction = Class.forName(s"dps.mission.action.${mission.missionCode}CompleteAction").newInstance().asInstanceOf[CompleteAction]
       completeAction.finished(mission, params)
