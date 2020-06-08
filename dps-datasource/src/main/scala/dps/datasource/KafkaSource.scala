@@ -20,13 +20,13 @@ import org.apache.spark.rdd.RDD
 class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String]) extends StreamDatasource(sparkContext, params) {
   override def read(): Any = {
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "192.168.36.244:9092",
+      "bootstrap.servers"->"192.168.11.200:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "groupName",
       "auto.offset.reset" -> "latest",
       "enable.auto.commit" -> (true: java.lang.Boolean))
-    val topics = Array("DATAPACKAGE_QUEUE")
+    val topics = Array("logstash_test")
     val stream = KafkaUtils.createDirectStream[String, String](
       streamingContext,
       PreferConsistent,
@@ -34,6 +34,8 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
     val rdds: RDD[String] = sparkContext.emptyRDD[String]
     stream.foreachRDD(rdd => {
       val lineRDD = rdd.map(r => {
+        println(r.key())
+        println(r.value())
         r.value()
       })
       rdds.union(lineRDD);
