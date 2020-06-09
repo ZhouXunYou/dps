@@ -8,6 +8,7 @@ import org.apache.spark.SparkContext
 
 import dps.utils.SessionOperation
 import dps.datasource.DataSource
+import dps.datasource.StreamDatasource
 
 object DatasourceUtils {
   private val packageName = "dps.datasource"
@@ -43,7 +44,7 @@ object DatasourceUtils {
     sourcePackage.listFiles().foreach(file=>{
       if(file.isFile() && file.getName.endsWith(".class")){
         val clazz = Class.forName(Array(packageName,file.getName.split("\\.").apply(0)).mkString("."))
-        if(clazz.getSuperclass == classOf[DataSource]){
+        if(clazz.getSuperclass == classOf[DataSource]  || clazz.getSuperclass == classOf[StreamDatasource]){
           datasources = clazz :: datasources
         }
       }
