@@ -17,7 +17,7 @@ object Test {
     val sc = new SparkContext(sparkConf)
     import scala.collection.mutable.Map
     val map = Map[String, String]();
-    map.put("duration", "5");
+    map.put("duration", "10");
     
     val operationGroups:List[OperationGroup]=null
     val missionVariables:Map[String, Any]=Map[String,Any]()
@@ -26,7 +26,7 @@ object Test {
       .getConstructor(classOf[SparkContext], classOf[Map[String, String]], classOf[Operator])
       .newInstance(sc, map,o)
       .asInstanceOf[DataSource]
-    val rdd = s2.read("");
+    val rdd = s2.read("a");
 //    rdd.asInstanceOf[RDD[String]].foreach(f=>{
 //      println(f)
 //    })
