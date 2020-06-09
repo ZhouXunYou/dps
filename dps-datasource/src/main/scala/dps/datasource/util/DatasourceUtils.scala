@@ -16,9 +16,9 @@ import org.apache.spark.SparkConf
 object DatasourceUtils {
   private val packageName = "dps.datasource"
   def main(args: Array[String]): Unit = {
-    val so = new SessionOperation("org.postgresql.Driver", "192.168.36.240", "3306", "root", "", "mysql", "dps")
+    //    val so = new SessionOperation("org.postgresql.Driver", "192.168.36.240", "3306", "root", "", DBType.POSTGRES, "dps")
 
-    //    val so = new SessionOperation("com.mysql.jdbc.Driver", "39.98.141.108", "16606", "root", "1qaz#EDC", "mysql", "dps")
+    val so = new SessionOperation("com.mysql.jdbc.Driver", "192.168.36.240", "3306", "root", "", DBType.MYSQL, "dps")
     so.executeUpdate("truncate table s_datasource_param_define", Array())
     so.executeUpdate("truncate table s_datasource_define", Array())
     val sparkConf = new SparkConf()
@@ -27,7 +27,7 @@ object DatasourceUtils {
     val sparkContext = new SparkContext(sparkConf)
     getDatasources().foreach(datasource => {
       println(datasource.getName)
-      val datasourceInstance = datasource.getConstructor(classOf[SparkContext], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkContext, Map[String, String](),null).asInstanceOf[DataSource]
+      val datasourceInstance = datasource.getConstructor(classOf[SparkContext], classOf[Map[String, String]], classOf[Operator]).newInstance(sparkContext, Map[String, String](), null).asInstanceOf[DataSource]
       initDatasource(datasourceInstance, so)
     })
   }
