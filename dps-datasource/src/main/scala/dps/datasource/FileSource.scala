@@ -17,7 +17,7 @@ class FileSource(override val sparkContext: SparkContext, override val params: M
       partitionNum = paramPartitionNumValue.toInt
     }
     val rdd = sparkContext.textFile(filePath, partitionNum)
-    operator.setVariable(variableKey, rdd);
+    operator.setVariable(variableKey, rdd)
   }
 
   def define(): DatasourceDefine = {
