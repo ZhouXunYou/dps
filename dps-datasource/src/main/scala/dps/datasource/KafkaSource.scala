@@ -21,13 +21,13 @@ import dps.atomic.Operator
 class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkContext, params,operator) {
   override def read(variableKey:String) {
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "192.168.36.244:9092",
+      "bootstrap.servers" -> "192.168.11.200:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "groupName",
       "auto.offset.reset" -> "latest",
       "enable.auto.commit" -> (true: java.lang.Boolean))
-    val topics = Array("CCC")
+    val topics = Array("logstash_test")
     val stream = KafkaUtils.createDirectStream[String, String](
       streamingContext,
       PreferConsistent,
@@ -42,20 +42,8 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
 //          operator.
         })
       })
-      operator.operation()
-//      val lineRDD = rdd.map(r => {
-//        r.value()
-//      })
-//      lineRDD.foreach(str=>{
-//        println(str)
-//      })
-//      rdds.union(lineRDD)
-//      rdds.foreach(l=>{
-//        println(l)
-//      })
+//      operator.operation()
     })
-    
-    return rdds
   }
   def define(): DatasourceDefine = {
     null

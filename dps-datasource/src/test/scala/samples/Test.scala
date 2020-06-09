@@ -7,6 +7,9 @@ import org.apache.spark.rdd.RDD
 import dps.datasource.DataSource
 import dps.datasource.StreamDatasource
 import dps.atomic.Operator
+import dps.atomic.model.OperationGroup
+import scala.collection.mutable.Map
+import scala.collection.immutable.List
 
 object Test {
   def main(args: Array[String]): Unit = {
@@ -16,16 +19,17 @@ object Test {
     val map = Map[String, String]();
     map.put("duration", "5");
     
-//    val operator = new Operator()
-    
+    val operationGroups:List[OperationGroup]=null
+    val missionVariables:Map[String, Any]=Map[String,Any]()
+    val o = new Operator(operationGroups,sc,missionVariables)
     val s2 = Class.forName("dps.datasource.KafkaSource")
-      .getConstructor(classOf[SparkContext], classOf[Map[String, String]])
-      .newInstance(sc, map)
+      .getConstructor(classOf[SparkContext], classOf[Map[String, String]], classOf[Operator])
+      .newInstance(sc, map,o)
       .asInstanceOf[DataSource]
-    val rdd = s2.read("aaaa");
-    rdd.asInstanceOf[RDD[String]].foreach(f=>{
-      println(f)
-    })
+    val rdd = s2.read("");
+//    rdd.asInstanceOf[RDD[String]].foreach(f=>{
+//      println(f)
+//    })
     s2.asInstanceOf[StreamDatasource].start()
   }
 }
