@@ -18,6 +18,9 @@ object Test {
     import scala.collection.mutable.Map
     val map = Map[String, String]();
     map.put("duration", "10");
+    map.put("bootstrapServers", "192.168.36.244:9092")
+    map.put("group", "groupTest")
+    map.put("topics", "CCC,DDD")
     
     val operationGroups:List[OperationGroup]=null
     val missionVariables:Map[String, Any]=Map[String,Any]()

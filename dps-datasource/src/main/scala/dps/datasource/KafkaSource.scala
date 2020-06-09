@@ -22,13 +22,13 @@ import dps.datasource.define.DatasourceParamDefine
 class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkContext, params,operator) {
   override def read(variableKey:String) {
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "192.168.36.244:9092",
+      "bootstrap.servers" -> params.get("bootstrapServers").get,
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
-      "group.id" -> "groupName",
+      "group.id" -> params.get("bootstrapServers").get,
       "auto.offset.reset" -> "latest",
       "enable.auto.commit" -> (true: java.lang.Boolean))
-    val topics = Array("CCC","DDD")
+    val topics = params.get("topics").get.split(",")
     val stream = KafkaUtils.createDirectStream[String, String](
       streamingContext,
       PreferConsistent,
@@ -47,7 +47,8 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
   def define(): DatasourceDefine = {
     val paramDefines = Map[String, DatasourceParamDefine](
       "bootstrapServers" -> new DatasourceParamDefine("Bootstrap Servers", "127.0.0.1:9002"),
-      "group" -> new DatasourceParamDefine("Group Name", "group"))
+      "group" -> new DatasourceParamDefine("Group Name", "group"),
+      "topics" -> new DatasourceParamDefine("Topics", "topic"))
     val datasourceDefine = new DatasourceDefine("Kafka", paramDefines.toMap)
     datasourceDefine.id = "kafka_source_define"
     return datasourceDefine
