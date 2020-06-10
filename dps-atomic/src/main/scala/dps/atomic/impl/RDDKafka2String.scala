@@ -25,18 +25,10 @@ class RDDKafka2String(override val sparkContext: SparkContext, override val inpu
       val stringRdd = topicRDD.map(topicTuple=>{
         topicTuple._3
       })
-//      val cc = new ContextCleaner
-//      ContextCleaner.
       variables.put(outputVariableKey+"_"+topicName, stringRdd)
-//      topicLines._2.
     })
-    
-    
   }
-
-  
   override def define: AtomOperationDefine = {
     null
   }
-
 }
