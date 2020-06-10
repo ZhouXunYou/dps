@@ -15,7 +15,7 @@ import dps.atomic.define.AtomOperationParamDefine
 class RDDKafka2Dataset(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
-    val kafkTuple = variables.get(inputVariableKey).get.asInstanceOf[Tuple3[String,Int,String]]
+    val kafkTuple = variables.get(inputVariableKey).get.asInstanceOf[RDD[Tuple3[String,Int,String]]]
     
     
   }
