@@ -17,16 +17,22 @@ class RDDKafka2String(override val sparkContext: SparkContext, override val inpu
 
   def doIt(params: Map[String, String]): Any = {
     val kafkTuple = this.pendingData.asInstanceOf[RDD[Tuple3[String,Int,String]]]
-    kafkTuple.groupBy(tuple=>{
+    val groupTopic = kafkTuple.groupBy(tuple=>{
       tuple._1
-    }).map(topicLines=>{
-      val topicName = topicLines._1
-      val topicRDD = sparkContext.parallelize(topicLines._2.toSeq)
-      val stringRdd = topicRDD.map(topicTuple=>{
-        topicTuple._3
-      })
-      variables.put(outputVariableKey+"_"+topicName, stringRdd)
     })
+    val iterableRDD = groupTopic.map(topicLines=>{
+      val a:Iterable[String] = null
+      val topicName = topicLines._1
+      return topicName
+//      val topicRDD = sparkContext.parallelize(topicLines._2.toSeq)
+    })
+    iterableRDD.foreach(i=>{
+      println(i)
+    })
+//    val stringRdd = topicRDD.map(topicTuple=>{
+//        topicTuple._3
+//      })
+//      variables.put(outputVariableKey+"_"+topicName, stringRdd)
   }
   override def define: AtomOperationDefine = {
     val params = Map(
