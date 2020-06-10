@@ -4,17 +4,15 @@ import dps.atomic.Operator
 import dps.datasource.define.{DatasourceDefine, DatasourceParamDefine}
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 
 import scala.collection.mutable.Map
 
-class KafkaSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkContext, params,operator) {
+class KafkaSource(override val sparkSession: SparkSession, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkSession, params,operator) {
   override def read(variableKey:String) {
-    println("params>>>>>>")
-    println(params)
-    println("params<<<<<<")
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> params.get("bootstrapServers").get,
       "key.deserializer" -> classOf[StringDeserializer],

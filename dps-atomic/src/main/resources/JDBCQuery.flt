@@ -1,31 +1,20 @@
 package ${packagePath}
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeUnit.DAYS
-import java.util.concurrent.TimeUnit.HOURS
-import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
+import org.apache.spark.sql.SparkSession
 
 import scala.collection.mutable.Map
 
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
-
-import dps.atomic.define.AtomOperationDefine
-import dps.atomic.define.AtomOperationParamDefine
-import dps.atomic.impl.AbstractAction
-
-class ${className}(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
+class ${className}(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
-    val sqlContext = new SQLContext(sparkContext)
     val startTime = getTime(params.get("startTime").get)
     val interval = Integer.valueOf(params.get("interval").getOrElse("0"))
     val timeunit = TimeUnit.valueOf(params.get("timeunit").getOrElse("HOURS"))
     val sql = s"""(${sql}) as ${className}_view"""
-    val dataset = sqlContext.read.format("jdbc")
+    val dataset = sparkSession.sqlContext.read.format("jdbc")
       .option("url", params.get("url").get)
       .option("driver", params.get("driver").get)
       .option("dbtable", sql)

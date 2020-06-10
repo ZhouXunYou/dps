@@ -1,18 +1,13 @@
 package dps.atomic.impl
 
-import org.apache.spark.SparkContext
-import scala.collection.mutable.Map
-import org.apache.spark.sql.RowFactory
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.types.StructField
-import org.apache.spark.sql.types.DataTypes
-import org.apache.spark.sql.types.StructType
-import org.apache.spark.sql.SQLContext
+import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import org.apache.spark.rdd.RDD
-import dps.atomic.define.AtomOperationDefine
-import dps.atomic.define.AtomOperationParamDefine
+import org.apache.spark.sql.types.{StructField, StructType}
+import org.apache.spark.sql.{Row, RowFactory, SparkSession}
 
-class RDDMap2Dataset(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
+import scala.collection.mutable.Map
+
+class RDDMap2Dataset(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
     val viewName = params.get("viewName").get
@@ -21,7 +16,7 @@ class RDDMap2Dataset(override val sparkContext: SparkContext, override val input
       buildRow(line)
     })
     var schema = StructType(specifyTableFields())
-    val dataframe = new SQLContext(sparkContext).createDataFrame(result, schema)
+    val dataframe = sparkSession.sqlContext.createDataFrame(result, schema)
     dataframe.createOrReplaceTempView(viewName)
     this.variables.put(outputVariableKey, dataframe);
   }
@@ -41,6 +36,7 @@ class RDDMap2Dataset(override val sparkContext: SparkContext, override val input
     //提供构建内存表的行数据实现
     //字符串分隔
     def values = line.split(",")
+
     return RowFactory.create(
       values(0), //第一列数据
       java.lang.Integer.valueOf(values.apply(1)), //第二列数据
@@ -51,7 +47,8 @@ class RDDMap2Dataset(override val sparkContext: SparkContext, override val input
   override def define: AtomOperationDefine = {
     val params = Map(
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
-      "buildTableFieldCode" -> new AtomOperationParamDefine("Build Table Field Code", """
+      "buildTableFieldCode" -> new AtomOperationParamDefine("Build Table Field Code",
+        """
     /**
      * 定义内存表的字段
      */
@@ -60,7 +57,8 @@ class RDDMap2Dataset(override val sparkContext: SparkContext, override val input
       fieldBuild("field2", "int", true),      //第二列定义,字段名field2,类型为int,可为空
       fieldBuild("field3", "long")            //第三列定义,字段名field3,类型为long,可为空
     )""", true, "3"),
-      "buildTableRowCode" -> new AtomOperationParamDefine("Build Table Field Code", """
+      "buildTableRowCode" -> new AtomOperationParamDefine("Build Table Field Code",
+        """
     //提供构建内存表的行数据实现
     //字符串分隔
     def values = line.split(",")

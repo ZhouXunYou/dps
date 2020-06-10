@@ -1,6 +1,7 @@
 package dps.mission
 
 import java.util.Optional
+
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
@@ -11,9 +12,11 @@ import dps.datasource.DataSource
 import dps.generator.MissionLoader
 import java.text.SimpleDateFormat
 import java.util.Calendar
+
 import scala.collection.Seq
 import dps.datasource.StreamDatasource
 import dps.atomic.Operator
+import org.apache.spark.sql.SparkSession
 
 object Launcher {
   def main(args: Array[String]): Unit = {
@@ -47,14 +50,18 @@ object Launcher {
     //      })
     //    })
     /** 验证任务是否执行，定制开发 **/
-    val sparkConf = new SparkConf()
+    val builder = SparkSession.builder()
+//    val sparkConf = new SparkConf()
 
     mission.missionParams.foreach(missionParam => {
-      sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
+//      sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
+      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
-    //    sparkConf.setMaster(mission.missionParams)
-    sparkConf.setAppName(mission.missionName)
-    val sparkContext = new SparkContext(sparkConf)
+//        sparkConf.setMaster(mission.missionParams)
+//    sparkConf.setAppName(mission.missionName)
+//    val sparkContext = new SparkContext(sparkConf)
+    builder.appName(mission.missionName)
+    val sparkSession = builder.getOrCreate()
     val missionVariables = Map[String, Any]()
 
     val datasourceInstanceParams = Map[String, String]()
@@ -62,11 +69,11 @@ object Launcher {
       datasourceInstanceParams.put(param._1, param._2.paramValue)
     })
     
-    val operator = new Operator(mission.operationGroups,sparkContext,missionVariables)
+    val operator = new Operator(mission.operationGroups,sparkSession,missionVariables)
     
     val datasourceInstance = Class.forName(mission.datasource.implementClass)
-      .getConstructor(classOf[SparkContext], classOf[Map[String, String]],classOf[Operator])
-      .newInstance(sparkContext, datasourceInstanceParams,operator)
+      .getConstructor(classOf[SparkSession], classOf[Map[String, String]],classOf[Operator])
+      .newInstance(sparkSession, datasourceInstanceParams,operator)
       .asInstanceOf[DataSource]
     datasourceInstance.read(mission.datasource.datasourceVariableKey);
 //    missionVariables.put(mission.datasource.datasourceVariableKey, datasourceInstance.read())

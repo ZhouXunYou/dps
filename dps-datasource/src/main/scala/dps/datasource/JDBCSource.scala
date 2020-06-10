@@ -1,13 +1,14 @@
 package dps.datasource
 
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SparkSession}
+
 import scala.collection.mutable.Map
 import dps.datasource.define.DatasourceDefine
 import dps.datasource.define.DatasourceParamDefine
 import dps.atomic.Operator
 
-class JDBCSource(override val sparkContext: SparkContext, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkContext, params,operator) {
+class JDBCSource(override val sparkSession: SparkSession, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkSession, params,operator) {
   override def read(variableKey:String){
     val url = params.get("url").get
     val user = params.get("user").get
@@ -15,7 +16,7 @@ class JDBCSource(override val sparkContext: SparkContext, override val params: M
     val tableName = params.get("tableName").get
     val tableAlias = params.get("tableAlias").getOrElse(null)
     val driver = params.get("driver").get
-    val dataset = new SQLContext(sparkContext).read.format("jdbc").option("driver", driver).option("url", url).option("dbtable", tableName).option("user", user).option("password", password).load()
+    val dataset = sparkSession.sqlContext.read.format("jdbc").option("driver", driver).option("url", url).option("dbtable", tableName).option("user", user).option("password", password).load()
     dataset.createOrReplaceTempView(params.get("tableAlias").getOrElse(tableName))
     operator.setVariable(variableKey, dataset)
     operator.operation()

@@ -1,33 +1,26 @@
 package dps.atomic.impl
+
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeUnit.DAYS
-import java.util.concurrent.TimeUnit.HOURS
-import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
+import java.util.concurrent.TimeUnit.{DAYS, HOURS, MINUTES, SECONDS}
+import java.util.{Calendar, Date}
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
+import org.apache.spark.sql.SparkSession
 
 import scala.collection.mutable.Map
 
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
-
-import dps.atomic.define.AtomOperationDefine
-import dps.atomic.define.AtomOperationParamDefine
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
-
-class JDBCQuery(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
+class JDBCQuery(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
-    val sqlContext = new SQLContext(sparkContext)
     val startTime = getTime(params.get("startTime").get)
     val interval = Integer.valueOf(params.get("interval").getOrElse("0"))
     val timeunit = TimeUnit.valueOf(params.get("timeunit").getOrElse("HOURS"))
     val sql = s"(select * from dual where d>='${getTimeWithHour(startTime)}' and d<'${getTime(getTimeWithHour(startTime), interval, timeunit)}')"
     val om = new ObjectMapper with ScalaObjectMapper
-    val dataset = sqlContext.read.format("jdbc")
+    val dataset = sparkSession.sqlContext.read.format("jdbc")
       .option("url", params.get("url").get)
       .option("driver", params.get("driver").get)
       .option("dbtable", sql)
@@ -37,6 +30,7 @@ class JDBCQuery(override val sparkContext: SparkContext, override val inputVaria
     dataset.createOrReplaceTempView(params.get("viewName").get)
     variables.put(outputVariableKey, dataset)
   }
+
   def getTime(paramValue: String): String = {
     if (paramValue == null || "".equals(paramValue.trim())) {
       val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -44,6 +38,7 @@ class JDBCQuery(override val sparkContext: SparkContext, override val inputVaria
     }
     return paramValue;
   }
+
   def getTime(startTime: String, interval: Int, unit: TimeUnit): String = {
     if (startTime == null || "".equals(startTime)) {
       return getTime(startTime)
@@ -76,6 +71,7 @@ class JDBCQuery(override val sparkContext: SparkContext, override val inputVaria
     }
     sdf.format(endTime)
   }
+
   def getTimeWithHour(paramValue: String): String = {
     if (paramValue == null || "".equals(paramValue.trim())) {
       val sdf = new SimpleDateFormat()
@@ -88,6 +84,7 @@ class JDBCQuery(override val sparkContext: SparkContext, override val inputVaria
     }
     return paramValue
   }
+
   override def define: AtomOperationDefine = {
     val params = Map(
       "driver" -> new AtomOperationParamDefine("JDBC Driver", "org.postgresql.Driver", true, "1"),

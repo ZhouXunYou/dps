@@ -1,13 +1,12 @@
 package ${packagePath}
 
-import org.apache.spark.SparkContext
-import scala.collection.mutable.Map
+import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import org.apache.spark.rdd.RDD
-import dps.atomic.define.AtomOperationDefine
-import dps.atomic.define.AtomOperationParamDefine
-import dps.atomic.impl.AbstractAction
+import org.apache.spark.sql.SparkSession
 
-class ${className} (override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
+import scala.collection.mutable.Map
+
+class ${className} (override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
     val leftRDD = params.get("leftVariableKey").get.asInstanceOf[RDD[Tuple2[String,String]]]
     val rightRDD = params.get("rightVariableKey").get.asInstanceOf[RDD[Tuple2[String,String]]]
