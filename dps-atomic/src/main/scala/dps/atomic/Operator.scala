@@ -7,7 +7,7 @@ import dps.atomic.impl.AbstractAction
 import scala.collection.mutable.Map
 import dps.atomic.model.OperationGroup
 
-class Operator (val operationGroups:List[OperationGroup],sparkContext:SparkContext,missionVariables:Map[String, Any]){
+class Operator (val operationGroups:List[OperationGroup],sparkContext:SparkContext,missionVariables:Map[String, Any]) extends Serializable{
   def setVariable(variableKey:String,value:Any){
     this.missionVariables.put(variableKey, value)
   }
