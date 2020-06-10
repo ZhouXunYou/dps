@@ -16,6 +16,18 @@ class RDDKafka2Dataset(override val sparkContext: SparkContext, override val inp
 
   def doIt(params: Map[String, String]): Any = {
     val kafkTuple = variables.get(inputVariableKey).get.asInstanceOf[RDD[Tuple3[String,Int,String]]]
+    kafkTuple.groupBy(tuple=>{
+      tuple._1
+    }).map(topicLines=>{
+      val topicName = topicLines._1
+      
+      val topicRDD = sparkContext.parallelize(topicLines._2.toSeq)
+      val stringRdd = topicRDD.map(topicTuple=>{
+        topicTuple._3
+      })
+      variables.put(outputVariableKey+"_"+topicName, stringRdd)
+//      topicLines._2.
+    })
     
     
   }
