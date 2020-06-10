@@ -5,3 +5,5 @@
 .cache-main
 .cache-tests
 **/src/main/scala/dps/mission/action/
+!/.idea/
+**/*.iml

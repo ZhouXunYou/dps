@@ -12,6 +12,9 @@ class Operator (val operationGroups:List[OperationGroup],sparkContext:SparkConte
     this.missionVariables.put(variableKey, value)
   }
   def operation(){
+    println(">>>>>>>>>>>>>>>>>>>>>")
+    println(operationGroups)
+    println("<<<<<<<<<<<<<<<<<<<<<")
     operationGroups.foreach(operationGroup => {
       operationGroup.operations.foreach(operation => {
         val actionInstance = Class.forName(operation.classQualifiedName)

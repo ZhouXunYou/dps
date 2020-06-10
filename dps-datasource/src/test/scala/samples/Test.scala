@@ -16,11 +16,11 @@ object Test {
     val sparkConf: SparkConf = new SparkConf().setAppName("Kafka_Receiver").setMaster("local[*]")
     val sc = new SparkContext(sparkConf)
     import scala.collection.mutable.Map
-    val map = Map[String, String]();
-    map.put("duration", "10");
-    map.put("bootstrapServers", "192.168.36.244:9092")
+    val map = Map[String, String]()
+//    map.put("duration", "10")
+    map.put("bootstrapServers", "192.168.11.200:9092")
     map.put("group", "groupTest")
-    map.put("topics", "CCC,DDD")
+    map.put("topics", "logstash_test")
     
     val operationGroups:List[OperationGroup]=null
     val missionVariables:Map[String, Any]=Map[String,Any]()

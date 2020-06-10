@@ -11,11 +11,11 @@ import dps.generator.SourceGenerator
 class AppTest {
 //  val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99/dps", "postgres", "postgres")
   
-  val so = new SessionOperation("org.postgresql.Driver", "10.10.10.212","3306", "gdhz", "changme","mysql","dps")
+  val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200","5432", "postgres", "postgres","postgres","dps")
   val ml = new MissionLoader(so)
   @Test
   def testMissioJsonOutput {
-    val mission = ml.getMission("LogStoreTask")
+    val mission = ml.getMission("DataProcessTask")
     val missionJson = JsonUtils.output(mission)
     assertNotNull(missionJson)
     println(missionJson)
@@ -23,9 +23,9 @@ class AppTest {
   
   @Test
   def testMissioOutputSource {
-    val mission = ml.getMission("LogStoreTask")
+    val mission = ml.getMission("DataProcessTask")
     val sg = new SourceGenerator(mission)
-    sg.produce("E:\\workspace\\scala.workspace\\dps\\dps-mission","E:\\workspace\\scala.workspace\\dps\\dps-atomic\\src\\main\\resources")
+    sg.produce("D:\\source\\others\\dps\\dps-mission","D:\\source\\others\\dps\\dps-atomic\\src\\main\\resources")
   }
 
   //    @Test

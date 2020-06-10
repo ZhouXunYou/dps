@@ -16,7 +16,7 @@ import org.apache.spark.SparkConf
 object DatasourceUtils {
   private val packageName = "dps.datasource"
   def main(args: Array[String]): Unit = {
-    val so = new SessionOperation("org.postgresql.Driver", "192.168.36.240", "3306", "root", "", "mysql", "dps")
+    val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200", "5432", "postgres", "postgres", "postgres", "dps")
 
     //    val so = new SessionOperation("com.mysql.jdbc.Driver", "39.98.141.108", "16606", "root", "1qaz#EDC", "mysql", "dps")
     so.executeUpdate("truncate table s_datasource_param_define", Array())
