@@ -51,15 +51,9 @@ object Launcher {
     //    })
     /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
-//    val sparkConf = new SparkConf()
-
     mission.missionParams.foreach(missionParam => {
-//      sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
       builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
-//        sparkConf.setMaster(mission.missionParams)
-//    sparkConf.setAppName(mission.missionName)
-//    val sparkContext = new SparkContext(sparkConf)
     builder.appName(mission.missionName)
     val sparkSession = builder.getOrCreate()
     val missionVariables = Map[String, Any]()
