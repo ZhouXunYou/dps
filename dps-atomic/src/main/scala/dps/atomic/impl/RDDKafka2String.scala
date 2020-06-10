@@ -11,11 +11,11 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.rdd.RDD
 import dps.atomic.define.AtomOperationDefine
 import dps.atomic.define.AtomOperationParamDefine
+import org.apache.spark.ContextCleaner
 
-class RDDKafka2Dataset(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
+class RDDKafka2String(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
-    
     val kafkTuple = this.pendingData.asInstanceOf[RDD[Tuple3[String,Int,String]]]
     kafkTuple.groupBy(tuple=>{
       tuple._1
@@ -25,6 +25,8 @@ class RDDKafka2Dataset(override val sparkContext: SparkContext, override val inp
       val stringRdd = topicRDD.map(topicTuple=>{
         topicTuple._3
       })
+//      val cc = new ContextCleaner
+//      ContextCleaner.
       variables.put(outputVariableKey+"_"+topicName, stringRdd)
 //      topicLines._2.
     })
