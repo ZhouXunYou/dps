@@ -15,12 +15,12 @@ import dps.atomic.define.AtomOperationParamDefine
 class RDDKafka2Dataset(override val sparkContext: SparkContext, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkContext, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
-    val kafkTuple = variables.get(inputVariableKey).get.asInstanceOf[RDD[Tuple3[String,Int,String]]]
+    
+    val kafkTuple = this.pendingData.asInstanceOf[RDD[Tuple3[String,Int,String]]]
     kafkTuple.groupBy(tuple=>{
       tuple._1
     }).map(topicLines=>{
       val topicName = topicLines._1
-      
       val topicRDD = sparkContext.parallelize(topicLines._2.toSeq)
       val stringRdd = topicRDD.map(topicTuple=>{
         topicTuple._3
