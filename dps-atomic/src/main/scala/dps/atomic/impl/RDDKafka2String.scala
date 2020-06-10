@@ -29,7 +29,9 @@ class RDDKafka2String(override val sparkContext: SparkContext, override val inpu
     })
   }
   override def define: AtomOperationDefine = {
-    val params = Map()
+    val params = Map(
+      "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1")
+    )
     val  atomOperation = new AtomOperationDefine("Kafka RDD Handle","kafkaRddHandle","RDDKafka2String.flt",params.toMap)
     atomOperation.id = "rdd_kafka_2_string"
     return atomOperation

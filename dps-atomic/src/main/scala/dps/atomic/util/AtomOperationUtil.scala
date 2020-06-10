@@ -16,9 +16,10 @@ object AtomOperationUtil {
   private val packageName = "dps.atomic.impl"
   def main(args: Array[String]): Unit = {
     //driver: String, ip: String,port:String, user: String, password: String,dbType:String,dbName:String
-    val so = new SessionOperation("org.postgresql.Driver", "192.168.36.186","5432", "postgres", "postgres","postgres","dps")
-//    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
-//    val so = new SessionOperation("com.mysql.jdbc.Driver", "jdbc:mysql://39.98.141.108:16606/dps?useUnicode=true&characterEncoding=UTF-8&useSSL=false", "root", "1qaz#EDC")
+//    val so = new SessionOperation("org.postgresql.Driver", "192.168.36.186","5432", "postgres", "postgres","postgres","dps")
+    //    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
+    //    val so = new SessionOperation("com.mysql.jdbc.Driver", "jdbc:mysql://39.98.141.108:16606/dps?useUnicode=true&characterEncoding=UTF-8&useSSL=false", "root", "1qaz#EDC")
+    val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200","5432", "postgres", "postgres","postgres","dps")
     so.executeUpdate("truncate table s_operation_param_def", Array())
     so.executeUpdate("truncate table s_operation_def", Array())
     val sparkConf = new SparkConf()

@@ -42,7 +42,7 @@ class RDDString2Map(override val sparkContext:SparkContext,override val inputVar
     return map""",true,"3")
     )
 
-    val atomOperation = new AtomOperationDefine("String RDD to Map RDD","rddString2Map","RDDString2Dataset.flt",params.toMap)
+    val atomOperation = new AtomOperationDefine("String RDD to Map RDD","rddString2Map","RDDString2Map.flt",params.toMap)
     atomOperation.id = "rdd_string_2_map"
     return atomOperation
   }
