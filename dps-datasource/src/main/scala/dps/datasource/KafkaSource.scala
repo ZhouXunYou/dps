@@ -35,7 +35,6 @@ class KafkaSource(override val sparkContext: SparkContext, override val params: 
         val partition = record.partition()
         (topic,partition,record.value())
       })
-      
       operator.setVariable(variableKey, streamRDD)
       operator.operation()
     })
