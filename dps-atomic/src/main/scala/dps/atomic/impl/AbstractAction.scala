@@ -8,7 +8,7 @@ import org.apache.spark.sql.types.StructField
 import dps.atomic.define.AtomOperationDefine
 
 abstract class AbstractAction(val sparkContext: SparkContext, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
-  var pendingData: Any = variables.get(inputVariableKey).getOrElse(null)
+  var pendingData: Any = variables.getOrElse(inputVariableKey, null)
   def define(): AtomOperationDefine = {
     null
   }
