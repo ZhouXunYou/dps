@@ -9,26 +9,29 @@ import dps.generator.SourceGenerator
 
 @Test
 class AppTest {
-//  val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99/dps", "postgres", "postgres")
-  
-  val so = new SessionOperation("org.postgresql.Driver", "192.168.36.186","5432", "postgres", "postgres","postgres","dps")
+  //  val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99/dps", "postgres", "postgres")
+
+  val so = new SessionOperation("org.postgresql.Driver", "192.168.36.186", "5432", "postgres", "postgres", "postgres", "dps")
   val ml = new MissionLoader(so)
+  //  val outputPath = "E:\\workspace\\scala.workspace\\dps\\dps-mission";
+  //  val templatePath = "E:\\workspace\\scala.workspace\\dps\\dps-atomic\\src\\main\\resources"
+  //  val missionCode = "DataProcessTask"
   val outputPath = "E:\\workspace\\scala.workspace\\dps\\dps-mission";
   val templatePath = "E:\\workspace\\scala.workspace\\dps\\dps-atomic\\src\\main\\resources"
   val missionCode = "DataProcessTask"
-//  @Test
-//  def testMissioJsonOutput {
-//    val mission = ml.getMission("DataProcessTask")
-//    val missionJson = JsonUtils.output(mission)
-//    assertNotNull(missionJson)
-//    println(missionJson)
-//  }
-  
+  //  @Test
+  //  def testMissioJsonOutput {
+  //    val mission = ml.getMission("DataProcessTask")
+  //    val missionJson = JsonUtils.output(mission)
+  //    assertNotNull(missionJson)
+  //    println(missionJson)
+  //  }
+
   @Test
   def testMissioOutputSource {
     val mission = ml.getMission(missionCode)
     val sg = new SourceGenerator(mission)
-    sg.produce(outputPath,templatePath)
+    sg.produce(outputPath, templatePath)
   }
 
   //    @Test
