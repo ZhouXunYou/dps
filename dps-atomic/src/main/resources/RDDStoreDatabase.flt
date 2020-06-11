@@ -1,5 +1,6 @@
 package ${packagePath}
 
+import dps.atomic.impl.AbstractAction
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 

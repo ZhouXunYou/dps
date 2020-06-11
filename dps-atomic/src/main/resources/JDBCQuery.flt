@@ -1,5 +1,6 @@
 package ${packagePath}
 
+import dps.atomic.impl.AbstractAction
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
