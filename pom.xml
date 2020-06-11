@@ -26,7 +26,7 @@
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<mysql.version>8.0.19</mysql.version>
 		<roaringbitmap.version>0.8.9</roaringbitmap.version>
-		<antlr.v4.version>4.8</antlr.v4.version>
+		<antlr.v4.version>4.7</antlr.v4.version>
 		<janino.version>3.0.8</janino.version>
 	</properties>
 
