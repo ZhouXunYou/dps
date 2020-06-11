@@ -26,6 +26,8 @@
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<mysql.version>8.0.19</mysql.version>
 		<roaringbitmap.version>0.8.9</roaringbitmap.version>
+		<antlr.v4.version>4.8</antlr.v4.version>
+		<janino.version>3.0.8</janino.version>
 	</properties>
 
 	<dependencyManagement>
@@ -79,6 +81,16 @@
 				<groupId>org.roaringbitmap</groupId>
 				<artifactId>RoaringBitmap</artifactId>
 				<version>${roaringbitmap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4</artifactId>
+				<version>${antlr.v4.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>janino</artifactId>
+				<version>${janino.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.spark</groupId>
