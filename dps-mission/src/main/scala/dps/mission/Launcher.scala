@@ -33,22 +33,22 @@ object Launcher {
     val mission = ml.getMission(missionCode)
     /** 验证任务是否执行，定制开发 **/
     // TODO 后续删除这部分
-    //    val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    //    mission.operationGroups.foreach(og=>{
-    //      og.operations.foreach(operation=>{
-    //        operation.operationParams.foreach(param=>{
-    //          if(param._1.equals("startTime")){
-    //            val startTime = param._2.operationParamValue
-    //            val startDateTime = sdf.parse(startTime)
-    //            val current = Calendar.getInstance().getTime
-    //            if(startDateTime.getTime>=current.getTime){
-    //              println(s"Start time is exception, start time is ${startDateTime}, current time is ${current}. Mission abort")
-    //              System.exit(0)
-    //            }
-    //          }
-    //        })
-    //      })
-    //    })
+//        val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//        mission.operationGroups.foreach(og=>{
+//          og.operations.foreach(operation=>{
+//            operation.operationParams.foreach(param=>{
+//              if(param._1.equals("startTime")){
+//                val startTime = param._2.operationParamValue
+//                val startDateTime = sdf.parse(startTime)
+//                val current = Calendar.getInstance().getTime
+//                if(startDateTime.getTime>=current.getTime){
+//                  println(s"Start time is exception, start time is ${startDateTime}, current time is ${current}. Mission abort")
+//                  System.exit(0)
+//                }
+//              }
+//            })
+//          })
+//        })
     /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
     mission.missionParams.foreach(missionParam => {
@@ -70,22 +70,6 @@ object Launcher {
       .newInstance(sparkSession, datasourceInstanceParams,operator)
       .asInstanceOf[DataSource]
     datasourceInstance.read(mission.datasource.datasourceVariableKey);
-//    missionVariables.put(mission.datasource.datasourceVariableKey, datasourceInstance.read())
-//    mission.operationGroups.foreach(operationGroup => {
-//      operationGroup.operations.foreach(operation => {
-//        val actionInstance = Class.forName(operation.classQualifiedName)
-//          .getConstructor(classOf[SparkContext], classOf[String], classOf[String], classOf[Map[String, Any]])
-//          .newInstance(sparkContext, operation.inVariableKey, operation.outVariableKey, missionVariables)
-//          .asInstanceOf[AbstractAction]
-//        val operationParams = Map[String, String]()
-//        operation.operationParams.foreach(operationParam => {
-//          val paramName = operationParam._1
-//          val param = operationParam._2
-//          operationParams.put(paramName, Optional.ofNullable(param.operationParamValue).orElse(param.operationParamDefaultValue))
-//        })
-//        actionInstance.doIt(operationParams)
-//      })
-//    })
     if (datasourceInstance.isInstanceOf[StreamDatasource]) {
       datasourceInstance.asInstanceOf[StreamDatasource].start()
     } else {

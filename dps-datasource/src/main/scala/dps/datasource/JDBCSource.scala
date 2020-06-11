@@ -16,7 +16,12 @@ class JDBCSource(override val sparkSession: SparkSession, override val params: M
     val tableName = params.get("tableName").get
     val tableAlias = params.get("tableAlias").getOrElse(null)
     val driver = params.get("driver").get
-    val dataset = sparkSession.sqlContext.read.format("jdbc").option("driver", driver).option("url", url).option("dbtable", tableName).option("user", user).option("password", password).load()
+    val dataset = sparkSession.sqlContext.read.format("jdbc")
+    .option("driver", driver)
+    .option("url", url)
+    .option("dbtable", tableName)
+    .option("user", user)
+    .option("password", password).load()
     dataset.createOrReplaceTempView(params.get("tableAlias").getOrElse(tableName))
     operator.setVariable(variableKey, dataset)
     operator.operation()
