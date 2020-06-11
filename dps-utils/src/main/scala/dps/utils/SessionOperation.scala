@@ -12,7 +12,7 @@ class SessionOperation {
     this()
     Class.forName(driver)
     val url = dbType.toLowerCase() match{
-      case "mysql" => s"jdbc:mysql://${ip}:${port}/${dbName}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
+      case "mysql" => s"jdbc:mysql://${ip}:${port}/${dbName}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&useOldAliasMetadataBehavior=true"
       case "postgres" => s"jdbc:postgresql://${ip}:${port}/${dbName}"
     }
     this.conn = DriverManager.getConnection(url, user, password)
