@@ -75,7 +75,7 @@ class MissionLoader(val so: SessionOperation) {
    */
   private def getMissionDatasources(missionId: String): Datasource = {
     var datasources = List[Datasource]()
-    val datasourceDatas = so.executeQuery("select mds.id `seq_id`,dd.*,mds.datasource_variable_key from b_mission_datasource_seq mds inner join s_datasource_define dd on mds.datasource_def_id = dd.id where mds.mission_id = ? order by mds.seq_num", Array(missionId))
+    val datasourceDatas = so.executeQuery("select mds.id seq_id,dd.*,mds.datasource_variable_key from b_mission_datasource_seq mds inner join s_datasource_define dd on mds.datasource_def_id = dd.id where mds.mission_id = ? order by mds.seq_num", Array(missionId))
     if(datasourceDatas.size==1){
       val datasourceData = datasourceDatas(0)
       val seqId = datasourceData.get("seq_id").get
