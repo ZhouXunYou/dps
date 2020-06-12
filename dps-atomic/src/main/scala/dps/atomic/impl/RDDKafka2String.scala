@@ -14,7 +14,10 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val inpu
     groupTopic.foreach(topic => {
       val topicName = topic._1
       val topicRDD = sparkSession.sparkContext.parallelize(topic._2.toSeq)
-      variables.put(outputVariableKey + "_" + topicName, topicRDD)
+      val valueRDD = topicRDD.map(tuple=>{
+        tuple._3
+      })
+      variables.put(outputVariableKey + "_" + topicName, valueRDD)
     })
   }
 
