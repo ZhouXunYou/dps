@@ -24,12 +24,24 @@
 		<freemarker.version>2.3.29</freemarker.version>
 		<jackson.version>2.6.7.1</jackson.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
-		<mysql.version>8.0.19</mysql.version>
+		<mysql.version>5.1.49</mysql.version>
 		<roaringbitmap.version>0.8.9</roaringbitmap.version>
 		<antlr.v4.version>4.7</antlr.v4.version>
 		<janino.version>3.0.8</janino.version>
 	</properties>
-
+	<repositories>
+		<repository>
+			<id>aliyun</id>
+			<name>aliyun</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
