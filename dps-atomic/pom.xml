@@ -24,6 +24,16 @@
 <!-- 			<scope>provided</scope> -->
 		</dependency>
 		<dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-streaming_${scala.compat.version}</artifactId>
+<!-- 			<scope>provided</scope> -->
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.spark</groupId>
+		    <artifactId>spark-streaming-kafka-0-10_${scala.compat.version}</artifactId>
+<!-- 			<scope>provided</scope> -->
+		</dependency>
+		<dependency>
 			<groupId>dps-utils</groupId>
 			<artifactId>dps-utils</artifactId>
 			<version>${project.version}</version>
