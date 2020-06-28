@@ -27,6 +27,7 @@ class RDDStringSendKafka(override val sparkSession: SparkSession, override val i
     rdd.foreach(value=>{
       kafkaProducer.value.send(sendTopicName, value)
     })
+    
   }
 
   override def define: AtomOperationDefine = {
