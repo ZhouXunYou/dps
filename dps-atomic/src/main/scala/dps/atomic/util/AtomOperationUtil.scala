@@ -3,13 +3,12 @@ package dps.atomic.util
 import java.io.File
 
 import scala.collection.mutable.Map
-
 import org.apache.spark.SparkContext
-
 import dps.utils.SessionOperation
 import dps.atomic.define.AtomOperationDefine
 import dps.atomic.impl.AbstractAction
 import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
 
 object AtomOperationUtil {
   
@@ -25,9 +24,9 @@ object AtomOperationUtil {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("initAtomicData")
     sparkConf.setMaster("local[*]")
-    val sparkContext = new SparkContext(sparkConf)
+    val sparkSession = SparkSession.builder().config(conf = sparkConf).getOrCreate()
     getAtomOperations.foreach(atomOperationClass=>{
-      val action = atomOperationClass.getConstructor(classOf[SparkContext],classOf[String],classOf[String],classOf[Map[String,Any]]).newInstance(sparkContext,"","",Map()).asInstanceOf[AbstractAction]
+      val action = atomOperationClass.getConstructor(classOf[SparkSession],classOf[String],classOf[String],classOf[Map[String,Any]]).newInstance(sparkSession,"","",Map()).asInstanceOf[AbstractAction]
       initAtomOperationDefin(action.define(),so)
     })
   }
