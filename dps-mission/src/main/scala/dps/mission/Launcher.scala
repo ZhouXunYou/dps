@@ -33,28 +33,28 @@ object Launcher {
     val mission = ml.getMission(missionCode)
     /** 验证任务是否执行，定制开发 **/
     // TODO 后续删除这部分
-//        val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//        mission.operationGroups.foreach(og=>{
-//          og.operations.foreach(operation=>{
-//            operation.operationParams.foreach(param=>{
-//              if(param._1.equals("startTime")){
-//                val startTime = param._2.operationParamValue
-//                val startDateTime = sdf.parse(startTime)
-//                val current = Calendar.getInstance().getTime
-//                if(startDateTime.getTime>=current.getTime){
-//                  println(s"Start time is exception, start time is ${startDateTime}, current time is ${current}. Mission abort")
-//                  System.exit(0)
-//                }
-//              }
-//            })
-//          })
+//    val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//    mission.operationGroups.foreach(og => {
+//      og.operations.foreach(operation => {
+//        operation.operationParams.foreach(param => {
+//          if (param._1.equals("startTime")) {
+//            val startTime = param._2.operationParamValue
+//            val startDateTime = sdf.parse(startTime)
+//            val current = Calendar.getInstance().getTime
+//            if (startDateTime.getTime >= current.getTime) {
+//              println(s"Start time is exception, start time is ${startDateTime}, current time is ${current}. Mission abort")
+//              System.exit(0)
+//            }
+//          }
 //        })
+//      })
+//    })
     /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
     mission.missionParams.foreach(missionParam => {
       builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
-    builder.appName(mission.missionName)
+    builder.appName(mission.missionCode)
     val sparkSession = builder.getOrCreate()
     val missionVariables = Map[String, Any]()
 

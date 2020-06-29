@@ -5,7 +5,7 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.mutable.Map
 
-class ExecuteSQL(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
+class ExecuteSQL(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends dps.atomic.impl.AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
     val sql = params.get("sql").get

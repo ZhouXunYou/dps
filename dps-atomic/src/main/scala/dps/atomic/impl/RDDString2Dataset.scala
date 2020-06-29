@@ -1,13 +1,13 @@
 package dps.atomic.impl
 
-import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
+import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.{StructField, StructType}
-import org.apache.spark.sql.{Row, RowFactory, SparkSession}
+import org.apache.spark.sql.types.{ StructField, StructType }
+import org.apache.spark.sql.{ Row, RowFactory, SparkSession }
 
 import scala.collection.mutable.Map
 
-class RDDMap2Dataset(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
+class RDDMap2Dataset(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends dps.atomic.impl.AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
     val viewName = params.get("viewName").get
@@ -47,17 +47,20 @@ class RDDMap2Dataset(override val sparkSession: SparkSession, override val input
   override def define: AtomOperationDefine = {
     val params = Map(
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
-      "buildTableFieldCode" -> new AtomOperationParamDefine("Build Table Field Code",
+      "buildTableFieldCode" -> new AtomOperationParamDefine(
+        "Build Table Field Code",
         """
     /**
      * 定义内存表的字段
+     * 数据类型支持:string,int,integer,long,float,double,date,time
      */
     List(
       fieldBuild("field1", "string", false),  //第一列定义,字段名field1,类型为string,不可为空
       fieldBuild("field2", "int", true),      //第二列定义,字段名field2,类型为int,可为空
       fieldBuild("field3", "long")            //第三列定义,字段名field3,类型为long,可为空
     )""", true, "3"),
-      "buildTableRowCode" -> new AtomOperationParamDefine("Build Table Field Code",
+      "buildTableRowCode" -> new AtomOperationParamDefine(
+        "Build Table Field Code",
         """
     //提供构建内存表的行数据实现
     //字符串分隔

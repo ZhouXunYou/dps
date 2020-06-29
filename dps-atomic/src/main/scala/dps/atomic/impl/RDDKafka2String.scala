@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.mutable.Map
 
-class RDDKafka2String(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
+class RDDKafka2String(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends dps.atomic.impl.AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
     val kafkTuple = this.pendingData.asInstanceOf[RDD[Tuple3[String, Int, String]]]
@@ -14,7 +14,10 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val inpu
     groupTopic.foreach(topic => {
       val topicName = topic._1
       val topicRDD = sparkSession.sparkContext.parallelize(topic._2.toSeq)
-      variables.put(outputVariableKey + "_" + topicName, topicRDD)
+      val valueRDD = topicRDD.map(tuple=>{
+        tuple._3
+      })
+      variables.put(outputVariableKey + "_" + topicName, valueRDD)
     })
   }
 

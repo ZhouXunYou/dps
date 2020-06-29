@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit._
+import org.quartz.CronExpression
+import java.util.Date
+
 @Test
 class AppTest {
 
@@ -40,6 +43,12 @@ class AppTest {
 
     }
     println(endTime)
+  }
+  @Test
+  def testCron() = {
+    val c:CronExpression = new CronExpression("* * * * * ?")
+    val flag = c.isSatisfiedBy(new Date)
+    println(flag)
   }
 
   //    @Test
