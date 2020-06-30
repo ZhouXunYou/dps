@@ -28,6 +28,8 @@
 		<roaringbitmap.version>0.8.9</roaringbitmap.version>
 		<antlr.v4.version>4.7</antlr.v4.version>
 		<janino.version>3.0.8</janino.version>
+		<fastjson.version>1.2.70</fastjson.version>
+		<quartz.version>2.3.2</quartz.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -112,7 +114,12 @@
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
-				<version>1.2.70</version>
+				<version>${fastjson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+				<version>${quartz.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
