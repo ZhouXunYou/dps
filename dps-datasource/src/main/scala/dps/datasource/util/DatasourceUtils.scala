@@ -1,17 +1,18 @@
 package dps.datasource.util
 
 import java.io.File
+import java.lang.reflect.Modifier
 
 import scala.collection.mutable.Map
 
+import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.SparkSession
 
-import dps.utils.SessionOperation
+import dps.atomic.Operator
 import dps.datasource.DataSource
 import dps.datasource.StreamDatasource
-import java.lang.reflect.Modifier
-import dps.atomic.Operator
-import org.apache.spark.SparkConf
+import dps.utils.SessionOperation
 
 object DatasourceUtils {
   private val packageName = "dps.datasource"
@@ -27,7 +28,7 @@ object DatasourceUtils {
     val sparkContext = new SparkContext(sparkConf)
     getDatasources().foreach(datasource => {
       println(datasource.getName)
-      val datasourceInstance = datasource.getConstructor(classOf[SparkContext], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkContext, Map[String, String](),null).asInstanceOf[DataSource]
+      val datasourceInstance = datasource.getConstructor(classOf[SparkSession], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkContext, Map[String, String](),null).asInstanceOf[DataSource]
       initDatasource(datasourceInstance, so)
     })
   }
