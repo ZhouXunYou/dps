@@ -55,7 +55,7 @@ object Launcher {
       builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
     builder.appName(mission.missionCode)
-    val sparkSession = builder.getOrCreate()
+    val sparkSession = builder.enableHiveSupport().getOrCreate()
     val missionVariables = Map[String, Any]()
 
     val datasourceInstanceParams = Map[String, String]()
