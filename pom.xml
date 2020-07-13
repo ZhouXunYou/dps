@@ -28,6 +28,8 @@
 		<roaringbitmap.version>0.8.9</roaringbitmap.version>
 		<antlr.v4.version>4.7</antlr.v4.version>
 		<janino.version>3.0.8</janino.version>
+
+		<spark-hive.version>3.0.0</spark-hive.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -113,6 +115,12 @@
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
 				<version>1.2.70</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-hive_2.12</artifactId>
+				<version>${spark-hive.version}</version>
+<!--				<scope>provided</scope>-->
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
