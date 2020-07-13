@@ -9,8 +9,8 @@ import scala.collection.mutable.Map
 class ${className} (override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends dps.atomic.impl.AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
-    val paramPartitionNumValue = params.get("partitionNum").getOrElse(s"${sparkSession.sparkContext.defaultMinPartitions}").asInstanceOf[Int]
+    val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).asInstanceOf[String]
     val path = params.get("path").get
-    dataset.coalesce(paramPartitionNumValue).write.mode(SaveMode.Append).parquet(path)
+    dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
   }
 }
