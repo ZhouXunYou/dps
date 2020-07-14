@@ -13,7 +13,7 @@ import dps.atomic.Operator
 import org.apache.spark.sql.SparkSession
 
 abstract class StreamDatasource(override val sparkSession: SparkSession,override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkSession, params,operator){
-  val streamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(params.get("duration").getOrElse("5").toLong))
+  val streamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(params.get("duration").getOrElse("30").toLong))
   def start(){
     streamingContext.start()
     streamingContext.awaitTermination();

@@ -13,14 +13,13 @@ import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 object KafkaTest {
   def main(args: Array[String]): Unit = {
     val builder = SparkSession.builder()
-    val sparkSession = builder.appName("kt").master("localhost[*]").getOrCreate();
+    val sparkSession = builder.appName("kt").master("local[*]").getOrCreate();
     val streamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(5))
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "",
+      "bootstrap.servers" -> "192.168.11.207:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "aaa",
-//      "auto.offset.reset" -> "latest",
       "auto.offset.reset" -> "earliest",
       "enable.auto.commit" -> (true: java.lang.Boolean))
     val topics = "userpath".split(",")
@@ -33,5 +32,8 @@ object KafkaTest {
         println(record.topic(),record.partition(),record.value());
       })
     })
+
+    streamingContext.start()
+    streamingContext.awaitTermination()
   }
 }
