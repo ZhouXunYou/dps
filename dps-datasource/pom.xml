@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-sql_${scala.compat.version}</artifactId>
-<!-- 			<scope>provided</scope> -->
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>dps-utils</groupId>
@@ -36,10 +36,12 @@
 		<dependency>
 		    <groupId>org.apache.spark</groupId>
 		    <artifactId>spark-streaming_${scala.compat.version}</artifactId>
+		    <scope>provider</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.spark</groupId>
 		    <artifactId>spark-streaming-kafka-0-10_${scala.compat.version}</artifactId>
+		    <scope>provider</scope>
 		</dependency>
 		<!-- Test -->
 		<dependency>
