@@ -24,9 +24,9 @@ object AtomOperationUtil {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("initAtomicData")
     sparkConf.setMaster("local[*]")
-    val sparkSession = SparkSession.builder().config(conf = sparkConf).getOrCreate()
+    val sparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
     getAtomOperations.foreach(atomOperationClass=>{
-      val action = atomOperationClass.getConstructor(classOf[SparkSession],classOf[String],classOf[String],classOf[Map[String,Any]]).newInstance(sparkSession,"","",Map()).asInstanceOf[AbstractAction]
+      val action = atomOperationClass.getConstructor(classOf[SparkSession],classOf[SparkConf], classOf[String],classOf[String],classOf[Map[String,Any]]).newInstance(sparkSession,sparkConf,"","",Map()).asInstanceOf[AbstractAction]
       initAtomOperationDefin(action.define(),so)
     })
   }

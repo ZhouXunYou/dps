@@ -28,7 +28,7 @@ object DatasourceUtils {
     val sparkContext = new SparkContext(sparkConf)
     getDatasources().foreach(datasource => {
       println(datasource.getName)
-      val datasourceInstance = datasource.getConstructor(classOf[SparkSession], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkContext, Map[String, String](),null).asInstanceOf[DataSource]
+      val datasourceInstance = datasource.getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkContext, sparkConf, Map[String, String](),null).asInstanceOf[DataSource]
       initDatasource(datasourceInstance, so)
     })
   }

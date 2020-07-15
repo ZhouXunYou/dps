@@ -13,6 +13,7 @@ import dps.datasource.StreamDatasource
 import dps.generator.MissionLoader
 import dps.utils.RunParam
 import dps.utils.SessionOperation
+import org.apache.spark.SparkConf
 
 object Launcher {
   def main(args: Array[String]): Unit = {
@@ -47,9 +48,12 @@ object Launcher {
 //    })
     /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
+    val sparkConf = new SparkConf
     mission.missionParams.foreach(missionParam => {
-      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
+//      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
+      sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
+    builder.config(sparkConf)
     builder.appName(mission.missionCode)
     val sparkSession = builder.enableHiveSupport().getOrCreate()
     val missionVariables = Map[String, Any]()
@@ -59,11 +63,11 @@ object Launcher {
       datasourceInstanceParams.put(param._1, param._2.paramValue)
     })
     
-    val operator = new Operator(mission.operationGroups,sparkSession,missionVariables)
+    val operator = new Operator(mission.operationGroups,sparkSession,sparkConf,missionVariables)
     
     val datasourceInstance = Class.forName(mission.datasource.implementClass)
-      .getConstructor(classOf[SparkSession], classOf[Map[String, String]],classOf[Operator])
-      .newInstance(sparkSession, datasourceInstanceParams,operator)
+      .getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[Map[String, String]],classOf[Operator])
+      .newInstance(sparkSession, sparkConf, datasourceInstanceParams,operator)
       .asInstanceOf[DataSource]
     datasourceInstance.read(mission.datasource.datasourceVariableKey);
     if (datasourceInstance.isInstanceOf[StreamDatasource]) {

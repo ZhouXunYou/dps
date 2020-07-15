@@ -7,8 +7,9 @@ import scala.collection.mutable.Map
 import dps.datasource.define.DatasourceDefine
 import dps.datasource.define.DatasourceParamDefine
 import dps.atomic.Operator
+import org.apache.spark.SparkConf
 
-class JDBCSource(override val sparkSession: SparkSession, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkSession, params,operator) {
+class JDBCSource(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val params: Map[String, String], override val operator: Operator) extends DataSource(sparkSession, sparkConf, params, operator) {
   override def read(variableKey:String){
     val url = params.get("url").get
     val user = params.get("user").get

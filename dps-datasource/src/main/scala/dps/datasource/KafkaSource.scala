@@ -10,8 +10,9 @@ import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 
 import scala.collection.mutable.Map
+import org.apache.spark.SparkConf
 
-class KafkaSource(override val sparkSession: SparkSession, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkSession, params,operator) {
+class KafkaSource(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val params: Map[String, String],override val operator:Operator) extends StreamDatasource(sparkSession, sparkConf,params,operator) {
   override def read(variableKey:String) {
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> params.get("bootstrapServers").get,
