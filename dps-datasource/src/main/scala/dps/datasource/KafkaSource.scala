@@ -18,8 +18,8 @@ class KafkaSource(override val sparkSession: SparkSession, override val params: 
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> params.get("group").get,
-//      "auto.offset.reset" -> "latest",
-      "auto.offset.reset" -> "earliest",
+      "auto.offset.reset" -> "latest",
+//      "auto.offset.reset" -> "earliest",
       "enable.auto.commit" -> (true: java.lang.Boolean))
     val topics = params.get("topics").get.split(",")
     val stream = KafkaUtils.createDirectStream[String, String](
