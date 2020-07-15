@@ -11,10 +11,8 @@ import org.apache.spark.SparkConf
 class RDDKafka2String(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
-    
     val kafkTuple = this.pendingData.asInstanceOf[RDD[Tuple3[String, Int, String]]]
     val groupTopic = kafkTuple.groupBy(tuple => tuple._1)
-    groupTopic.foreach(f=>());
     groupTopic.foreach(topic => {
       val topicName = topic._1
       val context = new SparkContext(sparkConf);
