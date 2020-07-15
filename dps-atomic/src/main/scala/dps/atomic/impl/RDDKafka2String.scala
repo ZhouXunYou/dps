@@ -10,7 +10,8 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val inpu
 
   def doIt(params: Map[String, String]): Any = {
     val kafkTuple = this.pendingData.asInstanceOf[RDD[Tuple3[String, Int, String]]]
-    val groupTopic = kafkTuple.groupBy(tuple => tuple._1).collect()
+    val groupTopic = kafkTuple.groupBy(tuple => tuple._1)
+    groupTopic.foreach(f=>());
     groupTopic.foreach(topic => {
       val topicName = topic._1
       val topicRDD = sparkSession.sparkContext.parallelize(topic._2.toSeq)

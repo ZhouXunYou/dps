@@ -10,12 +10,8 @@ import org.apache.spark.sql.SparkSession
 class FileSource(override val sparkSession: SparkSession, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkSession, params,operator) {
   override def read(variableKey:String)= {
     val filePath = params.get("path").get
-    var partitionNum = sparkSession.sparkContext.defaultMinPartitions
-    val paramPartitionNumValue = params.get("partitionNum").get
-    if (paramPartitionNumValue != null && !"".equals(paramPartitionNumValue)) {
-      partitionNum = paramPartitionNumValue.toInt
-    }
-    val rdd = sparkSession.sparkContext.textFile(filePath, partitionNum)
+    val paramPartitionNumValue = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
+    val rdd = sparkSession.sparkContext.textFile(filePath, paramPartitionNumValue)
     operator.setVariable(variableKey, rdd)
   }
 
