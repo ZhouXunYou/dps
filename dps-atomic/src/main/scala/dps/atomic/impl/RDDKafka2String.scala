@@ -17,7 +17,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
     groupTopic.foreach(f=>());
     groupTopic.foreach(topic => {
       val topicName = topic._1
-      val context = SparkContext.getOrCreate(sparkConf);
+      val context = new SparkContext(sparkConf);
       val topicRDD = context.parallelize(topic._2.toSeq)
       val valueRDD = topicRDD.map(tuple => {
         tuple._3

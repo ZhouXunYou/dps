@@ -48,13 +48,13 @@ object Launcher {
 //    })
     /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
+    builder.appName(mission.missionCode)
     val sparkConf = new SparkConf
     mission.missionParams.foreach(missionParam => {
 //      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
       sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
     builder.config(sparkConf)
-    builder.appName(mission.missionCode)
     val sparkSession = builder.enableHiveSupport().getOrCreate()
     val missionVariables = Map[String, Any]()
 
