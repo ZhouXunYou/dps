@@ -45,6 +45,10 @@
 		    <artifactId>spark-streaming-kafka-0-10_${scala.compat.version}</artifactId>
 		    <scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
