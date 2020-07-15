@@ -28,13 +28,15 @@ class KafkaSource(override val sparkSession: SparkSession, override val params: 
       Subscribe[String, String](topics, kafkaParams))
     
     stream.foreachRDD(records => {
-      val streamRDD = records.map(record=>{
-        val topic = record.topic()
-        val partition = record.partition()
-        (topic,partition,record.value())
-      })
-      operator.setVariable(variableKey, streamRDD)
-      operator.operation()
+      if(!records.isEmpty()){
+        val streamRDD = records.map(record=>{
+          val topic = record.topic()
+          val partition = record.partition()
+          (topic,partition,record.value())
+        })
+        operator.setVariable(variableKey, streamRDD)
+        operator.operation()
+      }
     })
   }
   def define(): DatasourceDefine = {
