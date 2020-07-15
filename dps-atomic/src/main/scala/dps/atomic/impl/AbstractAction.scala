@@ -6,8 +6,9 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{DataTypes, StructField}
 
 import scala.collection.mutable.Map
+import org.apache.spark.SparkConf
 
-abstract class AbstractAction(val sparkSession: SparkSession, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
+abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf:SparkConf, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
   var pendingData: Any = variables.getOrElse(inputVariableKey, null)
 
   def define(): AtomOperationDefine = {

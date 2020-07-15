@@ -2,21 +2,18 @@ package dps.mission
 
 import java.util.Optional
 
+import scala.collection.Seq
 import scala.collection.mutable.Map
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
+
+import org.apache.spark.sql.SparkSession
+
+import dps.atomic.Operator
+import dps.datasource.DataSource
+import dps.datasource.StreamDatasource
+import dps.generator.MissionLoader
 import dps.utils.RunParam
 import dps.utils.SessionOperation
-import dps.atomic.impl.AbstractAction
-import dps.datasource.DataSource
-import dps.generator.MissionLoader
-import java.text.SimpleDateFormat
-import java.util.Calendar
-
-import scala.collection.Seq
-import dps.datasource.StreamDatasource
-import dps.atomic.Operator
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.SparkConf
 
 object Launcher {
   def main(args: Array[String]): Unit = {
@@ -51,10 +48,13 @@ object Launcher {
 //    })
     /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
-    mission.missionParams.foreach(missionParam => {
-      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
-    })
     builder.appName(mission.missionCode)
+    val sparkConf = new SparkConf
+    mission.missionParams.foreach(missionParam => {
+//      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
+      sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
+    })
+    builder.config(sparkConf)
     val sparkSession = builder.enableHiveSupport().getOrCreate()
     val missionVariables = Map[String, Any]()
 
@@ -63,11 +63,11 @@ object Launcher {
       datasourceInstanceParams.put(param._1, param._2.paramValue)
     })
     
-    val operator = new Operator(mission.operationGroups,sparkSession,missionVariables)
+    val operator = new Operator(mission.operationGroups,sparkSession,sparkConf,missionVariables)
     
     val datasourceInstance = Class.forName(mission.datasource.implementClass)
-      .getConstructor(classOf[SparkSession], classOf[Map[String, String]],classOf[Operator])
-      .newInstance(sparkSession, datasourceInstanceParams,operator)
+      .getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[Map[String, String]],classOf[Operator])
+      .newInstance(sparkSession, sparkConf, datasourceInstanceParams,operator)
       .asInstanceOf[DataSource]
     datasourceInstance.read(mission.datasource.datasourceVariableKey);
     if (datasourceInstance.isInstanceOf[StreamDatasource]) {

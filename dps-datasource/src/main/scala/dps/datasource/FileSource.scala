@@ -6,8 +6,9 @@ import dps.atomic.Operator
 import dps.datasource.define.DatasourceDefine
 import dps.datasource.define.DatasourceParamDefine
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.SparkConf
 
-class FileSource(override val sparkSession: SparkSession, override val params: Map[String, String],override val operator:Operator) extends DataSource(sparkSession, params,operator) {
+class FileSource(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val params: Map[String, String], override val operator: Operator) extends DataSource(sparkSession, sparkConf, params, operator) {
   override def read(variableKey:String)= {
     val filePath = params.get("path").get
     val paramPartitionNumValue = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt

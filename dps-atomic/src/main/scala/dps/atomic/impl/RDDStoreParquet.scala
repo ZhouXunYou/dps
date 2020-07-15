@@ -4,8 +4,9 @@ import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 
 import scala.collection.mutable.Map
+import org.apache.spark.SparkConf
 
-class RDDStoreParquet(override val sparkSession: SparkSession, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends dps.atomic.impl.AbstractAction(sparkSession, inputVariableKey, outputVariableKey, variables) with Serializable {
+class RDDStoreParquet(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
     val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt

@@ -9,8 +9,9 @@ import org.apache.spark.broadcast.Broadcast
 import dps.atomic.util.KafkaSink
 import java.util.Properties
 import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.spark.SparkConf
 
-class ${className}(override val sparkSession: SparkSession,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends import dps.atomic.impl.AbstractAction(sparkSession,inputVariableKey, outputVariableKey, variables) with Serializable {
+class ${className}(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
     val kafkaProducer: Broadcast[KafkaSink[String, String]] = {
       val kafkaProducerConfig = {
