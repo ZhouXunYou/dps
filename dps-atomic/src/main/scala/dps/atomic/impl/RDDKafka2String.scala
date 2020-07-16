@@ -12,7 +12,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
 
   def doIt(params: Map[String, String]): Any = {
     val topicValue = this.pendingData.asInstanceOf[RDD[Tuple3[String, Int, String]]].filter(tuple=>{
-      tuple._1.equals(params.get("tipicName").get)
+      tuple._1.equals(params.get("topicName").get)
     })
     val rdd = topicValue.map(tuple=>{
       tuple._3
@@ -22,7 +22,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
 
   override def define: AtomOperationDefine = {
     val params = Map(
-      "tipicName" -> new AtomOperationParamDefine("Topic Name", "Topic Name", true, "1"))
+      "topicName" -> new AtomOperationParamDefine("Topic Name", "Topic Name", true, "1"))
     val atomOperation = new AtomOperationDefine("Kafka RDD Handle", "kafkaRddHandle", "RDDKafka2String.flt", params.toMap)
     atomOperation.id = "rdd_kafka_2_string"
     return atomOperation

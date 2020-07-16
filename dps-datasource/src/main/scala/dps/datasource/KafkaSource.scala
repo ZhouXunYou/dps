@@ -38,6 +38,7 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
           val partition = record.partition()
           (topic,partition,record.value())
         })
+        operator.setVariable(variableKey, streamRDD);
         operator.operation()
       }
     })
