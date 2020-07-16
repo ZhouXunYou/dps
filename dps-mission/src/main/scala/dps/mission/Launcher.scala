@@ -54,6 +54,7 @@ object Launcher {
 //      builder.config(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
       sparkConf.set(missionParam.paramName, Optional.ofNullable(missionParam.paramValue).orElse(missionParam.defaultValue))
     })
+    sparkConf.set("spark.driver.allowMultipleContexts", "true")
     builder.config(sparkConf)
     val sparkSession = builder.enableHiveSupport().getOrCreate()
     val missionVariables = Map[String, Any]()

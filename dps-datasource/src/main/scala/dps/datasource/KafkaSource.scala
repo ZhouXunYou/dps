@@ -19,8 +19,8 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> params.get("group").get,
-//      "auto.offset.reset" -> "latest",
-      "auto.offset.reset" -> "earliest",
+      "auto.offset.reset" -> "latest",
+//      "auto.offset.reset" -> "earliest",
       "enable.auto.commit" -> (true: java.lang.Boolean))
     val topics = params.get("topics").get.split(",")
     val stream = KafkaUtils.createDirectStream[String, String](
@@ -29,13 +29,21 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
       Subscribe[String, String](topics, kafkaParams))
     
     stream.foreachRDD(records => {
+      println(records.isEmpty())
+      
       if(!records.isEmpty()){
         val streamRDD = records.map(record=>{
+          
           val topic = record.topic()
           val partition = record.partition()
           (topic,partition,record.value())
         })
-        operator.setVariable(variableKey, streamRDD)
+        val groupTopic = streamRDD.groupBy(topic=>topic._1)
+        groupTopic.foreach(topic=>{
+          val topicName = topic._1
+          val t2 = topic._2
+          operator.setVariable(variableKey, streamRDD)
+        })
         operator.operation()
       }
     })
