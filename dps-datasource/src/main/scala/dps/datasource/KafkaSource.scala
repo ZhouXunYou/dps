@@ -38,11 +38,6 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
           val partition = record.partition()
           (topic,partition,record.value())
         })
-//        val groupTopic = streamRDD.groupBy(topic=>topic._1)
-//        groupTopic.map(topic=>{
-//          val topicName = topic._1
-//          operator.setVariable(topicName, topic._2)
-//        })
         operator.operation()
       }
     })
