@@ -13,7 +13,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
   
   def doIt(params: Map[String, String]): Any = {
     val topicValue = this.pendingData.asInstanceOf[RDD[Tuple3[String, Int, String]]].filter(tuple=>{
-      tuple._1.equals(params.get("tipicName").get)
+      tuple._1.equals(params.get("topicName").get)
     })
     val rdd = topicValue.map(tuple=>{
       tuple._3
