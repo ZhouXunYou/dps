@@ -42,7 +42,7 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
         groupTopic.foreach(topic=>{
           val topicName = topic._1
           val t2 = topic._2
-          operator.setVariable(variableKey, streamRDD)
+          operator.setVariable(topicName, streamRDD)
         })
         operator.operation()
       }
