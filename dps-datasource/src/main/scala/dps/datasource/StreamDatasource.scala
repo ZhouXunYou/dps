@@ -14,7 +14,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkConf
 
 abstract class StreamDatasource(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val params: Map[String, String], override val operator: Operator) extends DataSource(sparkSession, sparkConf, params, operator) {
-  val streamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(params.get("duration").getOrElse("30").toLong))
+  val streamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(params.get("duration").getOrElse("120").toLong))
   def start(){
     streamingContext.start()
     streamingContext.awaitTermination();
