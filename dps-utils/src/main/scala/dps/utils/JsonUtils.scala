@@ -11,4 +11,7 @@ object JsonUtils {
   def output(value: Any): String = {
     mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value)
   }
+  def read[T](value:String,clazz:Class[T]):T = {
+    mapper.readValue(value,clazz)
+  }
 }
