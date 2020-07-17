@@ -28,7 +28,6 @@
 		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-streaming_${scala.compat.version}</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.spark</groupId>
@@ -36,14 +35,14 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>dps-utils</groupId>
-			<artifactId>dps-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-hive_${scala.compat.version}</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>dps-utils</groupId>
+			<artifactId>dps-utils</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<!-- Test -->
@@ -52,7 +51,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>

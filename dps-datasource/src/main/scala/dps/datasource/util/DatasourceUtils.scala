@@ -25,10 +25,11 @@ object DatasourceUtils {
     val sparkConf = new SparkConf()
     sparkConf.setAppName("initDatasourceData")
     sparkConf.setMaster("local[*]")
-    val sparkContext = new SparkContext(sparkConf)
+    val sparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
+    val operator = new Operator(null,sparkSession,sparkConf,Map[String,Any]())
     getDatasources().foreach(datasource => {
       println(datasource.getName)
-      val datasourceInstance = datasource.getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkContext, sparkConf, Map[String, String](),null).asInstanceOf[DataSource]
+      val datasourceInstance = datasource.getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[Map[String, String]],classOf[Operator]).newInstance(sparkSession, sparkConf, Map[String, String](),operator).asInstanceOf[DataSource]
       initDatasource(datasourceInstance, so)
     })
   }

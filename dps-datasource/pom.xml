@@ -26,16 +26,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>dps-utils</groupId>
-			<artifactId>dps-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dps-atomic</groupId>
-			<artifactId>dps-atomic</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 		    <groupId>org.apache.spark</groupId>
 		    <artifactId>spark-streaming_${scala.compat.version}</artifactId>
 		    <scope>provided</scope>
@@ -44,6 +34,16 @@
 		    <groupId>org.apache.spark</groupId>
 		    <artifactId>spark-streaming-kafka-0-10_${scala.compat.version}</artifactId>
 		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>dps-utils</groupId>
+			<artifactId>dps-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dps-atomic</groupId>
+			<artifactId>dps-atomic</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
@@ -56,7 +56,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<sourceDirectory>src/main/scala</sourceDirectory>
 		<testSourceDirectory>src/test/scala</testSourceDirectory>
