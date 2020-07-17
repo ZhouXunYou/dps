@@ -56,7 +56,8 @@ object Launcher {
     })
     sparkConf.set("spark.driver.allowMultipleContexts", "true")
     builder.config(sparkConf)
-    val sparkSession = builder.enableHiveSupport().getOrCreate()
+    val sparkSession = builder.getOrCreate()
+//    val sparkSession = builder.enableHiveSupport().getOrCreate()
     val missionVariables = Map[String, Any]()
 
     val datasourceInstanceParams = Map[String, String]()
