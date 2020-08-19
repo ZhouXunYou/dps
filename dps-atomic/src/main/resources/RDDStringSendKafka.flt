@@ -8,6 +8,7 @@ import scala.collection.mutable.Map
 import org.apache.spark.broadcast.Broadcast
 import dps.atomic.util.KafkaSink
 import java.util.Properties
+import dps.atomic.impl.AbstractAction
 import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.spark.SparkConf
 
