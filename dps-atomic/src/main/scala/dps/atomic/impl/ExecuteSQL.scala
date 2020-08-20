@@ -18,7 +18,7 @@ class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf
 
   override def define: AtomOperationDefine = {
     val params = Map(
-      "sql" -> new AtomOperationParamDefine("SQL", "select * from dual", true, "1"),
+      "sql" -> new AtomOperationParamDefine("SQL", "select * from dual", true, "3"),
       "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1")
     )
     val atomOperation = new AtomOperationDefine("Exceute SQL", "executeSQL", "ExecuteSQL.flt", params.toMap)
