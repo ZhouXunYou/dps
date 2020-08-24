@@ -1,0 +1,33 @@
+package ${packagePath}
+
+import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
+import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.{SparkConf, SparkContext}
+import org.neo4j.spark._
+
+import scala.collection.mutable.Map
+
+class ${className}(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
+
+	def doIt(params: Map[String, String]): Any = {
+	    val url = params.get("url").get
+	    val user = params.get("user").get
+	    val password = params.get("password").get
+	    val sql = params.get("sql").get
+	    val viewName = params.get("viewName").get
+	    val conf = sparkSession.conf
+	    conf.set("spark.neo4j.url", url)
+	    conf.set("spark.neo4j.user", user)
+	    conf.set("spark.neo4j.password", password)
+	    val sc = new SparkContext(conf)
+	    val neo4j = new Neo4j(sc)
+	    val new_neo4j: Neo4j = neo4j.cypher(sql)
+	
+	    val dataFrame: DataFrame = new_neo4j.loadDataFrame
+	    dataFrame.createOrReplaceTempView(viewName)
+	    dataFrame.show()
+	
+	    this.variables.put(outputVariableKey, dataFrame)
+	}
+
+}
