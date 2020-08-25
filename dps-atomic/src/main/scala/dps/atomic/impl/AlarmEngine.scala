@@ -22,6 +22,8 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
 
     val ruleExtends: RDD[Map[String, Any]] = ruleSplicing(ruleDataset, rddWheres)
 
+    alarmHandle(ruleExtends, params)
+
     this.variables.put(outputVariableKey, ruleExtends);
   }
 
@@ -127,9 +129,8 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
    *
    * @param rules
    * @param params
-   * @param sparkSession
    */
-  private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String], sparkSession: SparkSession) = {
+  private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
     rules.foreach(m => {
       val sql = s"${params.get("alarmSql").get}"
       val dataset = sparkSession.sqlContext.sql(sql);
@@ -151,8 +152,8 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
       "ruleSql" -> new AtomOperationParamDefine("Rule SQL", "select a.id,a.aggregate_occur_count,a.alarm_content_expression,a.alarm_rule_level,a.alarm_rule_name,a.occur_count from s_alarm_rule a inner join s_alarm_rule_relation b on a.id = b.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
       "identificationSql" -> new AtomOperationParamDefine("Rule Identification SQL", "select c.alarm_rule_id,c.identification_field,c.expression,c.id from s_alarm_rule a inner join s_alarm_rule_identification c on a.id = c.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
       "conditionSql" -> new AtomOperationParamDefine("Rule Condition SQL", "select d.alarm_rule_id,d.condition_field,d.expression,d.comparison,d.and_or,d.id from s_alarm_rule a inner join s_alarm_rule_condition d on a.id = d.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
-      "alarmTable" -> new AtomOperationParamDefine("Alarm Table Name", "b_alarm", true, "1"),
-      "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1")
+//      "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
+      "alarmTable" -> new AtomOperationParamDefine("Alarm Table Name", "b_alarm", true, "1")
     )
     val atomOperation = new AtomOperationDefine("AlarmEngine", "alarmEngine", "AlarmEngine.flt", params.toMap)
     atomOperation.id = "alarm_engine"

@@ -20,6 +20,8 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 
     val ruleExtends: RDD[Map[String, Any]] = ruleSplicing(ruleDataset, rddWheres)
 
+    alarmHandle(ruleExtends, params)
+
     this.variables.put(outputVariableKey, ruleExtends);
   }
 
@@ -127,7 +129,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
    * @param params
    * @param sparkSession
    */
-  private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String], sparkSession: SparkSession) = {
+  private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
     rules.foreach(m => {
       val sql = s"${params.get("alarmSql").get}"
       val dataset = sparkSession.sqlContext.sql(sql);

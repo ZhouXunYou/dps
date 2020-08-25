@@ -37,7 +37,9 @@ object AlarmEngineTest {
 
     val rddWheres: RDD[Tuple2[String, String]] = conditionsSplicing(identificationDataset, conditionDataset)
 
-    ruleSplicing(ruleDataset, rddWheres)
+    val ruleExtends: RDD[Map[String, Any]] = ruleSplicing(ruleDataset, rddWheres)
+
+    alarmHandle(ruleExtends, params, sparkSession)
 
   }
 
