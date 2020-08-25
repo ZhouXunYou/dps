@@ -28,25 +28,6 @@ object Launcher {
     val so = new SessionOperation(params.get("--driver").get, params.get("--ip").get, params.get("--port").get, params.get("--user").get, params.get("--password").get, params.get("--dbType").get, params.get("--dbName").get)
     val ml = new MissionLoader(so)
     val mission = ml.getMission(missionCode)
-    /** 验证任务是否执行，定制开发 **/
-    // TODO 后续删除这部分
-//    val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//    mission.operationGroups.foreach(og => {
-//      og.operations.foreach(operation => {
-//        operation.operationParams.foreach(param => {
-//          if (param._1.equals("startTime")) {
-//            val startTime = param._2.operationParamValue
-//            val startDateTime = sdf.parse(startTime)
-//            val current = Calendar.getInstance().getTime
-//            if (startDateTime.getTime >= current.getTime) {
-//              println(s"Start time is exception, start time is ${startDateTime}, current time is ${current}. Mission abort")
-//              System.exit(0)
-//            }
-//          }
-//        })
-//      })
-//    })
-    /** 验证任务是否执行，定制开发 **/
     val builder = SparkSession.builder()
     builder.appName(mission.missionCode)
     val sparkConf = new SparkConf
