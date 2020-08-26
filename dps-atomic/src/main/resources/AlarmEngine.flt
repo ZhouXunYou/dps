@@ -12,9 +12,13 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 
    def doIt(params: Map[String, String]): Any = {
 
-    val ruleDataset: Dataset[Row] = jdbcQuery(params, "ruleSql")
-    val identificationDataset: Dataset[Row] = jdbcQuery(params, "identificationSql")
-    val conditionDataset: Dataset[Row] = jdbcQuery(params, "conditionSql")
+    val ruleSql = s"""(${ruleSql}) as tmpView"""
+    val identificationSql = s"""(${identificationSql}) as tmpView"""
+    val conditionSql = s"""(${conditionSql}) as tmpView"""
+
+    val ruleDataset: Dataset[Row] = jdbcQuery(params, ruleSql)
+    val identificationDataset: Dataset[Row] = jdbcQuery(params, identificationSql)
+    val conditionDataset: Dataset[Row] = jdbcQuery(params, conditionSql)
 
     val rddWheres: RDD[Tuple2[String, String]] = conditionsSplicing(identificationDataset, conditionDataset)
 
@@ -29,11 +33,10 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
    * JDBC查询返回Dataset[Row]
    *
    * @param params
-   * @param keyForSQL
+   * @param sql
    * @return
    */
-  private def jdbcQuery(params: Map[String, String], keyForSQL: String): Dataset[Row] = {
-    val sql = s"(${params.get(keyForSQL).get}) as tmpView"
+  private def jdbcQuery(params: Map[String, String], sql: String): Dataset[Row] = {
     sparkSession.sqlContext.read.format("jdbc")
       .option("url", params.get("url").get)
       .option("driver", params.get("driver").get)
@@ -131,7 +134,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
    */
   private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
     rules.foreach(m => {
-      val sql = s"${params.get("alarmSql").get}"
+      val alarmSql = s"""${alarmSql}"""
       val dataset = sparkSession.sqlContext.sql(sql);
       dataset.write.format("jdbc")
         .option("driver", params.get("driver").get)

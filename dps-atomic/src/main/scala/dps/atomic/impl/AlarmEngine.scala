@@ -14,9 +14,13 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
 
   def doIt(params: Map[String, String]): Any = {
 
-    val ruleDataset: Dataset[Row] = jdbcQuery(params, "ruleSql")
-    val identificationDataset: Dataset[Row] = jdbcQuery(params, "identificationSql")
-    val conditionDataset: Dataset[Row] = jdbcQuery(params, "conditionSql")
+    val ruleSql = s"""(select * from dual) as tmpView"""
+    val identificationSql = s"""(select * from dual) as tmpView"""
+    val conditionSql = s"""(select * from dual) as tmpView"""
+
+    val ruleDataset: Dataset[Row] = jdbcQuery(params, ruleSql)
+    val identificationDataset: Dataset[Row] = jdbcQuery(params, identificationSql)
+    val conditionDataset: Dataset[Row] = jdbcQuery(params, conditionSql)
 
     val rddWheres: RDD[Tuple2[String, String]] = conditionsSplicing(identificationDataset, conditionDataset)
 
@@ -31,11 +35,10 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
    * JDBC查询返回Dataset[Row]
    *
    * @param params
-   * @param keyForSQL
+   * @param sql
    * @return
    */
-  private def jdbcQuery(params: Map[String, String], keyForSQL: String): Dataset[Row] = {
-    val sql = s"(${params.get(keyForSQL).get}) as tmpView"
+  private def jdbcQuery(params: Map[String, String], sql: String): Dataset[Row] = {
     sparkSession.sqlContext.read.format("jdbc")
       .option("url", params.get("url").get)
       .option("driver", params.get("driver").get)
@@ -132,8 +135,8 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
    */
   private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
     rules.foreach(m => {
-      val sql = s"${params.get("alarmSql").get}"
-      val dataset = sparkSession.sqlContext.sql(sql);
+      val alarmSql = s"""select * from dual"""
+      val dataset = sparkSession.sqlContext.sql(alarmSql);
       dataset.write.format("jdbc")
         .option("driver", params.get("driver").get)
         .option("url", params.get("url").get)
@@ -152,7 +155,8 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
       "ruleSql" -> new AtomOperationParamDefine("Rule SQL", "select a.id,a.aggregate_occur_count,a.alarm_content_expression,a.alarm_rule_level,a.alarm_rule_name,a.occur_count from s_alarm_rule a inner join s_alarm_rule_relation b on a.id = b.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
       "identificationSql" -> new AtomOperationParamDefine("Rule Identification SQL", "select c.alarm_rule_id,c.identification_field,c.expression,c.id from s_alarm_rule a inner join s_alarm_rule_identification c on a.id = c.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
       "conditionSql" -> new AtomOperationParamDefine("Rule Condition SQL", "select d.alarm_rule_id,d.condition_field,d.expression,d.comparison,d.and_or,d.id from s_alarm_rule a inner join s_alarm_rule_condition d on a.id = d.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
-//      "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
+      "alarmSql" -> new AtomOperationParamDefine("Alarm SQL", "select * from dual", true, "3"),
+      //      "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
       "alarmTable" -> new AtomOperationParamDefine("Alarm Table Name", "b_alarm", true, "1")
     )
     val atomOperation = new AtomOperationDefine("AlarmEngine", "alarmEngine", "AlarmEngine.flt", params.toMap)
