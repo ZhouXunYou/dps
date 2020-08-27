@@ -1,12 +1,15 @@
 package dps.atomic.impl
 
-import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
+import java.util.ArrayList
+
+import scala.collection.mutable.Map
+
+import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
-import scala.collection.mutable.Map
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkConf
+import dps.atomic.define.AtomOperationDefine
+import dps.atomic.define.AtomOperationParamDefine
 
 class RDDKafka2String(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
 
@@ -18,6 +21,13 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
       tuple._3
     })
     variables.put(outputVariableKey, rdd)
+    var topicNames:ArrayList[String] = variables.get("topicNames").getOrElse(null).asInstanceOf[ArrayList[String]]
+    if(topicNames==null){
+      var topicNames = new ArrayList[String]
+      
+    }
+    topicNames.add(params.get("topicName").get)
+    variables.put("topicNames", topicNames)
   }
 
   override def define: AtomOperationDefine = {
