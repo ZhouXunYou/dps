@@ -1,16 +1,31 @@
 package dps.atomic.util
 
+
 object LatLngUtil {
+  def check(point: Point, points: Array[Point]):Boolean = {
+    if (points.length < 3) {
+      return false
+    }
+    var peneralPath = new java.awt.geom.GeneralPath();
+    peneralPath.moveTo(points.apply(0).lng, points.apply(0).lat);
+    for (i <- 1 to points.length) {
+        peneralPath.lineTo(points.apply(i).lng, points.apply(i).lat);
+    }
+    peneralPath.lineTo(points.apply(0).lng, points.apply(0).lat);
+    peneralPath.closePath();
+    
+    peneralPath.contains(new java.awt.geom.Point2D.Double(point.lng,point.lat))
+  }
   def inPoly(point: Point, points: Array[Point]): Boolean = {
     if (points.length < 3) {
       return false
     }
     var sum = 0
-    var dLon1: Float = 0.0f
-    var dLon2: Float = 0.0f
-    var dLat1: Float = 0.0f
-    var dLat2: Float = 0.0f
-    var dLon: Float = 0.0f
+    var dLon1: Double = 0.0f
+    var dLon2: Double = 0.0f
+    var dLat1: Double = 0.0f
+    var dLat2: Double = 0.0f
+    var dLon: Double = 0.0f
     for (i <- 0 to points.length) {
       if (i == points.length - 1) {
         dLon1 = points.apply(i).lng

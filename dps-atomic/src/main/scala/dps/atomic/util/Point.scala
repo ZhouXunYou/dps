@@ -1,6 +1,6 @@
 package dps.atomic.util
 
 class Point {
-  var lat:Float = _
-  var lng:Float = _
+  var lat:Double = _
+  var lng:Double = _
 }
