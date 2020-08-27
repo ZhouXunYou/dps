@@ -12,6 +12,12 @@ class ${className} (override val sparkSession: SparkSession, override val sparkC
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
     val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).asInstanceOf[String]
     val path = params.get("path").get
-    dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
+   	if (dataset.count() > 0) {
+      dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
+    } else {
+      println("+------------------------------+")
+      println("无数据,跳过存储操作")
+      println("+------------------------------+")
+    }
   }
 }
