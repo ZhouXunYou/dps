@@ -12,15 +12,15 @@ object LatLngUtil {
     if (points.length < 3) {
       return false
     }
-    var peneralPath = new java.awt.geom.GeneralPath();
-    peneralPath.moveTo(points.apply(0).lng, points.apply(0).lat);
+    var generalPath = new java.awt.geom.GeneralPath();
+    generalPath.moveTo(points.apply(0).lng, points.apply(0).lat);
     for (i <- 1 to points.length-1) {
-        peneralPath.lineTo(points.apply(i).lng, points.apply(i).lat);
+        generalPath.lineTo(points.apply(i).lng, points.apply(i).lat);
     }
-    peneralPath.lineTo(points.apply(0).lng, points.apply(0).lat);
-    peneralPath.closePath();
+    generalPath.lineTo(points.apply(0).lng, points.apply(0).lat);
+    generalPath.closePath();
     
-    peneralPath.contains(new java.awt.geom.Point2D.Double(point.lng,point.lat))
+    generalPath.contains(new java.awt.geom.Point2D.Double(point.lng,point.lat))
   }
 //  def inPoly(point: Point, points: Array[Point]): Boolean = {
 //    if (points.length < 3) {
