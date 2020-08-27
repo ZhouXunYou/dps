@@ -3,14 +3,16 @@ package ${packagePath}
 import dps.atomic.Operator
 import dps.datasource.define.{DatasourceDefine, DatasourceParamDefine}
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
-import org.apache.spark.streaming.kafka010.KafkaUtils
-import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
+//import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
+//import org.apache.spark.streaming.kafka010.KafkaUtils
+//import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
+import java.util.ArrayList
 
 class ${className}(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends dps.atomic.impl.AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
   
@@ -24,7 +26,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
     variables.put(outputVariableKey, rdd)
     var topicNames:ArrayList[String] = variables.get("topicNames").getOrElse(null).asInstanceOf[ArrayList[String]]
     if(topicNames==null){
-      var topicNames = new ArrayList[String]
+      topicNames = new ArrayList[String]
       
     }
     topicNames.add(params.get("topicName").get)

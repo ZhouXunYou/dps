@@ -23,7 +23,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
     variables.put(outputVariableKey, rdd)
     var topicNames:ArrayList[String] = variables.get("topicNames").getOrElse(null).asInstanceOf[ArrayList[String]]
     if(topicNames==null){
-      var topicNames = new ArrayList[String]
+      topicNames = new ArrayList[String]
       
     }
     topicNames.add(params.get("topicName").get)
