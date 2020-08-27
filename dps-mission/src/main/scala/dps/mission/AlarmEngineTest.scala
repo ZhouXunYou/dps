@@ -147,17 +147,18 @@ object AlarmEngineTest {
    */
   private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String], sparkSession: SparkSession) = {
 
+    val driver = params.get("driver").get
+    val url = params.get("url").get
+    val tableName = params.get("alarmTable").get
+    val user = params.get("user").get
+    val password = params.get("password").get
+    
     rules.foreach(m => {
-      val alarmSql = s"""select uuid() as id,'${m.get("alarm_content_expression").get}' as alarm_content,'${m.get("alarm_rule_level").get}' as alarm_level,'${m.get("alarm_rule_name").get}' as alarm_title,'' as identification_field,now() as merge_time,count(*) as occur_count,now() as occur_time,'${m.get("id").get}' as alarm_rule_id,'' as moid,'' as area_type,'' as area_id,'A_T_BASE_STATION' as alarm_type,now() as create_time  from string2dataset GROUP BY bid,reason,scene where '${m.get("conditions").get}'"""
+      println(m.get("alarm_content_expression").get)
+      val alarmSql = s"""select uuid() as id,'${m.get("alarm_content_expression").get}' as alarm_content,'${m.get("alarm_rule_level").get}' as alarm_level,'${m.get("alarm_rule_name").get}' as alarm_title,'' as identification_field,now() as merge_time,count(*) as occur_count,now() as occur_time,'${m.get("id").get}' as alarm_rule_id,'' as moid,'' as area_type,'' as area_id,'A_T_BASE_STATION' as alarm_type,now() as create_time  from string2dataset GROUP BY bid,reason,scene where ${m.get("conditions").get}"""
       println("---------------------------------------------")
       println(alarmSql)
       println("---------------------------------------------")
-      println(params)
-      val driver = params.get("driver").get
-      val url = params.get("url").get
-      val tableName = params.get("alarmTable").get
-      val user = params.get("user").get
-      val password = params.get("password").get
       val dataset = sparkSession.sqlContext.sql(alarmSql);
       dataset.write.format("jdbc")
         .option("driver", driver)
