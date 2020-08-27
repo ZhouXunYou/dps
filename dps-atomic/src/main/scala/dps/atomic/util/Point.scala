@@ -1,6 +1,5 @@
 package dps.atomic.util
 
-class Point {
-  var lat:Double = _
-  var lng:Double = _
+class Point(val lng:Double,val lat:Double) {
+  
 }
