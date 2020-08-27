@@ -21,7 +21,9 @@ class RDDStringSendKafka(override val sparkSession: SparkSession, override val s
         properties.setProperty("value.serializer", classOf[StringSerializer].getName)
         properties
       }
-      sparkSession.sparkContext.broadcast(KafkaSink[String, String](kafkaProducerConfig))
+      import sparkSession.implicits
+      val context = sparkSession.sparkContext
+      context.broadcast(KafkaSink[String, String](kafkaProducerConfig))
     }
     val sendTopicName = params.get("sendTopicName").get
     val rdd = this.pendingData.asInstanceOf[RDD[String]]
