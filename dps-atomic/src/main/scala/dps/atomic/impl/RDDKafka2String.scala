@@ -10,15 +10,20 @@ import org.apache.spark.sql.SparkSession
 
 import dps.atomic.define.AtomOperationDefine
 import dps.atomic.define.AtomOperationParamDefine
+import com.alibaba.fastjson.JSON
 
 class RDDKafka2String(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
+    val topicName = params.get("topicName").get
+    
     val topicValue = this.pendingData.asInstanceOf[RDD[Tuple3[String, Int, String]]].filter(tuple=>{
-      tuple._1.equals(params.get("topicName").get)
+      tuple._1.equals(topicName)
     })
     val rdd = topicValue.map(tuple=>{
-      tuple._3
+      val t = JSON.parseObject(tuple._3)
+      t.put("topicName", topicName)
+      t.toJSONString()
     })
     variables.put(outputVariableKey, rdd)
     var topicNames:ArrayList[String] = variables.get("topicNames").getOrElse(null).asInstanceOf[ArrayList[String]]
@@ -26,7 +31,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
       topicNames = new ArrayList[String]
       
     }
-    topicNames.add(params.get("topicName").get)
+    topicNames.add(topicName)
     variables.put("topicNames", topicNames)
   }
 

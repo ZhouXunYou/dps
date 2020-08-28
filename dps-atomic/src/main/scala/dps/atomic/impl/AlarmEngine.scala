@@ -2,11 +2,11 @@ package dps.atomic.impl
 
 import java.util
 
-import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
+import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
+import org.apache.spark.sql.{ Dataset, Row, SaveMode, SparkSession }
 
 import scala.collection.mutable.Map
 
@@ -20,7 +20,7 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
 
     this.variables.put(outputVariableKey, ruleExtends);
   }
-  
+
   /**
    * 告警处理
    *
@@ -28,25 +28,32 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
    * @param params
    */
   private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
-    rules.foreach(m => {
+    rules.collect().foreach(m => {
       val alarmSql = s"""select * from dual"""
       val dataset = sparkSession.sqlContext.sql(alarmSql);
-      dataset.write.format("jdbc")
-        .option("driver", params.get("driver").get)
-        .option("url", params.get("url").get)
-        .option("dbtable", params.get("alarmTable").get)
-        .option("user", params.get("user").get)
-        .option("password", params.get("password").get).mode(SaveMode.Append).save();
+      if (dataset.count() > 0) {
+        dataset.write.format("jdbc")
+          .option("driver", params.get("driver").get)
+          .option("url", params.get("url").get)
+          .option("dbtable", params.get("alarmTable").get)
+          .option("user", params.get("user").get)
+          .option("password", params.get("password").get)
+          .mode(SaveMode.Append).save();
+      } else {
+        println("+------------------------------+")
+        println("无数据,跳过存储操作")
+        println("+------------------------------+")
+      }
     })
   }
-  
+
   /**
    * 规则拼接
    *
    * @param params
    */
   private def ruleSplicing(params: Map[String, String]): RDD[Map[String, Any]] = {
-    
+
     val ruleSql =
       s"""(
          |select a.id,
@@ -103,8 +110,7 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
         "alarm_rule_level" -> t._2._1.get(3),
         "alarm_rule_name" -> t._2._1.get(4),
         "occur_count" -> t._2._1.get(5),
-        "conditions" -> t._2._2
-      )
+        "conditions" -> t._2._2)
     })
   }
 
@@ -185,13 +191,12 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
       "url" -> new AtomOperationParamDefine("JDBC URL", "jdbc:postgresql://ip:port/database", true, "1"),
       "user" -> new AtomOperationParamDefine("User", "user", true, "1"),
       "password" -> new AtomOperationParamDefine("Password", "*******", true, "1"),
-//      "ruleSql" -> new AtomOperationParamDefine("Rule SQL", "select a.id,a.aggregate_occur_count,a.alarm_content_expression,a.alarm_rule_level,a.alarm_rule_name,a.occur_count from s_alarm_rule a inner join s_alarm_rule_relation b on a.id = b.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
-//      "identificationSql" -> new AtomOperationParamDefine("Rule Identification SQL", "select c.alarm_rule_id,c.identification_field,c.expression,c.id from s_alarm_rule a inner join s_alarm_rule_identification c on a.id = c.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
-//      "conditionSql" -> new AtomOperationParamDefine("Rule Condition SQL", "select d.alarm_rule_id,d.condition_field,d.expression,d.comparison,d.and_or,d.id from s_alarm_rule a inner join s_alarm_rule_condition d on a.id = d.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
+      //      "ruleSql" -> new AtomOperationParamDefine("Rule SQL", "select a.id,a.aggregate_occur_count,a.alarm_content_expression,a.alarm_rule_level,a.alarm_rule_name,a.occur_count from s_alarm_rule a inner join s_alarm_rule_relation b on a.id = b.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
+      //      "identificationSql" -> new AtomOperationParamDefine("Rule Identification SQL", "select c.alarm_rule_id,c.identification_field,c.expression,c.id from s_alarm_rule a inner join s_alarm_rule_identification c on a.id = c.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
+      //      "conditionSql" -> new AtomOperationParamDefine("Rule Condition SQL", "select d.alarm_rule_id,d.condition_field,d.expression,d.comparison,d.and_or,d.id from s_alarm_rule a inner join s_alarm_rule_condition d on a.id = d.alarm_rule_id where a.alarm_rule_status = 1", true, "3"),
       "alarmSql" -> new AtomOperationParamDefine("Alarm SQL", "select * from dual", true, "3"),
       //      "viewName" -> new AtomOperationParamDefine("View Name", "View Name", true, "1"),
-      "alarmTable" -> new AtomOperationParamDefine("Alarm Table Name", "b_alarm", true, "1")
-    )
+      "alarmTable" -> new AtomOperationParamDefine("Alarm Table Name", "b_alarm", true, "1"))
     val atomOperation = new AtomOperationDefine("AlarmEngine", "alarmEngine", "AlarmEngine.flt", params.toMap)
     atomOperation.id = "alarm_engine"
     return atomOperation

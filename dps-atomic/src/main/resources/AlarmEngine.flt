@@ -3,7 +3,7 @@ package ${packagePath}
 import dps.atomic.impl.AbstractAction
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
@@ -26,15 +26,22 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
    * @param params
    */
   private def alarmHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
-    rules.foreach(m => {
-      val alarmSql = s"""select * from dual"""
+    rules.collect().foreach(m => {
+      val alarmSql = s"""${alarmSql}"""
       val dataset = sparkSession.sqlContext.sql(alarmSql);
-      dataset.write.format("jdbc")
-        .option("driver", params.get("driver").get)
-        .option("url", params.get("url").get)
-        .option("dbtable", params.get("alarmTable").get)
-        .option("user", params.get("user").get)
-        .option("password", params.get("password").get).mode(SaveMode.Append).save();
+      if (dataset.count() > 0) {
+    	  dataset.write.format("jdbc")
+      	  .option("driver", params.get("driver").get)
+      	  .option("url", params.get("url").get)
+      	  .option("dbtable", params.get("alarmTable").get)
+      	  .option("user", params.get("user").get)
+      	  .option("password", params.get("password").get)
+      	  .mode(SaveMode.Append).save();
+      } else {
+        println("+------------------------------+")
+        println("无数据,跳过存储操作")
+        println("+------------------------------+")
+      }
     })
   }
   

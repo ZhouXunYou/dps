@@ -19,7 +19,6 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
     var schema = StructType(specifyTableFields())
     val dataframe = sparkSession.sqlContext.createDataFrame(result, schema)
     dataframe.createOrReplaceTempView(viewName)
-    dataframe.show()
     this.variables.put(outputVariableKey, dataframe);
   }
 

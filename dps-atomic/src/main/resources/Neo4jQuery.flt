@@ -17,19 +17,12 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 	    val sql = params.get("sql").get
 	    val viewName = params.get("viewName").get
 
-//		val config = sparkSession.conf
-//		var conf = new SparkConf().setAppName(config.get("spark.app.name")).setMaster(config.get("spark.master"))
-//	    conf.set("spark.neo4j.url", url)
-//	    conf.set("spark.neo4j.user", user)
-//	    conf.set("spark.neo4j.password", password)
-//	    val sc = new SparkContext(conf)
 	    import sparkSession.implicits._
 	    val neo4j = new Neo4j(sparkSession.sparkContext)
 	    val new_neo4j: Neo4j = neo4j.cypher(sql)
 	
 	    val dataFrame: DataFrame = new_neo4j.loadDataFrame
 	    dataFrame.createOrReplaceTempView(viewName)
-	    dataFrame.show()
 	    this.variables.put(outputVariableKey, dataFrame)
 	}
 

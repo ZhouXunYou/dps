@@ -12,8 +12,6 @@ class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf
     val sql = params.get("sql").get
     val viewName = params.get("viewName").get
     val dataset = sparkSession.sqlContext.sql(sql);
-    println("数据条数: " + dataset.count())
-    dataset.show()
     dataset.createOrReplaceTempView(viewName);
     this.variables.put(outputVariableKey, dataset);
   }
