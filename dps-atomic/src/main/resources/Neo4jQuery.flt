@@ -29,8 +29,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 	
 	    val dataFrame: DataFrame = new_neo4j.loadDataFrame
 	    dataFrame.createOrReplaceTempView(viewName)
-	    dataFrame.show(2)
-	
+	    dataFrame.show()
 	    this.variables.put(outputVariableKey, dataFrame)
 	}
 

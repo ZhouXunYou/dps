@@ -19,6 +19,7 @@ class RDDString2Dataset(override val sparkSession: SparkSession, override val sp
     var schema = StructType(specifyTableFields())
     val dataframe = sparkSession.sqlContext.createDataFrame(result, schema)
     dataframe.createOrReplaceTempView(viewName)
+    dataframe.show()
     this.variables.put(outputVariableKey, dataframe);
   }
 

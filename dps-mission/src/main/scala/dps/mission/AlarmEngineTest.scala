@@ -1,14 +1,13 @@
 package dps.mission
 
-import java.util
-import java.util.Optional
-
-import org.apache.commons.lang3.StringUtils
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{ DataFrame, Dataset, Row, SQLContext, SaveMode, SparkSession }
-import org.apache.spark.{ SparkConf, SparkContext }
-
 import scala.collection.mutable.Map
+
+import org.apache.spark.SparkConf
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.SparkSession
 
 object AlarmEngineTest {
   def main(args: Array[String]): Unit = {
@@ -67,7 +66,7 @@ object AlarmEngineTest {
   }
 
   /**
-   * Dataset[Row]转RDD[Map[String, String]]
+   * Dataset[Row]转RDD[Tuple2[String, String]]
    *
    * @param dataset
    * @param conditionExpr 条件表达式
@@ -120,20 +119,25 @@ object AlarmEngineTest {
     })
   }
 
-  private def ruleSplicing(ruleDataset: Dataset[Row], rddWheres: RDD[Tuple2[String, String]]) = {
+  private def ruleSplicing(ruleDataset: Dataset[Row], rddWheres: RDD[Tuple2[String, String]]): RDD[Map[String, Any]] = {
 
     val rddRule = ruleDataset.rdd.map(r => {
-      (r.getString(0), r)
+      (r.getString(0), Map(
+        "aggregate_occur_count" -> r.get(1),
+        "alarm_content_expression" -> r.get(2),
+        "alarm_rule_level" -> r.get(3),
+        "alarm_rule_name" -> r.get(4),
+        "occur_count" -> r.get(5)))
     })
 
     rddRule.join(rddWheres).map(t => {
       Map(
         "id" -> t._1,
-        "aggregate_occur_count" -> t._2._1.get(1),
-        "alarm_content_expression" -> t._2._1.get(2),
-        "alarm_rule_level" -> t._2._1.get(3),
-        "alarm_rule_name" -> t._2._1.get(4),
-        "occur_count" -> t._2._1.get(5),
+        "aggregate_occur_count" -> t._2._1.get("aggregate_occur_count"),
+        "alarm_content_expression" -> t._2._1.get("alarm_content_expression"),
+        "alarm_rule_level" -> t._2._1.get("alarm_rule_level"),
+        "alarm_rule_name" -> t._2._1.get("alarm_rule_name"),
+        "occur_count" -> t._2._1.get("occur_count"),
         "conditions" -> t._2._2)
     })
   }
@@ -152,7 +156,7 @@ object AlarmEngineTest {
     val tableName = params.get("alarmTable").get
     val user = params.get("user").get
     val password = params.get("password").get
-    
+
     rules.foreach(m => {
       println(m.get("alarm_content_expression").get)
       val alarmSql = s"""select uuid() as id,'${m.get("alarm_content_expression").get}' as alarm_content,'${m.get("alarm_rule_level").get}' as alarm_level,'${m.get("alarm_rule_name").get}' as alarm_title,'' as identification_field,now() as merge_time,count(*) as occur_count,now() as occur_time,'${m.get("id").get}' as alarm_rule_id,'' as moid,'' as area_type,'' as area_id,'A_T_BASE_STATION' as alarm_type,now() as create_time  from string2dataset GROUP BY bid,reason,scene where ${m.get("conditions").get}"""
