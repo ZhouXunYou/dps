@@ -28,8 +28,7 @@ class Neo4jQuery(override val sparkSession: SparkSession, override val sparkConf
 
     val dataFrame: DataFrame = new_neo4j.loadDataFrame
     dataFrame.createOrReplaceTempView(viewName)
-    dataFrame.show(2)
-
+    dataFrame.show()
     this.variables.put(outputVariableKey, dataFrame)
   }
 

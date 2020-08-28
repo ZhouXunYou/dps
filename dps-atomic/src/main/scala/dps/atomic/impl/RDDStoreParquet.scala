@@ -11,6 +11,9 @@ class RDDStoreParquet(override val sparkSession: SparkSession, override val spar
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
     val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
     val path = params.get("path").get
+    println("+------------------------------+")
+    println(dataset.count())
+    println("+------------------------------+")
     if (dataset.count() > 0) {
       dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
     } else {

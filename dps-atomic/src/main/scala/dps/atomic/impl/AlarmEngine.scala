@@ -102,7 +102,7 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
         "alarm_content_expression" -> t._2._1.get(2),
         "alarm_rule_level" -> t._2._1.get(3),
         "alarm_rule_name" -> t._2._1.get(4),
-        "occur_count" -> t._2._1.get(4),
+        "occur_count" -> t._2._1.get(5),
         "conditions" -> t._2._2
       )
     })
