@@ -9,6 +9,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{ Dataset, Row, SaveMode, SparkSession }
 
 import scala.collection.mutable.Map
+import java.util.ArrayList
 
 class AlarmEngine(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 
@@ -31,7 +32,8 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
     rules.collect().foreach(m => {
       val alarmSql = s"""select * from dual"""
       val dataset = sparkSession.sqlContext.sql(alarmSql);
-      if (dataset.count() > 0) {
+      val dscount = dataset.count()
+      if (dscount > 0) {
         dataset.write.format("jdbc")
           .option("driver", params.get("driver").get)
           .option("url", params.get("url").get)
@@ -54,64 +56,95 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
    */
   private def ruleSplicing(params: Map[String, String]): RDD[Map[String, Any]] = {
 
+    val topicNames: ArrayList[String] = variables.get("topicNames").get.asInstanceOf[ArrayList[String]]
+    
+    var topicName = new String
+    if (topicNames.size() > 0) {
+      topicName = topicNames.get(0)
+    }
+    
     val ruleSql =
       s"""(
-         |select a.id,
-         |       a.aggregate_occur_count,
-         |       a.alarm_content_expression,
-         |       a.alarm_rule_level,
-         |       a.alarm_rule_name,
-         |       a.occur_count
-         |  from s_alarm_rule a
-         |  inner join s_alarm_rule_relation b
-         |  on a.id = b.alarm_rule_id
-         |  where a.alarm_rule_status = 1
-         |) as tmpView""".stripMargin
+          select ar.id as alarm_rule_id, 
+                 ar.aggregate_occur_count, 
+                 ar.alarm_content_expression, 
+                 ar.alarm_rule_level, 
+                 ar.alarm_rule_name, 
+                 ar.occur_count, 
+                 ar.alarm_type, 
+                 arr.left_relation 
+            from s_alarm_rule ar 
+            inner join s_alarm_rule_relation arr 
+            on ar.id = arr.alarm_rule_id 
+            where ar.alarm_rule_status = 1 
+            and arr.left_relation = '${topicName}'
+          ) as tmpView""".stripMargin
     val identificationSql =
       s"""(
-         |select c.alarm_rule_id,
-         |       c.identification_field,
-         |       c.expression,
-         |       c.id
-         |  from s_alarm_rule a
-         |  inner join s_alarm_rule_identification c
-         |  on a.id = c.alarm_rule_id
-         |  where a.alarm_rule_status = 1
-         |) as tmpView""".stripMargin
+         select ari.alarm_rule_id,
+                ari.identification_field as field,
+                ari.expression,
+                ari.id
+           from s_alarm_rule_identification ari 
+           inner join s_alarm_rule ar 
+           on ari.alarm_rule_id = ar.id 
+           inner join s_alarm_rule_relation arr 
+           on arr.alarm_rule_id = ar.id 
+           where ar.alarm_rule_status = 1 
+           and arr.left_relation = '${topicName}'
+         ) as tmpView""".stripMargin
     val conditionSql =
       s"""(
-         |select d.alarm_rule_id,
-         |       d.condition_field,
-         |       d.expression,
-         |       d.comparison,
-         |       d.and_or,
-         |       d.id
-         |  from s_alarm_rule a
-         |  inner join s_alarm_rule_condition d
-         |  on a.id = d.alarm_rule_id
-         |  where a.alarm_rule_status = 1
-         |) as tmpView""".stripMargin
+         select arc.alarm_rule_id,
+                arc.condition_field as field,
+                arc.expression,
+                arc.comparison,
+                arc.and_or,
+                arc.id
+           from s_alarm_rule_condition arc 
+           inner join s_alarm_rule ar 
+           on arc.alarm_rule_id = ar.id 
+           inner join s_alarm_rule_relation arr 
+           on arr.alarm_rule_id = ar.id 
+           where ar.alarm_rule_status = 1 
+           and arr.left_relation = '${topicName}'
+        ) as tmpView""".stripMargin
 
     val ruleDataset: Dataset[Row] = jdbcQuery(params, ruleSql)
     val identificationDataset: Dataset[Row] = jdbcQuery(params, identificationSql)
     val conditionDataset: Dataset[Row] = jdbcQuery(params, conditionSql)
 
     val rddWheres: RDD[Tuple2[String, String]] = conditionsSplicing(identificationDataset, conditionDataset)
+    
+    val identificationField = identificationAssembly(identificationDataset)
 
     val rddRule = ruleDataset.rdd.map(r => {
       (r.getString(0), r)
     })
-
-    rddRule.join(rddWheres).map(t => {
+    
+    rddRule.join(rddWheres).join(identificationField).map(t => {
       Map(
-        "id" -> t._1,
-        "aggregate_occur_count" -> t._2._1.get(1),
-        "alarm_content_expression" -> t._2._1.get(2),
-        "alarm_rule_level" -> t._2._1.get(3),
-        "alarm_rule_name" -> t._2._1.get(4),
-        "occur_count" -> t._2._1.get(5),
-        "conditions" -> t._2._2)
+        "alarm_rule_id" -> t._1,
+        "aggregate_occur_count" -> t._2._1._1.get(1),
+        "alarm_content_expression" -> t._2._1._1.get(2),
+        "alarm_rule_level" -> t._2._1._1.get(3),
+        "alarm_rule_name" -> t._2._1._1.get(4),
+        "occur_count" -> t._2._1._1.get(5),
+        "conditions" -> t._2._1._2,
+        "identification_field" -> t._2._2
+      )
     })
+
+//    rddRule.join(rddWheres).map(t => {
+//      Map(
+//        "alarm_rule_id" -> t._1,
+//        "aggregate_occur_count" -> t._2._1.get(1),
+//        "alarm_content_expression" -> t._2._1.get(2),
+//        "alarm_rule_level" -> t._2._1.get(3),
+//        "alarm_rule_name" -> t._2._1.get(4),
+//        "occur_count" -> t._2._1.get(5),
+//        "conditions" -> t._2._2)
+//    })
   }
 
   /**
@@ -129,6 +162,27 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
     val rddJoin = identificationRdd.join(conditionRdd)
     rddJoin.map(tuple2 => {
       (tuple2._1, ("(" + tuple2._2._1 + ") and (" + tuple2._2._2 + ")"))
+    })
+  }
+  
+  /**
+   * identification_field属性拼接
+   *
+   * @param dataset
+   * @return
+   */
+  private def identificationAssembly(dataset: Dataset[Row]): RDD[Tuple2[String, String]] = {
+    dataset.rdd.groupBy(row => {
+      row.getAs("alarm_rule_id").asInstanceOf[String]
+    }).map(v => {
+		  var str = new String
+      v._2.foreach(row => {
+        if (StringUtils.isNotBlank(str)) {
+          str = str + ","
+        }
+        str = str + "\"" + row.getAs("field").asInstanceOf[String] + "\":\"" + row.getAs("expression").asInstanceOf[String] + "\""
+      })
+      Tuple2(v._1, "{"+str+"}")
     })
   }
 
