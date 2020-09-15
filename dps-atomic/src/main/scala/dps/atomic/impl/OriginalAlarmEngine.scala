@@ -6,6 +6,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import java.util.ArrayList
+import dps.atomic.define.AtomOperationDefine
 
 class OriginalAlarmEngine(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
@@ -42,5 +43,12 @@ class OriginalAlarmEngine(override val sparkSession: SparkSession, override val 
       })
       flags.contains(1)
     })
+  }
+  
+  override def define: AtomOperationDefine = {
+    val params = Map()
+    val atomOperation = new AtomOperationDefine("OriginalAlarmEngine", "originalAlarmEngine", "OriginalAlarmEngine.flt", params.toMap)
+    atomOperation.id = "original_alarm_engine"
+    return atomOperation
   }
 }
