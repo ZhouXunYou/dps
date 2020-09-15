@@ -44,7 +44,7 @@
 			<artifactId>dps-utils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
