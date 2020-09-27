@@ -21,9 +21,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
       tuple._1.equals(topicName)
     })
     val rdd = topicValue.map(tuple=>{
-      val t = JSON.parseObject(tuple._3)
-      t.put("topicName", topicName)
-      t.toJSONString()
+      tuple._3
     })
     variables.put(outputVariableKey, rdd)
     var topicNames:ArrayList[String] = variables.get("topicNames").getOrElse(null).asInstanceOf[ArrayList[String]]

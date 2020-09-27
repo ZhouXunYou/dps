@@ -32,8 +32,11 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
       println(records.isEmpty())
       
       if(!records.isEmpty()){
+        println("records:")
+        println(records)
         val streamRDD = records.map(record=>{
-          
+        	println("record:")
+          println(record)
           val topic = record.topic()
           val partition = record.partition()
           (topic,partition,record.value())

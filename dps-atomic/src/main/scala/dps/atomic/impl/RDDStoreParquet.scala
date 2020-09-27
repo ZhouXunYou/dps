@@ -9,14 +9,14 @@ import org.apache.spark.SparkConf
 class RDDStoreParquet(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
-    val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
-    val path = params.get("path").get
-    if (dataset.count() > 0) {
-      dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
-    } else {
+    if (dataset != null && dataset.isEmpty) {
       println("+------------------------------+")
       println("无数据,跳过存储操作")
       println("+------------------------------+")
+    } else {
+      val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
+      val path = params.get("path").get
+      dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
     }
   }
 

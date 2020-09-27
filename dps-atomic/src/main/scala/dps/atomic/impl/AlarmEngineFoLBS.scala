@@ -18,11 +18,18 @@ class AlarmEngineForLBS(override val sparkSession: SparkSession, override val sp
 
     val ruleExtends: RDD[Map[String, Any]] = ruleSplicing(params)
 
-    alarmOriginalHandle(ruleExtends, params)
-    
-    alarmActiveHandle(ruleExtends, params)
+    if (ruleExtends.isEmpty()) {
+      println("+------------------------------+")
+      println("无规则数据,跳过告警引擎计算")
+      println("+------------------------------+")
+    } else {
+      
+      alarmOriginalHandle(ruleExtends, params)
 
-    this.variables.put(outputVariableKey, ruleExtends);
+      alarmActiveHandle(ruleExtends, params)
+    }
+    
+    this.variables.put(outputVariableKey, ruleExtends)
   }
 
   /**

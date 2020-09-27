@@ -18,9 +18,16 @@ class AlarmEngine(override val sparkSession: SparkSession, override val sparkCon
 
     val ruleExtends: RDD[Map[String, Any]] = this.pendingData.asInstanceOf[RDD[Map[String, Any]]]
 
-    alarmOriginalHandle(ruleExtends, params)
+    if (ruleExtends.isEmpty()) {
+      println("+------------------------------+")
+      println("无规则数据,跳过告警引擎计算")
+      println("+------------------------------+")
+    } else {
+      
+      alarmOriginalHandle(ruleExtends, params)
 
-    alarmActiveHandle(ruleExtends, params)
+      alarmActiveHandle(ruleExtends, params)
+    }
 
   }
 
