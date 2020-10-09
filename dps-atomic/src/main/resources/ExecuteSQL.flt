@@ -12,7 +12,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
   def doIt(params: Map[String, String]): Any = {
     val sql = params.get("sql").get
     val viewName = params.get("viewName").get
-    val dataset = sparkSession.sqlContext.sql(sql);
+    val dataset = sparkSession.sqlContext.sql(sql).distinct();
     dataset.createOrReplaceTempView(viewName);
     this.variables.put(outputVariableKey, dataset);
   }

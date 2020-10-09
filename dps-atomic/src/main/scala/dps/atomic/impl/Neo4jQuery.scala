@@ -20,7 +20,7 @@ class Neo4jQuery(override val sparkSession: SparkSession, override val sparkConf
     val neo4j = new Neo4j(sparkSession.sparkContext)
     val new_neo4j: Neo4j = neo4j.cypher(sql)
 
-    val dataFrame: DataFrame = new_neo4j.loadDataFrame
+    val dataFrame: DataFrame = new_neo4j.loadDataFrame.distinct()
     dataFrame.createOrReplaceTempView(viewName)
     this.variables.put(outputVariableKey, dataFrame)
   }
