@@ -37,6 +37,8 @@
 		<fastjson.version>1.2.70</fastjson.version>
 		<quartz.version>2.3.2</quartz.version>
 		<kafka-clients.version>0.10.0.1</kafka-clients.version>
+		<geotools.version>23.2</geotools.version>
+		<jts.version>1.17.1</jts.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -148,6 +150,23 @@
 				<groupId>org.apache.kafka</groupId>
 				<artifactId>kafka-clients</artifactId>
 				<version>${kafka-clients.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.geotools/gt-geojson -->
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-geojson</artifactId>
+				<version>${geotools.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.geotools/gt-geometry -->
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-geometry</artifactId>
+				<version>${geotools.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.locationtech.jts</groupId>
+				<artifactId>jts-core</artifactId>
+				<version>${jts.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
