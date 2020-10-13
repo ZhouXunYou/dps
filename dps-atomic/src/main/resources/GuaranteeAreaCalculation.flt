@@ -22,7 +22,7 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 
     val security_areas = this.jdbcQuery(params, s"""(${sql}) as ${className}_view""", sparkSession).distinct().rdd.collect()
 
-    data.map(f => {
+    val map = data.map(f => {
       val logicId = f.getAs("id").asInstanceOf[String]
       val lng = f.getAs("longitude").asInstanceOf[Double]
       val lat = f.getAs("latitude").asInstanceOf[Double]
@@ -51,8 +51,10 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
       }
       Map(
         "id" -> logicId,
-        "security_Id" -> securityIds)
+        "security_id" -> securityIds)
     })
+    
+    this.variables.put(outputVariableKey, map);
   }
 
   /**

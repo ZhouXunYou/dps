@@ -21,7 +21,7 @@ class GuaranteeAreaCalculation(override val sparkSession: SparkSession, override
 
     val security_areas = this.jdbcQuery(params, "(select id,name,region,area from t_security_area) as tmpView", sparkSession).distinct().rdd.collect()
 
-    data.map(f => {
+    val map = data.map(f => {
       val logicId = f.getAs("id").asInstanceOf[String]
       val lng = f.getAs("longitude").asInstanceOf[Double]
       val lat = f.getAs("latitude").asInstanceOf[Double]
@@ -50,8 +50,10 @@ class GuaranteeAreaCalculation(override val sparkSession: SparkSession, override
       }
       Map(
         "id" -> logicId,
-        "security_Id" -> securityIds)
+        "security_id" -> securityIds)
     })
+    
+    this.variables.put(outputVariableKey, map);
   }
 
   /**
