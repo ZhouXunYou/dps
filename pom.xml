@@ -28,7 +28,7 @@
 		<!-- <jackson.version>2.6.7.1</jackson.version> -->
 		<jackson.version>2.9.8</jackson.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
-		<mysql.version>5.1.49</mysql.version>
+		<mysql.version>8.0.16</mysql.version>
 		<impalaJDBC41.version>2.6.3</impalaJDBC41.version>
 		<neo4j.version>2.4.5-M1</neo4j.version>
 		<roaringbitmap.version>0.8.9</roaringbitmap.version>
