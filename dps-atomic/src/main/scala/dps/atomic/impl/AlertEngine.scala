@@ -226,20 +226,23 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
     identifications.rdd.groupBy(row => {
       row.getAs("alarm_rule_id").asInstanceOf[String]
     }).map(v => {
-      var field = new String
+//      var field = new String
 
       var map = new HashMap[String, String]
       v._2.foreach(row => {
-        map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
+        if (!"areaType".equals(row.getAs("field").asInstanceOf[String])) {
+          
+        	map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
+        }
       })
 
-      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-        field = "areaId"
-      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-        field = "guaranteeAreaId"
-      }
+//      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
+//        field = "areaId"
+//      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
+//        field = "guaranteeAreaId"
+//      }
 
-      val where = field.+("='").+(map.get("areaId")).+("'")
+      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
 
       Tuple2(v._1, where)
     }).join(
@@ -276,7 +279,7 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
    * 获取规则
    */
   private def getRules(params: Map[String, String], topicName: String): Dataset[Row] = {
-    val sql = "(".+("select ar.id as alarm_rule_id, coalesce(ar.aggregate_occur_count, 0) as aggregate_occur_count, ar.alarm_content_expression, ar.alarm_rule_level, ar.alarm_rule_name, coalesce(ar.occur_count, 0) as occur_count, ar.alarm_type, ar.alarm_respons_field, arr.left_relation from s_alarm_rule ar inner join s_alarm_rule_relation arr on ar.id = arr.alarm_rule_id where ar.alarm_rule_status = 1 and arr.left_relation = '").+(topicName).+("') as tmpView")
+    val sql = "(".+("select ar.id as alarm_rule_id, coalesce(ar.aggregate_occur_count, 0) as aggregate_occur_count, ar.alarm_content_expression, ar.alarm_rule_level, ar.alarm_rule_name, coalesce(ar.occur_count, 0) as occur_count, ar.alarm_type, ar.alarm_respons_field, arr.left_relation from s_alarm_rule ar inner join s_alarm_rule_relation arr on ar.id = arr.alarm_rule_id inner join s_alarm_rule_identification ari on ar.id = ari.alarm_rule_id where ar.alarm_rule_status = 1 and ari.identification_field = 'areaId' and substring(ari.expression, 7) <> '000000' and arr.left_relation = '").+(topicName).+("') as tmpView")
 
     this.jdbcQuery(params, sql)
   }
@@ -285,8 +288,8 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
    * 获取主识别参数
    */
   private def getIdentifications(params: Map[String, String], topicName: String): Dataset[Row] = {
-    val sql = "(".+("select ari.alarm_rule_id, ari.identification_field as field, ari.expression, ari.id from s_alarm_rule_identification ari inner join s_alarm_rule ar on ari.alarm_rule_id = ar.id inner join s_alarm_rule_relation arr on arr.alarm_rule_id = ar.id where ar.alarm_rule_status = 1 and arr.left_relation = '").+(topicName).+("') as tmpView")
-
+    val sql = "(".+("select ari.alarm_rule_id, ari.identification_field as field, ari.expression, ari.id from s_alarm_rule_identification ari inner join s_alarm_rule ar on ari.alarm_rule_id = ar.id inner join s_alarm_rule_relation arr on arr.alarm_rule_id = ar.id  where ar.alarm_rule_status = 1 and ari.identification_field = 'areaId' and substring(ari.expression, 7) <> '000000' and arr.left_relation = '").+(topicName).+("') as tmpView")
+    
     this.jdbcQuery(params, sql)
   }
 
@@ -294,7 +297,7 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
    * 获取规则条件
    */
   private def getConditions(params: Map[String, String], topicName: String): Dataset[Row] = {
-    val sql = "(".+("select arc.alarm_rule_id, arc.condition_field as field, arc.expression, arc.comparison, arc.and_or, arc.id from s_alarm_rule_condition arc inner join s_alarm_rule ar on arc.alarm_rule_id = ar.id inner join s_alarm_rule_relation arr on arr.alarm_rule_id = ar.id where ar.alarm_rule_status = 1 and arr.left_relation = '").+(topicName).+("') as tmpView")
+    val sql = "(".+("select arc.alarm_rule_id, arc.condition_field as field, arc.expression, arc.comparison, arc.and_or, arc.id from s_alarm_rule_condition arc inner join s_alarm_rule ar on arc.alarm_rule_id = ar.id inner join s_alarm_rule_relation arr on arr.alarm_rule_id = ar.id inner join s_alarm_rule_identification ari on ar.id = ari.alarm_rule_id where ar.alarm_rule_status = 1 and ari.identification_field = 'areaId' and substring(ari.expression, 7) <> '000000' and arr.left_relation = '").+(topicName).+("') as tmpView")
 
     this.jdbcQuery(params, sql)
   }

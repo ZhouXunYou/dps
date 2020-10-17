@@ -16,8 +16,13 @@ class ${className} (override val sparkSession: SparkSession, override val sparkC
       println("+------------------------------+")
     } else {
       val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
+      val modeParam = params.getOrElse("saveMode", "1").toInt
+      var saveMode: SaveMode = SaveMode.Append
+      if (params.getOrElse("saveMode", "1").toInt.equals(2)) {
+        saveMode = SaveMode.Overwrite
+      }
       val path = params.get("path").get
-      dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
+      dataset.repartition(partitionNum.toInt).write.mode(saveMode).parquet(path)
     }
   }
 }

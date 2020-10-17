@@ -24,19 +24,25 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
       "enable.auto.commit" -> (true: java.lang.Boolean))
     val topics = params.get("topics").get.split(",")
     val stream = KafkaUtils.createDirectStream[String, String](
-      streamingContext,
-      PreferConsistent,
-      Subscribe[String, String](topics, kafkaParams))
-    
+    streamingContext,
+    PreferConsistent,
+    Subscribe[String, String](topics, kafkaParams))
+      
     stream.foreachRDD(records => {
-      println(records.isEmpty())
       
       if(!records.isEmpty()){
-        println("records:")
-        println(records)
+        // 排查异常用,稳定后删掉
+    	  println("++++++++++++++++++++++++++")
+  		  println("kafka source stream records count:", records.count())
+  		  println("kafka source stream records", records.toString())
+  		  println("kafka source stream records.first.value", records.first().value())
+        println("++++++++++++++++++++++++++")
         val streamRDD = records.map(record=>{
-        	println("record:")
-          println(record)
+          // 排查异常用,稳定后删掉
+          println("++++++++++++++++++++++++++")
+    		  println("kafka source stream records <- record key:", record.key())
+    		  println("kafka source stream records <- record value:", record.value())
+        	println("++++++++++++++++++++++++++")
           val topic = record.topic()
           val partition = record.partition()
           (topic,partition,record.value())

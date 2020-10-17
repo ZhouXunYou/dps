@@ -143,7 +143,11 @@ class AlarmEngineForLBS(override val sparkSession: SparkSession, override val sp
             from s_alarm_rule ar 
             inner join s_alarm_rule_relation arr 
             on ar.id = arr.alarm_rule_id 
+            inner join s_alarm_rule_identification ari 
+            on ar.id = ari.alarm_rule_id
             where ar.alarm_rule_status = 1 
+            and ari.identification_field = 'areaId'
+	          and substring(ari.expression, 7) <> '000000'
             and arr.left_relation = '${topicName}'
           ) as tmpRuleView""".stripMargin
 
@@ -160,7 +164,11 @@ class AlarmEngineForLBS(override val sparkSession: SparkSession, override val sp
            on ari.alarm_rule_id = ar.id 
            inner join s_alarm_rule_relation arr 
            on arr.alarm_rule_id = ar.id 
+           inner join s_alarm_rule_identification ari 
+           on ar.id = ari.alarm_rule_id
            where ar.alarm_rule_status = 1 
+           and ari.identification_field = 'areaId'
+           and substring(ari.expression, 7) <> '000000'
            and arr.left_relation = '${topicName}'
          ) as tmpIdentifacationView""".stripMargin
     val conditionSql =
@@ -176,13 +184,17 @@ class AlarmEngineForLBS(override val sparkSession: SparkSession, override val sp
            on arc.alarm_rule_id = ar.id 
            inner join s_alarm_rule_relation arr 
            on arr.alarm_rule_id = ar.id 
+           inner join s_alarm_rule_identification ari 
+           on ar.id = ari.alarm_rule_id
            where ar.alarm_rule_status = 1 
+           and ari.identification_field = 'areaId'
+           and substring(ari.expression, 7) <> '000000'
            and arr.left_relation = '${topicName}'
         ) as tmpConditionView""".stripMargin
 
     val identifications: Dataset[Row] = this.jdbcQuery(params, identificationSql)
     val conditions: Dataset[Row] = this.jdbcQuery(params, conditionSql)
-
+    
     val rddWheres: RDD[Tuple2[String, String]] = conditionsSplicing(identifications, conditions)
 
     val identificationField = identificationAssembly(identifications)
@@ -257,20 +269,14 @@ class AlarmEngineForLBS(override val sparkSession: SparkSession, override val sp
     dataset.rdd.groupBy(row => {
       row.getAs("alarm_rule_id").asInstanceOf[String]
     }).map(v => {
-      var field = new String
-
       var map = new HashMap[String, String]
       v._2.foreach(row => {
-        map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
+        if (!row.getAs("field").asInstanceOf[String].equals("areaType")) {
+        	map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
+        }
       })
-
-      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-        field = "areaId"
-      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-        field = "guaranteeAreaId"
-      }
-
-      val where = field.+("='").+(map.get("areaId")).+("'")
+      
+      val where = "areaId".+("='").+(map.get("areaId")).+("' or secturity_id='").+(map.get("areaId")).+("'")
 
       Tuple2(v._1, where)
     })

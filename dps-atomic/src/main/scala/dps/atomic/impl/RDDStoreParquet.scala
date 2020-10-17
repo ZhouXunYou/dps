@@ -15,14 +15,20 @@ class RDDStoreParquet(override val sparkSession: SparkSession, override val spar
       println("+------------------------------+")
     } else {
       val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
+      val modeParam = params.getOrElse("saveMode", "1").toInt
+      var saveMode: SaveMode = SaveMode.Append
+      if (params.getOrElse("saveMode", "1").toInt.equals(2)) {
+        saveMode = SaveMode.Overwrite
+      }
       val path = params.get("path").get
-      dataset.coalesce(partitionNum.toInt).write.mode(SaveMode.Append).parquet(path)
+      dataset.repartition(partitionNum.toInt).write.mode(saveMode).parquet(path)
     }
   }
 
   override def define: AtomOperationDefine = {
     val params = Map(
       "partitionNum" -> new AtomOperationParamDefine("Partition Size", "1", false, "1"),
+      "saveMode" -> new AtomOperationParamDefine("Save Mode(1:Append,2:Overwrite)", "1", false, "1"),
       "path" -> new AtomOperationParamDefine("path", "hdfs://${host}:${port}/${warehouse}", true, "1")
     )
     val atomOperation = new AtomOperationDefine("RDD Store Parquet", "rddStoreParuet", "RDDStoreParquet.flt", params.toMap)

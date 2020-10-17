@@ -52,7 +52,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
   private def clearHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
     rules.collect().foreach(m => {
 
-      val sql = "(select min(occur_time) as start_time,max(occur_time) as end_time from b_alarm_original where alarm_rule_id = '".+(m.get("alarm_rule_id").get).+("' identification_field::jsonb ->>'alarmType'='").+(m.get("alarm_type").get).+("') as tmpView")
+      val sql = "(select min(occur_time) as start_time,max(occur_time) as end_time from b_alarm_original where alarm_rule_id = '".+(m.get("alarm_rule_id").get).+("' and identification_field::jsonb ->>'alarmType'='").+(m.get("alarm_type").get).+("') as tmpView")
 
       val timeInterval = this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sql)
 
@@ -66,7 +66,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
 
         val endTime = timeInterval.first().getAs("end_time").asInstanceOf[String]
 
-        val sql2 = "(select distinct atime,region from b_alarm_tower where atime >= '".+(startTime).+("' and atime <= '").+(endTime).+("' and rtime <= now()) as tmpView")
+        val sql2 = "(select distinct a_time,area_id from b_alarm_tower where a_time >= '".+(startTime).+("' and a_time <= '").+(endTime).+("' and r_time <= now()) as tmpView")
 
         val recoverableOriginal = this.jdbcQuery(params.get("impalaUrl").get, params.get("impalaDriver").get, params.get("impalaUser").get, params.get("impalaPassword").get, sql2)
 
@@ -261,20 +261,23 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
     identifications.rdd.groupBy(row => {
       row.getAs("alarm_rule_id").asInstanceOf[String]
     }).map(v => {
-      var field = new String
+//      var field = new String
 
       var map = new HashMap[String, String]
       v._2.foreach(row => {
-        map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
+        if (!"areaType".equals(row.getAs("field").asInstanceOf[String])) {
+          
+        	map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
+        }
       })
 
-      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-        field = "areaId"
-      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-        field = "guaranteeAreaId"
-      }
+//      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
+//        field = "areaId"
+//      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
+//        field = "guaranteeAreaId"
+//      }
 
-      val where = field.+("='").+(map.get("areaId")).+("'")
+      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
 
       Tuple2(v._1, where)
     }).join(

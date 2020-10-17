@@ -50,7 +50,11 @@ class AlarmRuleAnalysis(override val sparkSession: SparkSession, override val sp
             from s_alarm_rule ar 
             inner join s_alarm_rule_relation arr 
             on ar.id = arr.alarm_rule_id 
+            inner join s_alarm_rule_identification ari 
+            on ar.id = ari.alarm_rule_id 
             where ar.alarm_rule_status = 1 
+            and ari.identification_field = 'areaId' 
+            and substring(ari.expression, 7) <> '000000' 
             and arr.left_relation = '${topicName}'
           ) as tmpRuleView""".stripMargin
 
@@ -67,7 +71,11 @@ class AlarmRuleAnalysis(override val sparkSession: SparkSession, override val sp
            on ari.alarm_rule_id = ar.id 
            inner join s_alarm_rule_relation arr 
            on arr.alarm_rule_id = ar.id 
+           inner join s_alarm_rule_identification ari 
+           on ar.id = ari.alarm_rule_id 
            where ar.alarm_rule_status = 1 
+           and ari.identification_field = 'areaId' 
+           and substring(ari.expression, 7) <> '000000' 
            and arr.left_relation = '${topicName}'
          ) as tmpIdentifacationView""".stripMargin
     val conditionSql =
@@ -83,7 +91,11 @@ class AlarmRuleAnalysis(override val sparkSession: SparkSession, override val sp
            on arc.alarm_rule_id = ar.id 
            inner join s_alarm_rule_relation arr 
            on arr.alarm_rule_id = ar.id 
+           inner join s_alarm_rule_identification ari 
+           on ar.id = ari.alarm_rule_id 
            where ar.alarm_rule_status = 1 
+           and ari.identification_field = 'areaId' 
+           and substring(ari.expression, 7) <> '000000' 
            and arr.left_relation = '${topicName}'
         ) as tmpConditionView""".stripMargin
 
