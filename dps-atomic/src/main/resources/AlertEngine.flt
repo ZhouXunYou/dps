@@ -209,7 +209,8 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 //        field = "guaranteeAreaId"
 //      }
 
-      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
+      val where = "areaId".+("='").+(map.get("areaId")).+("'")
+//      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
 
       Tuple2(v._1, where)
     }).join(

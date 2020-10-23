@@ -78,7 +78,7 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
                             alarm_level,
                             identification_field,
                             alarm_content
-                       having count(0) > ${m.get("occur_count").get}
+                       having count(0) >= ${m.get("occur_count").get}
                   ) as tmpAlarmOriginal""".stripMargin
 
     val alarms: Dataset[Row] = this.jdbcQuery(params, sql)
@@ -242,7 +242,8 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
 //        field = "guaranteeAreaId"
 //      }
 
-      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
+      val where = "areaId".+("='").+(map.get("areaId")).+("'")
+//      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
 
       Tuple2(v._1, where)
     }).join(
