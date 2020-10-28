@@ -10,20 +10,18 @@ import scala.collection.mutable.Map
 
 class ${className}(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
 
-	def doIt(params: Map[String, String]): Any = {
-	    val url = params.get("url").get
-	    val user = params.get("user").get
-	    val password = params.get("password").get
-	    val sql = params.get("sql").get
-	    val viewName = params.get("viewName").get
+  def doIt(params: Map[String, String]): Any = {
 
-	    import sparkSession.implicits._
-	    val neo4j = new Neo4j(sparkSession.sparkContext)
-	    val new_neo4j: Neo4j = neo4j.cypher(sql)
-	
-	    val dataFrame: DataFrame = new_neo4j.loadDataFrame.distinct()
-	    dataFrame.createOrReplaceTempView(viewName)
-	    this.variables.put(outputVariableKey, dataFrame)
-	}
+    val sql = params.get("sql").get
+    val viewName = params.get("viewName").get
+
+    import sparkSession.implicits._
+    val neo4j = new Neo4j(sparkSession.sparkContext)
+    val new_neo4j: Neo4j = neo4j.cypher(sql)
+
+    val dataFrame: DataFrame = new_neo4j.loadDataFrame.distinct()
+    dataFrame.createOrReplaceTempView(viewName)
+    this.variables.put(outputVariableKey, dataFrame)
+  }
 
 }

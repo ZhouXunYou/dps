@@ -12,43 +12,39 @@ import dps.atomic.define.AtomOperationParamDefine
 
 class AlarmEngine4Active(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
   def doIt(params: Map[String, String]): Any = {
-    val rules: Dataset[Row] = this.pendingData.asInstanceOf[Dataset[Row]]
 
-    if (rules.isEmpty) {
-      println("+------------------------------+")
-      println("无规则数据,跳过活动告警计算")
-      println("+------------------------------+")
-    } else {
+    val sql = s"""(select md5(now()::text||random()::text) as id,
+                  				a.alarm_content,
+                  				a.alarm_level,
+                  				b.alarm_rule_name as alarm_title,
+                  				a.identification_field,
+                          now() as merge_time,
+                  				count(0) as occur_count,
+                  				max(a.occur_time) as  occur_time,
+                  				a.alarm_rule_id,
+                          null as moid,
+                          now() as create_time,
+                          '{}' as alarm_respons_field
+                  from b_alarm_original a
+                  inner join s_alarm_rule b
+                  on a.alarm_rule_id = b.id
+                  where coalesce(a.alarm_rule_id,'') not in (select distinct coalesce(alarm_rule_id,'') as alarm_rule_id from b_alarm)
+                  						group by a.alarm_rule_id,
+                  										a.alarm_level,
+                  										a.identification_field,
+                  										a.alarm_content,
+                  										b.alarm_rule_name
+                  							 having count(0) >= 1) as tmpAlarmOriginal""".stripMargin
 
-      val original: RDD[Dataset[Row]] = rules.rdd.map(m => {
+    val dataset = sparkSession.sqlContext.read.format("jdbc")
+      .option("url", params.get("url").get)
+      .option("driver", params.get("driver").get)
+      .option("dbtable", sql)
+      .option("user", params.get("user").get)
+      .option("password", params.get("password").get)
+      .load()
 
-        val sql = s"""(select md5(now()::text||random()::text) as id,
-                            alarm_content,
-                            alarm_level,
-                            '${m.getAs("alarm_rule_name").asInstanceOf[String]}' as alarm_title,
-                            identification_field,
-                            count(0) as occur_count,
-														max(occur_time) as  occur_time,
-                            alarm_rule_id,
-                            now() as create_time
-                       from b_alarm_original 
-                       where coalesce(alarm_rule_id,'') not in (select distinct coalesce(alarm_rule_id,'') as alarm_rule_id from b_alarm)
-                        and alarm_rule_id = '${m.getAs("alarm_rule_id").asInstanceOf[String]}'
-                       group by alarm_rule_id,
-                            alarm_level,
-                            identification_field,
-                            alarm_content
-                       having count(0) > ${m.getAs("occur_count").asInstanceOf[Integer]}) as tmpAlarmActive""".stripMargin
-
-        sparkSession.sqlContext.read.format("jdbc")
-          .option("url", params.get("url").get)
-          .option("driver", params.get("driver").get)
-          .option("dbtable", sql)
-          .option("user", params.get("user").get)
-          .option("password", params.get("password").get)
-          .load()
-      })
-    }
+    this.variables.put(outputVariableKey, dataset)
   }
 
   override def define: AtomOperationDefine = {

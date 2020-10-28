@@ -40,7 +40,8 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
 
       this.alarmOriginalHandle(ruleExtends, params)
 
-      this.alarmActiveHandle(ruleExtends, params)
+      this.alarmActive(params)
+//      this.alarmActiveHandle(ruleExtends, params)
     }
 
     this.variables.put(outputVariableKey, ruleExtends)
@@ -50,38 +51,45 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
   /**
    * 活动告警条件过滤并存储
    */
-  private def alarmActiveHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
-    rules.collect().foreach(m => {
-      this.alarmActive(params, m)
-      this.updateAlarmActive(params, m)
-    })
-  }
+//  private def alarmActiveHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
+//    rules.collect().foreach(m => {
+//      this.alarmActive(params, m)
+//      this.updateAlarmActive(params, m)
+//    })
+//  }
 
   /**
    * 活动告警分析
    */
-  private def alarmActive(params: Map[String, String], m: Map[String, Any]) {
+  private def alarmActive(params: Map[String, String]) {
+    println("active alarm handle")
     // 新告警过滤
     val sql = s"""(select md5(now()::text||random()::text) as id,
-                            alarm_content,
-                            alarm_level,
-                            '${m.get("alarm_rule_name").get}' as alarm_title,
-                            identification_field,
-                            count(0) as occur_count,
-														max(occur_time) as  occur_time,
-                            alarm_rule_id,
-                            now() as create_time
-                       from b_alarm_original 
-                       where coalesce(alarm_rule_id,'') not in (select distinct coalesce(alarm_rule_id,'') as alarm_rule_id from b_alarm)
-                        and alarm_rule_id = '${m.get("alarm_rule_id").get}'
-                       group by alarm_rule_id,
-                            alarm_level,
-                            identification_field,
-                            alarm_content
-                       having count(0) >= ${m.get("occur_count").get}
-                  ) as tmpAlarmOriginal""".stripMargin
+                  				a.alarm_content,
+                  				a.alarm_level,
+                  				b.alarm_rule_name as alarm_title,
+                  				a.identification_field,
+                          now() as merge_time,
+                  				count(0) as occur_count,
+                  				max(a.occur_time) as  occur_time,
+                  				a.alarm_rule_id,
+                          null as moid,
+                          now() as create_time,
+                          '{}' as alarm_respons_field
+                  from b_alarm_original a
+                  inner join s_alarm_rule b
+                  on a.alarm_rule_id = b.id
+                  where coalesce(a.alarm_rule_id,'') not in (select distinct coalesce(alarm_rule_id,'') as alarm_rule_id from b_alarm)
+                  						group by a.alarm_rule_id,
+                  										a.alarm_level,
+                  										a.identification_field,
+                  										a.alarm_content,
+                  										b.alarm_rule_name
+                  							 having count(0) >= 1) as tmpAlarmOriginal""".stripMargin
 
     val alarms: Dataset[Row] = this.jdbcQuery(params, sql)
+    alarms.show()
+    println("active alarm")
     if (alarms.isEmpty) {
       println("+------------------------------+")
       println("活动告警分析无数据,跳过存储操作")
@@ -94,59 +102,59 @@ class AlertEngine(override val sparkSession: SparkSession, override val sparkCon
   /**
    * 分析并更新已存在活动告警
    */
-  private def updateAlarmActive(params: Map[String, String], m: Map[String, Any]) {
-    // 更新已存在告警的数据
-    val sql = s"""(select ori.alarm_rule_id,
-                            ori.alarm_content,
-                    			  ori.alarm_level,
-                    			  '${m.get("alarm_rule_name").get}' as alarm_title,
-                    			  ori.identification_field,
-                    			  count(0) as occur_count,
-                    			  max(ori.occur_time) as  merge_time
-                       from b_alarm_original ori
-                       inner join b_alarm al on coalesce(ori.alarm_rule_id,'') = coalesce(al.alarm_rule_id,'')
-                       where ori.alarm_rule_id = '${m.get("alarm_rule_id").get}'
-                       group by ori.alarm_rule_id,
-                             ori.alarm_level,
-                    			   ori.identification_field,
-                    			   ori.alarm_content
-                       having count(0) > ${m.get("occur_count").get}
-                  ) as tmpView""".stripMargin
-
-    val alarm: Dataset[Row] = this.jdbcQuery(params, sql)
-
-    var conn: Connection = null
-    val props = new Properties
-    props.put("user", params.get("user").get)
-    props.put("password", params.get("password").get)
-    alarm.foreachPartition(iter => {
-      try {
-        conn = DriverManager.getConnection(params.get("url").get, props)
-        iter.foreach(row => {
-          val alarm_rule_id = row.getAs("alarm_rule_id").asInstanceOf[String]
-          val alarm_content = row.getAs("alarm_content").asInstanceOf[String]
-          val alarm_level = row.getAs("alarm_level").asInstanceOf[Integer]
-          val alarm_title = row.getAs("alarm_title").asInstanceOf[String]
-          val identification_field = row.getAs("identification_field").asInstanceOf[String]
-          val occur_count = row.getAs("occur_count").asInstanceOf[Long]
-          val merge_time = row.getAs("merge_time").asInstanceOf[Timestamp]
-
-          val uSql = s"""update b_alarm set alarm_content = '$alarm_content',
-                                            alarm_level = $alarm_level,
-                                            alarm_title = '$alarm_title',
-                                            identification_field = '$identification_field',
-                                            occur_count = $occur_count,
-                                            merge_time = '$merge_time'
-                                            where alarm_rule_id = '$alarm_rule_id'"""
-          conn.createStatement().executeUpdate(uSql)
-        })
-      } catch {
-        case e: Exception => println(e.printStackTrace())
-      } finally {
-        conn.close()
-      }
-    })
-  }
+//  private def updateAlarmActive(params: Map[String, String], m: Map[String, Any]) {
+//    // 更新已存在告警的数据
+//    val sql = s"""(select ori.alarm_rule_id,
+//                            ori.alarm_content,
+//                    			  ori.alarm_level,
+//                    			  '${m.get("alarm_rule_name").get}' as alarm_title,
+//                    			  ori.identification_field,
+//                    			  count(0) as occur_count,
+//                    			  max(ori.occur_time) as  merge_time
+//                       from b_alarm_original ori
+//                       inner join b_alarm al on coalesce(ori.alarm_rule_id,'') = coalesce(al.alarm_rule_id,'')
+//                       where ori.alarm_rule_id = '${m.get("alarm_rule_id").get}'
+//                       group by ori.alarm_rule_id,
+//                             ori.alarm_level,
+//                    			   ori.identification_field,
+//                    			   ori.alarm_content
+//                       having count(0) > ${m.get("occur_count").get}
+//                  ) as tmpView""".stripMargin
+//
+//    val alarm: Dataset[Row] = this.jdbcQuery(params, sql)
+//
+//    var conn: Connection = null
+//    val props = new Properties
+//    props.put("user", params.get("user").get)
+//    props.put("password", params.get("password").get)
+//    alarm.foreachPartition(iter => {
+//      try {
+//        conn = DriverManager.getConnection(params.get("url").get, props)
+//        iter.foreach(row => {
+//          val alarm_rule_id = row.getAs("alarm_rule_id").asInstanceOf[String]
+//          val alarm_content = row.getAs("alarm_content").asInstanceOf[String]
+//          val alarm_level = row.getAs("alarm_level").asInstanceOf[Integer]
+//          val alarm_title = row.getAs("alarm_title").asInstanceOf[String]
+//          val identification_field = row.getAs("identification_field").asInstanceOf[String]
+//          val occur_count = row.getAs("occur_count").asInstanceOf[Long]
+//          val merge_time = row.getAs("merge_time").asInstanceOf[Timestamp]
+//
+//          val uSql = s"""update b_alarm set alarm_content = '$alarm_content',
+//                                            alarm_level = $alarm_level,
+//                                            alarm_title = '$alarm_title',
+//                                            identification_field = '$identification_field',
+//                                            occur_count = $occur_count,
+//                                            merge_time = '$merge_time'
+//                                            where alarm_rule_id = '$alarm_rule_id'"""
+//          conn.createStatement().executeUpdate(uSql)
+//        })
+//      } catch {
+//        case e: Exception => println(e.printStackTrace())
+//      } finally {
+//        conn.close()
+//      }
+//    })
+//  }
 
   /**
    * 过滤原始告警并存储

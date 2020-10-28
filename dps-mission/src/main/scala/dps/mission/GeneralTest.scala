@@ -6,18 +6,20 @@ import java.io.StringReader
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SparkSession
 import org.geotools.geojson.geom.GeometryJSON
 import org.locationtech.jts.geom.Geometry
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import org.neo4j.spark.Neo4j
 
 object GeneralTest {
   def main(args: Array[String]): Unit = {
 
     val params: Map[String, String] = Map(
-      "url" -> "jdbc:postgresql://192.168.11.200:5432/emmc",
+      "url" -> "jdbc:postgresql://192.168.11.201:5432/emmc",
       "driver" -> "org.postgresql.Driver",
       "user" -> "postgres",
       "password" -> "postgres")
@@ -25,24 +27,33 @@ object GeneralTest {
     val builder = SparkSession.builder()
     val sparkConf = new SparkConf
     sparkConf.setAppName("test").setMaster("local[*]")
-    sparkConf.set("spark.driver.allowMultipleContexts", "true").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer").set("spark.executor.memory", "8g")
+    sparkConf.set("spark.driver.allowMultipleContexts", "true")
+      .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+      .set("spark.executor.memory", "8g")
+      .set("spark.neo4j.url", "bolt://192.168.11.201:7687")
+      .set("spark.neo4j.user", "neo4j")
+      .set("spark.neo4j.password", "a123456")
     builder.config(sparkConf)
     val sparkSession = builder.getOrCreate()
 
+    val neo4j = new Neo4j(sparkSession.sparkContext)
+
+    println("计算开始:" + System.currentTimeMillis())
+    val new_neo4j: Neo4j = neo4j.cypher("match (n:BASE_STATION_LOGIC) return n.sys_moid as moid,n.attr_Region as area_id,toFloat(n.attr_Latitude) as latitude,toFloat(n.attr_Longitude) as longitude", params)
+    val dataFrame: DataFrame = new_neo4j.loadDataFrame
+
     val security_areas = this.jdbcQuery(params, "(select id,name,region,area from t_security_area) as tmpView", sparkSession).distinct().rdd.collect()
 
-    val path = "hdfs://cdhnode209:8020/emmc/humanmigrated"
-    val df = sparkSession.sqlContext.read.load(path).select("logic_site_id", "latitude", "longitude").distinct().rdd
+    //    val path = "hdfs://cdhnode209:8020/emmc/humanmigrated"
+    //    val df = sparkSession.sqlContext.read.load(path).select("logic_site_id", "latitude", "longitude").distinct().rdd
 
-    val map = df.map(f => {
-    	val logicId = f.getAs("logic_site_id").asInstanceOf[String]
+    val map = dataFrame.rdd.map(f => {
+      val logicId = f.getAs("moid").asInstanceOf[String]
       val lng = f.getAs("longitude").asInstanceOf[Double]
       val lat = f.getAs("latitude").asInstanceOf[Double]
       val coordinate = new JSONArray()
-      //      coordinate.add(lng)
-      //      coordinate.add(lat)
-      coordinate.add(116.350654)
-      coordinate.add(39.938061)
+      coordinate.add(lng)
+      coordinate.add(lat)
       val geoPoint = new JSONObject
       geoPoint.put("type", "Point")
       geoPoint.put("coordinates", coordinate)
@@ -67,10 +78,13 @@ object GeneralTest {
         "logicId" -> logicId,
         "securityIds" -> securityIds)
     })
-
+    
+    
     map.foreach(f => {
       println(f)
     })
+    println(map.count())
+    println("计算结束:" + System.currentTimeMillis())
   }
 
   /**

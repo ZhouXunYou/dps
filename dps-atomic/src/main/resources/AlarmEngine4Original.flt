@@ -27,6 +27,8 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
         
         sparkSession.sqlContext.sql(sql)
       })
+      
+      this.variables.put(outputVariableKey, original)
     }
   }
 }

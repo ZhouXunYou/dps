@@ -31,18 +31,7 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
     stream.foreachRDD(records => {
       
       if(!records.isEmpty()){
-        // 排查异常用,稳定后删掉
-    	  println("++++++++++++++++++++++++++")
-  		  println("kafka source stream records count:", records.count())
-  		  println("kafka source stream records", records.toString())
-  		  println("kafka source stream records.first.value", records.first().value())
-        println("++++++++++++++++++++++++++")
         val streamRDD = records.map(record=>{
-          // 排查异常用,稳定后删掉
-          println("++++++++++++++++++++++++++")
-    		  println("kafka source stream records <- record key:", record.key())
-    		  println("kafka source stream records <- record value:", record.value())
-        	println("++++++++++++++++++++++++++")
           val topic = record.topic()
           val partition = record.partition()
           (topic,partition,record.value())

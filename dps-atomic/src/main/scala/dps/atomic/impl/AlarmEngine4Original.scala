@@ -30,6 +30,8 @@ class AlarmEngine4Original(override val sparkSession: SparkSession, override val
 
         sparkSession.sqlContext.sql(sql)
       })
+      
+      this.variables.put(outputVariableKey, original)
     }
   }
 
