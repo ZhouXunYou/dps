@@ -11,9 +11,9 @@ class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf
   def doIt(params: Map[String, String]): Any = {
     val sql = params.get("sql").get
     val viewName = params.get("viewName").get
-    val dataset = sparkSession.sqlContext.sql(sql).distinct();
-    dataset.createOrReplaceTempView(viewName);
-    this.variables.put(outputVariableKey, dataset);
+    val dataset = sparkSession.sqlContext.sql(sql)
+    dataset.createOrReplaceTempView(viewName)
+    this.variables.put(outputVariableKey, dataset)
   }
 
   override def define: AtomOperationDefine = {

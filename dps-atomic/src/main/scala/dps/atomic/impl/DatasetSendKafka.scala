@@ -30,8 +30,10 @@ class DatasetSendKafka(override val sparkSession: SparkSession, override val spa
     val sendTopicName = params.get("sendTopicName").get
     
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
-    dataset.toJSON.rdd.foreach(value=>{
-      kafkaProducer.value.send(sendTopicName, value.toString())
+    dataset.toJSON.rdd.foreachPartition(f=>{
+      if (f.hasNext) {
+    	  kafkaProducer.value.send(sendTopicName, f.next())
+      }
     })
     
   }

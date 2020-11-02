@@ -42,10 +42,10 @@ object GeneralTest {
     val new_neo4j: Neo4j = neo4j.cypher("match (n:BASE_STATION_LOGIC) return n.sys_moid as moid,n.attr_Region as area_id,toFloat(n.attr_Latitude) as latitude,toFloat(n.attr_Longitude) as longitude", params)
     val dataFrame: DataFrame = new_neo4j.loadDataFrame
 
-    val security_areas = this.jdbcQuery(params, "(select id,name,region,area from t_security_area) as tmpView", sparkSession).distinct().rdd.collect()
+    val security_areas = this.jdbcQuery(params, "(select id,name,region,area from t_security_area) as tmpView", sparkSession).rdd.collect()
 
     //    val path = "hdfs://cdhnode209:8020/emmc/humanmigrated"
-    //    val df = sparkSession.sqlContext.read.load(path).select("logic_site_id", "latitude", "longitude").distinct().rdd
+    //    val df = sparkSession.sqlContext.read.load(path).select("logic_site_id", "latitude", "longitude").rdd
 
     val map = dataFrame.rdd.map(f => {
       val logicId = f.getAs("moid").asInstanceOf[String]

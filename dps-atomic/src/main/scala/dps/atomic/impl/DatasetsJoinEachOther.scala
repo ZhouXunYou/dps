@@ -15,7 +15,7 @@ class DatasetsJoinEachOther(override val sparkSession: SparkSession, override va
     val leftDataset = params.get("leftVariableKey").get.asInstanceOf[Dataset[Row]]
     val rightDataset = params.get("rightVariableKey").get.asInstanceOf[Dataset[Row]]
     
-    val datasetJoin = leftDataset.join(rightDataset, params.get("colum").get).distinct()
+    val datasetJoin = leftDataset.join(rightDataset, params.get("colum").get)
     datasetJoin.createOrReplaceTempView(params.get("viewName").get)
     this.variables.put(outputVariableKey, datasetJoin);
   }

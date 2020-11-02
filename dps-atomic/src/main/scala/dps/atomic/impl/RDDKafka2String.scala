@@ -23,7 +23,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
     val rdd = topicValue.map(tuple=>{
       tuple._3
     })
-    variables.put(outputVariableKey, rdd.distinct())
+    variables.put(outputVariableKey, rdd)
     var topicNames:ArrayList[String] = variables.get("topicNames").getOrElse(null).asInstanceOf[ArrayList[String]]
     if(topicNames==null){
       topicNames = new ArrayList[String]
