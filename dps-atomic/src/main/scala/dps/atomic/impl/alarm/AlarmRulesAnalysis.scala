@@ -1,18 +1,16 @@
-package dps.atomic.impl
-
-import java.util
+package dps.atomic.impl.alarm
 
 import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
-import org.apache.commons.lang3.StringUtils
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{ Dataset, Row, SaveMode, SparkSession }
-
+import org.apache.spark.sql.{ Dataset, Row, SparkSession}
 import scala.collection.mutable.Map
 import java.util.ArrayList
 import java.util.HashMap
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
+import dps.atomic.impl.AbstractAction
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 class AlarmRulesAnalysis(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 

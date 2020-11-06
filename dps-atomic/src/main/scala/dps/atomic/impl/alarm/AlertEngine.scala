@@ -1,26 +1,20 @@
-package dps.atomic.impl
+package dps.atomic.impl.alarm
 
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.Timestamp
 import java.util.ArrayList
-import java.util.Properties
-
 import scala.collection.mutable.Map
-
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.sql.SparkSession
-
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
-
 import dps.atomic.define.AtomOperationDefine
 import dps.atomic.define.AtomOperationParamDefine
 import java.util.HashMap
+import dps.atomic.impl.AbstractAction
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 class AlertEngine(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 

@@ -1,4 +1,4 @@
-package dps.atomic.impl
+package dps.atomic.impl.alarm
 
 import java.sql.Connection
 import java.sql.DriverManager
@@ -7,23 +7,20 @@ import java.sql.Timestamp
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.Properties
-
 import scala.collection.mutable.Map
-
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.SaveMode
 import org.apache.spark.sql.SparkSession
-
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
-
 import dps.atomic.define.AtomOperationDefine
 import dps.atomic.define.AtomOperationParamDefine
+import dps.atomic.impl.AbstractAction
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
-class AlertClear(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
+class ClearAlert(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 
   def doIt(params: Map[String, String]): Any = {
     val topicNames: ArrayList[String] = variables.get("topicNames").get.asInstanceOf[ArrayList[String]]
@@ -52,31 +49,21 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
   private def clearHandle(rules: RDD[Map[String, Any]], params: Map[String, String]) = {
     rules.collect().foreach(m => {
 
-      val sql = "(select min(occur_time) as start_time,max(occur_time) as end_time from b_alarm_original where alarm_rule_id = '".+(m.get("alarm_rule_id").get).+("' and identification_field::jsonb ->>'alarmType'='").+(m.get("alarm_type").get).+("') as tmpView")
+      val sql1 = s"""select area_id,rtime from alertExtends where area_id not in (select area_id from alertExtends where ${m.get("conditions").get})"""
+      val originalClearBefore = sparkSession.sqlContext.sql(sql1)
 
-      val timeInterval = this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sql)
-
-      if (timeInterval.isEmpty) {
+      if (originalClearBefore.isEmpty) {
         println("+------------------------------+")
-        println("当前规则无告警数据,跳过清除告警分析计算操作")
+        println("没有需要清除的告警,跳过后续操作")
         println("+------------------------------+")
       } else {
 
-        val startTime = timeInterval.first().getAs("start_time").asInstanceOf[String]
-
-        val endTime = timeInterval.first().getAs("end_time").asInstanceOf[String]
-
-        val sql2 = "(select distinct a_time,area_id from b_alarm_tower where a_time >= '".+(startTime).+("' and a_time <= '").+(endTime).+("' and r_time <= now()) as tmpView")
-
-        val recoverableOriginal = this.jdbcQuery(params.get("impalaUrl").get, params.get("impalaDriver").get, params.get("impalaUser").get, params.get("impalaPassword").get, sql2)
-
-        var originalClear: Dataset[Row] = sparkSession.emptyDataFrame
-        recoverableOriginal.foreach(row => {
-          val sql = "(select * from b_alarm_original where alarm_rule_id = '".+(m.get("alarm_rule_id").get).+("' and identification_field::jsonb ->>'alarmType' = '").+(m.get("alarm_type").get).+(" and identification_field::jsonb ->> 'areaId' = '").+(row.getAs("region").asInstanceOf[String]).+("' and occur_time = '").+(row.getAs("atime").asInstanceOf[String]).+("') as tmpView")
-
-          val data = this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sql)
-          originalClear.unionAll(data)
+        var areaIdsClear = new String
+        originalClearBefore.foreach(row => {
+          areaIdsClear.+("','").+(row.getAs("area_id").asInstanceOf[String])
         })
+        val sql2 = "select * from b_alarm_original where identification_field::jsonb ->>'alarmType' = '".+(m.get("alarm_type").get).+(" and identification_field::jsonb ->> 'areaId' in ('").+(areaIdsClear).+("')) as tmpView")
+        val originalClear = this.jdbcQuery(params.get("url").get, params.get("driver").get, params.get("user").get, params.get("password").get, sql2)
 
         var conn: Connection = null
         conn.setAutoCommit(false)
@@ -121,7 +108,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
         // 处理活动告警
         val sqlActiveCurrent = "select alarm_rule_id from b_alarm_original where coalesce(alarm_rule_id,'') not in (select distinct coalesce(alarm_rule_id,'') as alarm_rule_id from b_alarm) and alarm_rule_id = '".+(m.get("alarm_rule_id").get).+("' group by alarm_rule_id having count(0) > ").+(m.get("occur_count").get)
 
-        val alarmRuleIdExcept = this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sqlActiveCurrent)
+        val alarmRuleIdExcept = this.jdbcQuery(params.get("url").get, params.get("driver").get, params.get("user").get, params.get("password").get, sqlActiveCurrent)
 
         var exceptAlarmRuleIds = new String
         alarmRuleIdExcept.foreach(row => {
@@ -129,7 +116,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
         })
         exceptAlarmRuleIds = "'".+(exceptAlarmRuleIds).+("'")
         val sqlActiveClear = "select * from b_alarm where alarm_rule_id in (".+(exceptAlarmRuleIds).+(")")
-        val activeClear = this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sqlActiveClear)
+        val activeClear = this.jdbcQuery(params.get("url").get, params.get("driver").get, params.get("user").get, params.get("password").get, sqlActiveClear)
 
         var activeIds = new ArrayList[String]
         try {
@@ -169,36 +156,6 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
         } finally {
           conn.close()
         }
-
-        /*originalClear.foreachPartition(iter => {
-          try {
-            // 原始告警数据移到历史详情中
-            val sqlInsert = "insert into b_alarm_history_detail (id, alarm_id, alarm_rule_id, alarm_content, alarm_level, identification_field, occur_time) values (md5(random()::text || now()::text),?,?,?,?,?,?)"
-            var stmt: PreparedStatement = conn.prepareStatement(sqlInsert)
-            iter.foreach(row => {
-              originalIds.add(row.getAs("alarm_id").asInstanceOf[String])
-              stmt.setString(1, row.getAs("alarm_id").asInstanceOf[String])
-              stmt.setString(2, row.getAs("alarm_rule_id").asInstanceOf[String])
-              stmt.setString(3, row.getAs("alarm_content").asInstanceOf[String])
-              stmt.setString(4, row.getAs("alarm_level").asInstanceOf[String])
-              stmt.setString(5, row.getAs("identification_field").asInstanceOf[String])
-              stmt.setTimestamp(6, row.getAs("occur_time").asInstanceOf[Timestamp])
-            })
-
-            stmt.executeBatch()
-            conn.commit()
-
-            // 删除原始告警数据
-            val sqlDel = "delete from b_alarm_original where id in(?1)"
-            stmt = conn.prepareStatement(sqlDel)
-            stmt.execute()
-            conn.commit()
-          } catch {
-            case e: Exception => println(e.printStackTrace())
-          } finally {
-            conn.close()
-          }
-        })*/
       }
     })
   }
@@ -261,23 +218,20 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
     identifications.rdd.groupBy(row => {
       row.getAs("alarm_rule_id").asInstanceOf[String]
     }).map(v => {
-//      var field = new String
+      var field = new String
 
       var map = new HashMap[String, String]
       v._2.foreach(row => {
-        if (!"areaType".equals(row.getAs("field").asInstanceOf[String])) {
-          
-        	map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
-        }
+        map.put(row.getAs("field").asInstanceOf[String], row.getAs("expression").asInstanceOf[String])
       })
 
-//      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-//        field = "areaId"
-//      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
-//        field = "guaranteeAreaId"
-//      }
+      if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
+        field = "areaId"
+      } else if ("REGION_TYPE_AREA".equals(map.get("areaType"))) {
+        field = "guaranteeAreaId"
+      }
 
-      val where = "areaId".+("='").+(map.get("areaId")).+("' or security_id = '").+(map.get("areaId")).+("'")
+      val where = field.+("='").+(map.get("areaId")).+("'")
 
       Tuple2(v._1, where)
     }).join(
@@ -316,7 +270,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
   private def getRules(params: Map[String, String], topicName: String): Dataset[Row] = {
     val sql = "(".+("select ar.id as alarm_rule_id, coalesce(ar.aggregate_occur_count, 0) as aggregate_occur_count, ar.alarm_content_expression, ar.alarm_rule_level, ar.alarm_rule_name, coalesce(ar.occur_count, 0) as occur_count, ar.alarm_type, ar.alarm_respons_field, arr.left_relation from s_alarm_rule ar inner join s_alarm_rule_relation arr on ar.id = arr.alarm_rule_id where ar.alarm_rule_status = 1 and arr.left_relation = '").+(topicName).+("') as tmpView")
 
-    this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sql)
+    this.jdbcQuery(params.get("url").get, params.get("driver").get, params.get("user").get, params.get("password").get, sql)
   }
 
   /**
@@ -325,7 +279,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
   private def getIdentifications(params: Map[String, String], topicName: String): Dataset[Row] = {
     val sql = "(".+("select ari.alarm_rule_id, ari.identification_field as field, ari.expression, ari.id from s_alarm_rule_identification ari inner join s_alarm_rule ar on ari.alarm_rule_id = ar.id inner join s_alarm_rule_relation arr on arr.alarm_rule_id = ar.id where ar.alarm_rule_status = 1 and arr.left_relation = '").+(topicName).+("') as tmpView")
 
-    this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sql)
+    this.jdbcQuery(params.get("url").get, params.get("driver").get, params.get("user").get, params.get("password").get, sql)
   }
 
   /**
@@ -334,25 +288,7 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
   private def getConditions(params: Map[String, String], topicName: String): Dataset[Row] = {
     val sql = "(".+("select arc.alarm_rule_id, arc.condition_field as field, arc.expression, arc.comparison, arc.and_or, arc.id from s_alarm_rule_condition arc inner join s_alarm_rule ar on arc.alarm_rule_id = ar.id inner join s_alarm_rule_relation arr on arr.alarm_rule_id = ar.id where ar.alarm_rule_status = 1 and arr.left_relation = '").+(topicName).+("') as tmpView")
 
-    this.jdbcQuery(params.get("pgUrl").get, params.get("pgDriver").get, params.get("pgUser").get, params.get("pgPassword").get, sql)
-  }
-
-  /**
-   * 数据存储到关系型数据库
-   *
-   * @param dataset
-   * @param params
-   * @param dbtable
-   * @param savemode
-   */
-  private def store2db(dataset: Dataset[Row], params: Map[String, String], dbtable: String, savemode: SaveMode) = {
-    dataset.write.format("jdbc")
-      .option("driver", params.get("pgDriver").get)
-      .option("url", params.get("pgUrl").get)
-      .option("dbtable", dbtable)
-      .option("user", params.get("pgUser").get)
-      .option("password", params.get("pgPassword").get)
-      .mode(savemode).save();
+    this.jdbcQuery(params.get("url").get, params.get("driver").get, params.get("user").get, params.get("password").get, sql)
   }
 
   /**
@@ -391,16 +327,13 @@ class AlertClear(override val sparkSession: SparkSession, override val sparkConf
 
   override def define: AtomOperationDefine = {
     val params = Map(
-      "pgDriver" -> new AtomOperationParamDefine("Real JDBC Driver", "org.postgresql.Driver", true, "1"),
-      "pgUrl" -> new AtomOperationParamDefine("Real JDBC URL", "jdbc:postgresql://ip:port/database", true, "1"),
-      "pgUser" -> new AtomOperationParamDefine("Real User", "user", true, "1"),
-      "pgPassword" -> new AtomOperationParamDefine("Real Password", "*******", true, "1"),
-      "impalaDriver" -> new AtomOperationParamDefine("Impala JDBC Driver", "com.cloudera.impala.jdbc41.Driver", true, "1"),
-      "impalaUrl" -> new AtomOperationParamDefine("Impala JDBC URL", "jdbc:impala://ip:port/database", true, "1"),
-      "impalaUser" -> new AtomOperationParamDefine("Impala User", "user", true, "1"),
-      "impalaPassword" -> new AtomOperationParamDefine("Impala Password", "*******", true, "1"))
-    val atomOperation = new AtomOperationDefine("AlertClear", "alertClear", "AlertClear.flt", params.toMap)
-    atomOperation.id = "alert_clear"
+      "driver" -> new AtomOperationParamDefine("JDBC Driver", "org.postgresql.Driver", true, "1"),
+      "url" -> new AtomOperationParamDefine("JDBC URL", "jdbc:postgresql://ip:port/database", true, "1"),
+      "user" -> new AtomOperationParamDefine("User", "user", true, "1"),
+      "password" -> new AtomOperationParamDefine("Password", "*******", true, "1"),
+      "areaIdFliterSql" -> new AtomOperationParamDefine("AreaId Fliter SQL", "select * from dual", true, "3"))
+    val atomOperation = new AtomOperationDefine("ClearAlert", "clearAlert", "ClearAlert.flt", params.toMap)
+    atomOperation.id = "clear_alert"
     return atomOperation
   }
 }

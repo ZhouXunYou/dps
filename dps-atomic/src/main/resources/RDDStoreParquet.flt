@@ -17,12 +17,29 @@ class ${className} (override val sparkSession: SparkSession, override val sparkC
     } else {
       val partitionNum = params.get("partitionNum").getOrElse(sparkSession.sparkContext.defaultMinPartitions.toString()).toInt
       val modeParam = params.getOrElse("saveMode", "1").toInt
+      val path = params.get("path").get
+      val repairTables = params.getOrElse("repairTables", "").toString
+      val partitionFields = params.getOrElse("partitionFields", "").toString
       var saveMode: SaveMode = SaveMode.Append
       if (params.getOrElse("saveMode", "1").toInt.equals(2)) {
         saveMode = SaveMode.Overwrite
       }
-      val path = params.get("path").get
-      dataset.repartition(partitionNum.toInt).write.mode(saveMode).parquet(path)
+      
+      if (!partitionFields.isEmpty()) {
+    	  var partitions = "";
+        partitionFields.split(",").foreach(f=>{
+          partitions.+(f).+(",")
+        })
+        dataset.repartition(partitionNum.toInt).write.mode(saveMode).partitionBy(partitions).parquet(path)
+      } else {
+    	  dataset.repartition(partitionNum.toInt).write.mode(saveMode).parquet(path)
+      }
+      
+      if (!repairTables.isEmpty()) {
+        repairTables.split(",").foreach(f=>{
+          sparkSession.sqlContext.sql("MSCK REPAIR TABLE".+(f));
+        })
+      }
     }
   }
 }
