@@ -1,4 +1,4 @@
-package dps.mission.log
+package dps.utils
 
 import org.apache.log4j.Level
 object LogPrinter {
