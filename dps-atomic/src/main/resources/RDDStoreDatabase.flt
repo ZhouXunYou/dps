@@ -8,12 +8,13 @@ import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
 
 class ${className}(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
+
+  val logger = Logger(this.getClass)
+
   def doIt(params: Map[String, String]): Any = {
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
     if (dataset != null && dataset.isEmpty) {
-      println("+------------------------------+")
-      println("无数据,跳过存储操作")
-      println("+------------------------------+")
+      logger.info("无数据,跳过存储操作")
     } else {
       dataset.write.format("jdbc")
         .option("driver", params.get("driver").get)

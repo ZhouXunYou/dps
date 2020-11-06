@@ -1,11 +1,10 @@
-package dps.atomic.impl.dataset
+package dps.atomic.impl
 
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import scala.collection.mutable.Map
-import dps.atomic.impl.AbstractAction
 
 class Dataset2ConditionsRDD(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 

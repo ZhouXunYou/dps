@@ -1,18 +1,19 @@
-package dps.atomic.impl.rdd
+package dps.atomic.impl
 
-import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
-import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
+import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
+import org.apache.spark.sql.{ Dataset, Row, SaveMode, SparkSession }
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
-import dps.atomic.impl.AbstractAction
+import com.typesafe.scalalogging.Logger
 
-class RDDStoreDatabase(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
+class RDDStoreDatabase(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
+
+  val logger = Logger(this.getClass)
+
   def doIt(params: Map[String, String]): Any = {
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
     if (dataset != null && dataset.isEmpty) {
-      println("+------------------------------+")
-      println("无数据,跳过存储操作")
-      println("+------------------------------+")
+      logger.info("无数据,跳过存储操作")
     } else {
       dataset.write.format("jdbc")
         .option("driver", params.get("driver").get)
@@ -29,8 +30,7 @@ class RDDStoreDatabase(override val sparkSession: SparkSession, override val spa
       "url" -> new AtomOperationParamDefine("JDBC URL", "jdbc:postgresql://ip:port/database", true, "1"),
       "table" -> new AtomOperationParamDefine("Table Name", "Table Name", true, "1"),
       "user" -> new AtomOperationParamDefine("User", "user", true, "1"),
-      "password" -> new AtomOperationParamDefine("Password", "*******", true, "1")
-    )
+      "password" -> new AtomOperationParamDefine("Password", "*******", true, "1"))
     val atomOperation = new AtomOperationDefine("RDD Store Database", "rddStoreDatabase", "RDDStoreDatabase.flt", params.toMap)
     atomOperation.id = "rdd_store_database"
     return atomOperation

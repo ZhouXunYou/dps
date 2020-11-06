@@ -1,18 +1,19 @@
-package dps.atomic.impl.dataset
+package dps.atomic.impl
 
 import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
 import org.apache.spark.sql.{ Dataset, Row, SparkSession}
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
-import dps.atomic.impl.AbstractAction
+import com.typesafe.scalalogging.Logger
 
 class DatasetFilter(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
+  
+  val logger = Logger(this.getClass)
+  
   def doIt(params: Map[String, String]): Any = {
     val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
     if (dataset != null && dataset.isEmpty) {
-      println("+------------------------------+")
-      println("无数据,跳过数据过滤操作")
-      println("+------------------------------+")
+      logger.info("无数据,跳过存储操作")
     } else {
       variables.put(outputVariableKey, dataset.filter(params.get("filter").get))
     }

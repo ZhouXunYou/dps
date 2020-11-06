@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds"
+	debug="false">
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d[%-5level]%logger:%msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<property name="LOG_HOME" value="logs" />
+	<property name="PROJECT_NAME" value="dps-mission" />
+	<appender name="error"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${PROJECT_NAME}.%d{yyyyMMdd}.e.%i.log
+			</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>300MB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d[%level]%logger:%msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<appender name="warn"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${PROJECT_NAME}.%d{yyyyMMdd}.w.%i.log
+			</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>300MB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d[%level]%logger:%msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<appender name="info"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${PROJECT_NAME}.%d{yyyyMMdd}.i.%i.log
+			</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>300MB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d[%level]%logger:%msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="debug"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${PROJECT_NAME}.%d{yyyyMMdd}.d.%i.log
+			</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>300MB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d[%level]%logger:%msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+	<logger name="dps" additivity="true" level="error">
+		<appender-ref ref="error" />
+	</logger>
+	<logger name="dps" additivity="true" level="warn">
+		<appender-ref ref="warn" />
+	</logger>
+	<logger name="dps" additivity="true" level="info">
+		<appender-ref ref="info" />
+	</logger>
+	<logger name="dps" additivity="true" level="debug">
+		<appender-ref ref="debug" />
+	</logger>
+</configuration>
