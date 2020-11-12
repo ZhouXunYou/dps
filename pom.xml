@@ -173,6 +173,16 @@
 				<artifactId>jts-core</artifactId>
 				<version>${jts.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.typesafe.scala-logging</groupId>
+				<artifactId>scala-logging_2.11</artifactId>
+				<version>3.9.2</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.2.3</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
