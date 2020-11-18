@@ -10,7 +10,16 @@ import org.apache.spark.SparkConf
 
 abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf:SparkConf, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
   var pendingData: Any = variables.getOrElse(inputVariableKey, null)
-
+  
+  //1:数字类型; 2:字符类型; 3:列表类型; 4:文本类型->sql; 5:文本类型->scala; 6:文本类型->javascript
+  val integerType:String = "1"
+  val stringType:String = "2"
+  val listType:String = "3"
+  val sqlType:String = "4"
+  val scalaType:String = "5"
+  val mapType:String = "6"
+  //数据类型映射的语言
+  val languageMapping:Map[String,String] = Map("4"->"sql","5"->"scala","6"->"javascript")
   def define(): AtomOperationDefine = {
     null
   }
