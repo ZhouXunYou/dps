@@ -30,7 +30,7 @@ class MissionLoader(val so: SessionOperation) {
             mission.finishedCode = missionData.get("finished_code").getOrElse("").asInstanceOf[String]
             mission.streamBatch = missionData.get("stream_batch").getOrElse("").asInstanceOf[String]
             mission.implClass = missionData.get("impl_class").getOrElse("").asInstanceOf[String]
-            //填充任务参数
+            //填充任务执行参数
             mission.missionParams = getMissionParams(mission.id)
             //填充原子操作组
             mission.operationGroups = getOperationGroups(mission.id)
