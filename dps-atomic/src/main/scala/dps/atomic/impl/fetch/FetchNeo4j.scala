@@ -21,9 +21,9 @@ class FetchNeo4j(override val sparkSession: SparkSession, override val sparkConf
     }
     override def define: AtomOperationDefine = {
         val params = Map(
-            "sql" -> new AtomOperationParamDefine("graphql", "match(n:ci) return n limit 1", true, "3"),
-            "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, "1"))
-        val atomOperation = new AtomOperationDefine("fetch.neo4j", "fetchNeo4j", "Neo4jQuery.flt", params.toMap)
+            "sql" -> new AtomOperationParamDefine("graphql", "match(n:ci) return n limit 1", true, sqlType),
+            "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, stringType))
+        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap)
         atomOperation.id = "fetch_neo4j"
         return atomOperation
     }

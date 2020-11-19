@@ -1,4 +1,4 @@
-package dps.atomic.impl.alarm
+package dps.atomic.temp.alarm
 
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
