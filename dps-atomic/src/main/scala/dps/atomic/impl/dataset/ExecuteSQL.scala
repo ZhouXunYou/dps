@@ -24,4 +24,10 @@ class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf
         atomOperation.id = "execute_sql"
         return atomOperation
     }
+//    override def getInputType[Nothing]:Class[Nothing]={
+//        return classOf[Nothing].getClass()
+//    }
+//    override def getOutputType[DataFrame]:Class[DataFrame]{
+//        return classOf[DataFrame].getClass
+//    }
 }

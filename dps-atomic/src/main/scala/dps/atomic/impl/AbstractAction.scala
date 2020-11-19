@@ -23,7 +23,6 @@ abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf: Spa
     def define(): AtomOperationDefine = {
         null
     }
-
     var typeMapping = Map(
         "string" -> DataTypes.StringType,
         "int" -> DataTypes.IntegerType,
