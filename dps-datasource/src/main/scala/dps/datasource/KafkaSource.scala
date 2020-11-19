@@ -56,11 +56,11 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
   }
   def define(): DatasourceDefine = {
     val paramDefines = Map[String, DatasourceParamDefine](
-      "kafka.bootstrapServers" -> new DatasourceParamDefine("kafka.bootstrap.servers", "127.0.0.1:9092"),
-      "kafka.group" -> new DatasourceParamDefine("kafka.group.name", "group"),
-      "kafka.topics" -> new DatasourceParamDefine("kafka.topic", "topic"),
-      "kafka.duration" -> new DatasourceParamDefine("kafka.duration", "300"),
-      "kafka.ds.name" -> new DatasourceParamDefine("kafka.ds.name", "DataStreamName"))
+      "bootstrap_servers" -> new DatasourceParamDefine("kafka.bootstrap.servers","kafka.bootstrap.servers", "127.0.0.1:9092"),
+      "group" -> new DatasourceParamDefine("kafka.group.name","kafka.group.name", "group"),
+      "topics" -> new DatasourceParamDefine("kafka.topic","kafka.topic", "topic"),
+      "duration" -> new DatasourceParamDefine("kafka.duration","kafka.duration", "300"),
+      "ds_name" -> new DatasourceParamDefine("kafka.ds.name","kafka.ds.name", "DataStreamName"))
       
     val datasourceDefine = new DatasourceDefine("ds.kafka", paramDefines.toMap)
     datasourceDefine.id = "kafka_source_define"

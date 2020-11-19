@@ -43,7 +43,7 @@ object DatasourceUtils {
             val datasourceParamCode = datasourceDefinParam._1
             val datasourceParamDefine = datasourceDefinParam._2
             val id = s"${define.id}_${datasourceParamCode}"
-            val params = Array[Any](id, define.id, datasourceParamCode, datasourceParamDefine.paramName, datasourceParamDefine.defaultValue)
+            val params = Array[Any](id, define.id, datasourceParamDefine.paramCode, datasourceParamDefine.paramName, datasourceParamDefine.defaultValue)
             so.executeUpdate("insert into s_datasource_param_define(id,datasource_id,datasource_param_code,datasource_param_name,datasource_param_default_value) values(?,?,?,?,?)", params)
         })
     }

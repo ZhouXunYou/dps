@@ -1,5 +1,5 @@
 package dps.datasource.define
 
-class DatasourceParamDefine(var paramName: String, var defaultValue: String) {
+class DatasourceParamDefine(val paramCode: String, val paramName: String, val defaultValue: String) {
 
 }

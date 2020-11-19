@@ -1,4 +1,4 @@
-package dps.atomic.impl
+package dps.atomic.temp
 
 import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
 import org.apache.spark.rdd.RDD
@@ -6,6 +6,7 @@ import org.apache.spark.sql.types.{ StructField, StructType }
 import org.apache.spark.sql.{ Row, RowFactory, SparkSession }
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
+import dps.atomic.impl.AbstractAction
 
 class RDDString2Dataset(override val sparkSession: SparkSession, override val sparkConf:SparkConf,override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf,inputVariableKey, outputVariableKey, variables) with Serializable {
 
