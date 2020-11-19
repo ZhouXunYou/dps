@@ -58,4 +58,10 @@ abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf: Spa
     def array2String(array: Array[String], separator: String): String = {
         array.mkString(separator)
     }
+    def getClassName():String={
+        this.getClass.getName
+    }
+    def getClassSimpleName:String={
+        this.getClass.getSimpleName
+    }
 }
