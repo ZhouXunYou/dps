@@ -12,14 +12,20 @@ object FilesLoadTest {
     val sparkConf = new SparkConf
     sparkConf.setAppName("test").setMaster("local[*]")
     sparkConf.set("spark.driver.allowMultipleContexts", "true").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer").set("spark.executor.memory", "8g")
+    .set("aaaaaaaaa", "wqrewrqwe")
+    .set("bqwerwer", "qwerqwer")
     builder.config(sparkConf)
     val sparkSession = builder.getOrCreate()
     
     
-    val path = "hdfs://cdhnode209:8020/emmc/humanmigrated"
-    val df = sparkSession.sqlContext.read.load(path);
-    println(df.count())
-    df.printSchema()
-    df.show()
+    val rdd = sparkSession.sparkContext.parallelize(Seq(1,2,3,4,5,6,7))
+    rdd.foreach(i=>{
+        println(i)
+    })
+//    val path = "hdfs://cdhnode209:8020/emmc/humanmigrated"
+//    val df = sparkSession.sqlContext.read.load(path);
+//    println(df.count())
+//    df.printSchema()
+//    df.show()
   }
 }

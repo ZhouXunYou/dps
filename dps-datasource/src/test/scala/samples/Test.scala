@@ -30,7 +30,7 @@ object Test {
       .getConstructor(classOf[SparkSession], classOf[Map[String, String]], classOf[Operator])
       .newInstance(sparkSession, sparkConf, map, o)
       .asInstanceOf[DataSource]
-    val rdd = s2.read("a");
+    val rdd = s2.read();
     s2.asInstanceOf[StreamDatasource].start()
   }
 
