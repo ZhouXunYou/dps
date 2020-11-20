@@ -47,7 +47,7 @@ class String2Map(override val sparkSession: SparkSession, override val sparkConf
     //返回
     return map""", true, scalaType))
         
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"${getClassSimpleName}.flt", params.toMap,classOf[RDD[_]],classOf[RDD[_]],classOf[String],classOf[Map[String, Any]])
+        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.flt", params.toMap,classOf[RDD[_]],classOf[RDD[_]],classOf[String],classOf[Map[String, Any]])
         atomOperation.id = "string_2_map"
         return atomOperation
     }
