@@ -18,7 +18,7 @@ class RDDStoreHive(override val sparkSession: SparkSession, override val sparkCo
     val params = Map(
       "table" -> new AtomOperationParamDefine("Hive Table Name", "Table Name", true, "1")
     )
-    val atomOperation = new AtomOperationDefine("RDD Store Hive", "rddStoreHive", "RDDStoreHive.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("RDD Store Hive", "rddStoreHive", "RDDStoreHive.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "rdd_store_hive"
     return atomOperation
   }

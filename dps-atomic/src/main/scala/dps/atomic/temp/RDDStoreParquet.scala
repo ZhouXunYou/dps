@@ -53,7 +53,7 @@ class RDDStoreParquet(override val sparkSession: SparkSession, override val spar
       "path" -> new AtomOperationParamDefine("path", "hdfs://${host}:${port}/${warehouse}", true, "1"),
       "repairTables" -> new AtomOperationParamDefine("Repair tables", "Repair hive tables name:db1.table1,db1.table2", false, "1"),
       "partitionFields" -> new AtomOperationParamDefine("Partition fields", "Partition fields:name,age,num", false, "1"))
-    val atomOperation = new AtomOperationDefine("RDD Store Parquet", "rddStoreParuet", "RDDStoreParquet.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("RDD Store Parquet", "rddStoreParuet", "RDDStoreParquet.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "rdd_store_parquet"
     return atomOperation
   }

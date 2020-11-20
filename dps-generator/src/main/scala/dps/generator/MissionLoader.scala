@@ -16,7 +16,7 @@ class MissionLoader(val so: SessionOperation) {
     def getMission(missionName: String): Mission = {
 
         val missionDatas = so.executeQuery(
-            "select m.id,m.mission_name,md.mission_type,md.mission_type_code,m.finished_code,m.stream_batch,m.impl_class from b_mission m inner join s_mission_def md on m.mission_def_id = md.id where m.mission_code = ?",
+            "select m.id,m.mission_name,md.mission_type,md.mission_type_code,m.finished_code,m.stream_batch,m.impl_class from b_mission m inner join s_def_mission md on m.mission_def_id = md.id where m.mission_code = ?",
             Array(missionName))
         if (missionDatas != null && missionDatas.size == 1) {
             val mission = new Mission
@@ -80,7 +80,7 @@ class MissionLoader(val so: SessionOperation) {
 
     private def getGroupOperations(operationGroupId: String): List[Operation] = {
         var operations = List[Operation]()
-        val operationDatas = so.executeQuery("select mogc.*,od.operation_name,od.operation_code,od.template from b_mission_operation_group_config mogc inner join s_operation_def  od on mogc.operation_def_id = od.id where mogc.operation_group_id = ? order by mogc.seq_num", Array(operationGroupId))
+        val operationDatas = so.executeQuery("select mogc.*,od.operation_name,od.operation_code,od.template from b_mission_operation_group_config mogc inner join s_def_operation  od on mogc.operation_def_id = od.id where mogc.operation_group_id = ? order by mogc.seq_num", Array(operationGroupId))
         operationDatas.foreach(operationData => {
             val id = operationData.get("id").get.asInstanceOf[String]
             val operationName = operationData.get("operation_name").get.asInstanceOf[String]
@@ -104,7 +104,7 @@ class MissionLoader(val so: SessionOperation) {
     }
 
     private def getOperationParams(operationGroupConfigId: String): Map[String, OperationParam] = {
-        val operationParamValueDatas = so.executeQuery("select mop.id,opd.operation_def_id,opd.operation_param_name,opd.operation_param_code,opd.operation_param_default_value,opd.required,opd.param_type,mop.operation_param_value from b_mission_operation_param mop inner join s_operation_param_def opd on mop.operation_param_def_id = opd.id  where mop.operation_group_config_id = ?", Array(operationGroupConfigId))
+        val operationParamValueDatas = so.executeQuery("select mop.id,opd.operation_def_id,opd.operation_param_name,opd.operation_param_code,opd.operation_param_default_value,opd.required,opd.param_type,mop.operation_param_value from b_mission_operation_param mop inner join s_def_operation_param opd on mop.operation_param_def_id = opd.id  where mop.operation_group_config_id = ?", Array(operationGroupConfigId))
 
         val operationParams = Map[String, OperationParam]()
         operationParamValueDatas.foreach(operationParamValueData => {

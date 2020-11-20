@@ -21,8 +21,8 @@ object DatasourceUtils {
         val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200", "5432", "postgres", "postgres", "postgres", "dps201")
 
         //    val so = new SessionOperation("com.mysql.jdbc.Driver", "39.98.141.108", "16606", "root", "1qaz#EDC", "mysql", "dps")
-        so.executeUpdate("truncate table s_datasource_param_define", Array())
-        so.executeUpdate("truncate table s_datasource_define", Array())
+        so.executeUpdate("truncate table s_def_datasource_param", Array())
+        so.executeUpdate("truncate table s_def_datasource", Array())
         val sparkConf = new SparkConf()
         sparkConf.setAppName("initDatasourceData")
         sparkConf.setMaster("local[*]")
@@ -37,14 +37,14 @@ object DatasourceUtils {
     }
     def initDatasource(datasource: DataSource, so: SessionOperation) {
         val define = datasource.define()
-        val datasourceParams = Array[Any](define.id, define.datasourceName, datasource.getClass.getName)
-        so.executeUpdate("insert into s_datasource_define(id,datasource_name,datasource_class) values (?,?,?)", datasourceParams)
+        val datasourceParams = Array[Any](define.id, define.datasourceName, datasource.getClass.getName,define.streamProcess)
+        so.executeUpdate("insert into s_def_datasource(id,datasource_name,datasource_class,stream_process) values (?,?,?,?)", datasourceParams)
         define.datasourceDefinParams.foreach(datasourceDefinParam => {
             val datasourceParamCode = datasourceDefinParam._1
             val datasourceParamDefine = datasourceDefinParam._2
             val id = s"${define.id}_${datasourceParamCode}"
             val params = Array[Any](id, define.id, datasourceParamDefine.paramCode, datasourceParamDefine.paramName, datasourceParamDefine.defaultValue)
-            so.executeUpdate("insert into s_datasource_param_define(id,datasource_id,datasource_param_code,datasource_param_name,datasource_param_default_value) values(?,?,?,?,?)", params)
+            so.executeUpdate("insert into s_def_datasource_param(id,datasource_id,datasource_param_code,datasource_param_name,datasource_param_default_value) values(?,?,?,?,?)", params)
         })
     }
 
@@ -71,20 +71,5 @@ object DatasourceUtils {
         val classes = new ListBuffer[Class[_]]
         getDatasources(new File(url.getFile), classes)
         classes.toArray
-        //    var datasources = List[Class[_]]()
-        //    val url = DatasourceUtils.getClass.getClassLoader.getResource(packageName.replace(".", "/"))
-        //    val sourcePackage = new File(url.getFile)
-        //    val fiels = sourcePackage.listFiles();
-        //    sourcePackage.listFiles().foreach(file => {
-        //      if (file.isFile() && file.getName.endsWith(".class")) {
-        //        val clazz = Class.forName(Array(packageName, file.getName.split("\\.").apply(0)).mkString("."))
-        //        if (!Modifier.isAbstract(clazz.getModifiers)) {
-        //          if (clazz.getSuperclass == classOf[DataSource] || clazz.getSuperclass == classOf[StreamDatasource]) {
-        //            datasources = clazz :: datasources
-        //          }
-        //        }
-        //      }
-        //    })
-        //    datasources.reverse.toArray
     }
 }

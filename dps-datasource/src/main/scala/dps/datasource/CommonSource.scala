@@ -16,7 +16,7 @@ class CommonSource(override val sparkSession: SparkSession, override val sparkCo
   }
   def define(): DatasourceDefine = {
     val paramDefines = Map[String, DatasourceParamDefine]()
-    val datasourceDefine = new DatasourceDefine("ds.common", paramDefines.toMap)
+    val datasourceDefine = new DatasourceDefine("ds.common", paramDefines.toMap,0)
     datasourceDefine.id = "common_source_define"
     return datasourceDefine
   }

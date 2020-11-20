@@ -45,7 +45,7 @@ class DatasetSendKafka(override val sparkSession: SparkSession, override val spa
       "bootstrapServers" -> new AtomOperationParamDefine("Bootstrap Servers","127.0.0.1:9092", true, "3"),
       "sendTopicName" -> new AtomOperationParamDefine("Send Topic Name","topic", true, "3"))
 
-    val atomOperation = new AtomOperationDefine("Dataset Send Kafka", "datesetSendKafka", "DatasetSendKafka.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("Dataset Send Kafka", "datesetSendKafka", "DatasetSendKafka.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "dataset_send_kafka"
     return atomOperation
   }

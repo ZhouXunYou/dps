@@ -22,9 +22,9 @@ object AtomOperationUtil {
         //    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
         //    val so = new SessionOperation("com.mysql.jdbc.Driver", "jdbc:mysql://39.98.141.108:16606/dps?useUnicode=true&characterEncoding=UTF-8&useSSL=false", "root", "1qaz#EDC")
         val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200", "5432", "postgres", "postgres", "postgres", "dps201")
-        so.executeUpdate("truncate table s_operation_param_def", Array())
-        so.executeUpdate("truncate table s_operation_udf_def", Array())
-        so.executeUpdate("truncate table s_operation_def", Array())
+        so.executeUpdate("truncate table s_def_operation_param", Array())
+        so.executeUpdate("truncate table s_def_operation_udf", Array())
+        so.executeUpdate("truncate table s_def_operation", Array())
         val sparkConf = new SparkConf()
         sparkConf.setAppName("initAtomicData")
         sparkConf.setMaster("local[*]")
@@ -35,8 +35,8 @@ object AtomOperationUtil {
         })
     }
     def initAtomOperationDefin(define: AtomOperationDefine, so: SessionOperation) {
-        val operationParams = Array[Any](define.id, define.operationName, define.operationCode, define.template)
-        so.executeUpdate("insert into s_operation_def(id,operation_name,operation_code,template) values (?,?,?,?)", operationParams)
+        val operationParams = Array[Any](define.id, define.operationName, define.operationCode, define.template,define.inputType.getName,define.outputType.getName,define.inputGenericType.getName,define.outputGenericType.getName)
+        so.executeUpdate("insert into s_def_operation(id,operation_name,operation_code,template,input_type,output_type,input_generic_type,output_generic_type) values (?,?,?,?,?,?,?,?)", operationParams)
         define.operationParams.foreach(operationParam => {
             val operationParamCode = operationParam._1
             val operationParamDefine = operationParam._2
@@ -46,7 +46,7 @@ object AtomOperationUtil {
                 required = 1
             }
             val params = Array[Any](operationParamId, define.id, operationParamDefine.operationParamName, operationParamCode, operationParamDefine.operationParamDefaultValue, required, Integer.valueOf(operationParamDefine.operationParamType))
-            so.executeUpdate("insert into s_operation_param_def(id,operation_def_id,operation_param_name,operation_param_code,operation_param_default_value,required,param_type) values(?,?,?,?,?,?,?)", params)
+            so.executeUpdate("insert into s_def_operation_param(id,operation_def_id,operation_param_name,operation_param_code,operation_param_default_value,required,param_type) values(?,?,?,?,?,?,?)", params)
         })
         if (define.isInstanceOf[AtomOperationHasUdfDefine]) {
             val udfs = define.asInstanceOf[AtomOperationHasUdfDefine].udfs
@@ -54,7 +54,7 @@ object AtomOperationUtil {
                 val udf = udfs.apply(i)
                 val seq = i + 1
                 val params = Array[Any](s"${define.id}_udf_${seq}", udf.udfName, udf.params.mkString(","),seq)
-                so.executeUpdate("insert into s_operation_udf_def(id,udf_name,udf_params,seq) values(?,?,?,?)", params)
+                so.executeUpdate("insert into s_def_operation_udf(id,udf_name,udf_params,seq) values(?,?,?,?)", params)
             }
         }
     }

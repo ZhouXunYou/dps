@@ -72,7 +72,7 @@ class RDDString2Dataset(override val sparkSession: SparkSession, override val sp
       java.lang.Long.valueOf(values.apply(2))      //第三列数据
     )""", true, "3"))
 
-    val atomOperation = new AtomOperationDefine("String RDD to Dataset", "rddString2Dataset", "RDDString2Dataset.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("String RDD to Dataset", "rddString2Dataset", "RDDString2Dataset.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "rdd_string_2_dataset"
     return atomOperation
   }

@@ -7,6 +7,8 @@ import scala.collection.mutable.Map
 import org.neo4j.spark._
 import dps.atomic.define.AtomOperationParamDefine
 import dps.atomic.define.AtomOperationDefine
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
 
 class FetchNeo4j(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
     override def doIt(params: Map[String, String]): Any = {
@@ -23,7 +25,7 @@ class FetchNeo4j(override val sparkSession: SparkSession, override val sparkConf
         val params = Map(
             "sql" -> new AtomOperationParamDefine("graphql", "match(n:ci) return n limit 1", true, sqlType),
             "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap)
+        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap,classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row])
         atomOperation.id = "fetch_neo4j"
         return atomOperation
     }

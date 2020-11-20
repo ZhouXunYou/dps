@@ -67,7 +67,7 @@ class RDDMap2Dataset(override val sparkSession: SparkSession, override val spark
       map.get("key3").get.asInstanceOf[JavaLong]   //第三列数据
     )""", true, "3"))
 
-    val atomOperation = new AtomOperationDefine("Map RDD to Dataset", "rddMap2Dataset", "RDDMap2Dataset.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("Map RDD to Dataset", "rddMap2Dataset", "RDDMap2Dataset.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "rdd_map_2_dataset"
     return atomOperation
   }

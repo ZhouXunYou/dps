@@ -62,7 +62,7 @@ class KafkaSource(override val sparkSession: SparkSession, override val sparkCon
       "duration" -> new DatasourceParamDefine("kafka.duration","kafka.duration", "300"),
       "ds_name" -> new DatasourceParamDefine("kafka.ds.name","kafka.ds.name", "DataStreamName"))
       
-    val datasourceDefine = new DatasourceDefine("ds.kafka", paramDefines.toMap)
+    val datasourceDefine = new DatasourceDefine("ds.kafka", paramDefines.toMap,1)
     datasourceDefine.id = "kafka_source_define"
     return datasourceDefine
   }

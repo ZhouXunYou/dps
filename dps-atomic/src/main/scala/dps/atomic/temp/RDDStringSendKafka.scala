@@ -41,7 +41,7 @@ class RDDStringSendKafka(override val sparkSession: SparkSession, override val s
       "bootstrapServers" -> new AtomOperationParamDefine("Bootstrap Servers","127.0.0.1:9092", true, "3"),
       "sendTopicName" -> new AtomOperationParamDefine("Send Topic Name","topic", true, "3"))
 
-    val atomOperation = new AtomOperationDefine("String RDD Send Kafka", "rddStringSendKafka", "RDDStringSendKafka.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("String RDD Send Kafka", "rddStringSendKafka", "RDDStringSendKafka.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "rdd_string_send_kafka"
     return atomOperation
   }

@@ -1,20 +1,29 @@
 package dps.atomic.impl.fetch
 
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeUnit.{ DAYS, HOURS, MINUTES, SECONDS }
-import java.util.{ Calendar, Date }
+import java.util.concurrent.TimeUnit.DAYS
+import java.util.concurrent.TimeUnit.HOURS
+import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.SECONDS
+
+import scala.collection.mutable.Map
+
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.SparkSession
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
-import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
-import org.apache.spark.sql.SparkSession
 
-import scala.collection.mutable.Map
-import org.apache.spark.SparkConf
-import dps.atomic.impl.AbstractAction
-import dps.atomic.define.AtomOperationUdf
+import dps.atomic.define.AtomOperationDefine
 import dps.atomic.define.AtomOperationHasUdfDefine
+import dps.atomic.define.AtomOperationParamDefine
+import dps.atomic.define.AtomOperationUdf
+import dps.atomic.impl.AbstractAction
 
 class FetchUseJdbc(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 
@@ -102,7 +111,7 @@ class FetchUseJdbc(override val sparkSession: SparkSession, override val sparkCo
             new AtomOperationUdf("getTime", Seq(classOf[String].getName)),
             new AtomOperationUdf("getTime", Seq(classOf[String].getName, classOf[Int].getName, classOf[TimeUnit].getName)),
             new AtomOperationUdf("getTimeWithHour", Seq(classOf[String].getName)))
-        val atomOperation = new AtomOperationHasUdfDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, udfs)
+        val atomOperation = new AtomOperationHasUdfDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row],udfs)
         atomOperation.id = "fetch_use_jdbc"
         return atomOperation
     }

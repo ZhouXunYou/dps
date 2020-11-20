@@ -48,7 +48,7 @@ class OriginalAlarmEngine(override val sparkSession: SparkSession, override val 
   
   override def define: AtomOperationDefine = {
     val params = Map()
-    val atomOperation = new AtomOperationDefine("OriginalAlarmEngine", "originalAlarmEngine", "OriginalAlarmEngine.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("OriginalAlarmEngine", "originalAlarmEngine", "OriginalAlarmEngine.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "original_alarm_engine"
     return atomOperation
   }

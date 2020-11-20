@@ -33,7 +33,7 @@ class RDDKafka2String(override val sparkSession: SparkSession, override val spar
   override def define: AtomOperationDefine = {
     val params = Map(
       "topicName" -> new AtomOperationParamDefine("Topic Name", "Topic Name", true, "1"))
-    val atomOperation = new AtomOperationDefine("Kafka RDD Handle", "kafkaRddHandle", "RDDKafka2String.flt", params.toMap)
+    val atomOperation = new AtomOperationDefine("Kafka RDD Handle", "kafkaRddHandle", "RDDKafka2String.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
     atomOperation.id = "rdd_kafka_2_string"
     return atomOperation
   }

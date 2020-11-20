@@ -1,4 +1,4 @@
-package dps.atomic.temp
+package dps.atomic.impl.rdd
 
 import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
 import org.apache.spark.rdd.RDD
@@ -7,7 +7,7 @@ import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
 import dps.atomic.impl.AbstractAction
 
-class RDDString2Map(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
+class String2Map(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
     def doIt(params: Map[String, String]): Any = {
         val rdd = this.pendingData.asInstanceOf[RDD[String]]
         val result = rdd.map(line => {
@@ -46,9 +46,9 @@ class RDDString2Map(override val sparkSession: SparkSession, override val sparkC
     map.put("key1", array.apply(1))
     //返回
     return map""", true, scalaType))
-
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"${getClassSimpleName}.flt", params.toMap,classOf[Nothing],classOf[Nothing],classOf[Nothing],classOf[Nothing])
-        atomOperation.id = "stringRDD_2_map"
+        
+        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"${getClassSimpleName}.flt", params.toMap,classOf[RDD[_]],classOf[RDD[_]],classOf[String],classOf[Map[String, Any]])
+        atomOperation.id = "string_2_map"
         return atomOperation
     }
 }

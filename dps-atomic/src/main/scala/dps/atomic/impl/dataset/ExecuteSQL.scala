@@ -5,6 +5,8 @@ import org.apache.spark.sql.SparkSession
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
 import dps.atomic.impl.AbstractAction
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
 
 class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 
@@ -20,7 +22,7 @@ class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf
         val params = Map(
             "sql" -> new AtomOperationParamDefine("sql", "select * from dual", true, sqlType),
             "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"dataset/${getClassSimpleName}.ftl", params.toMap)
+        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"dataset/${getClassSimpleName}.ftl", params.toMap,classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row])
         atomOperation.id = "execute_sql"
         return atomOperation
     }
