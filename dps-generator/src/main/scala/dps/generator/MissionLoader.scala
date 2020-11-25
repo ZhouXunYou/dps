@@ -42,7 +42,7 @@ class MissionLoader(val so: SessionOperation) {
 
     def getMissionParams(missionId: String): Array[MissionParam] = {
         val missionParamDatas = so.executeQuery(
-            "select id,mission_id,mission_param_key,mission_param_value,data_type from b_mission_param where mission_id = ?", Array(missionId))
+            "select id,mission_id,mission_param_key,mission_param_value,data_type from b_mission_param_group where mission_id = ?", Array(missionId))
         var missionParams = ListBuffer[MissionParam]()
         missionParamDatas.foreach(missionParamData => {
             val missionParam = new MissionParam
