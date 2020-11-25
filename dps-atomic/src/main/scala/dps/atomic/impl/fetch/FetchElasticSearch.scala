@@ -26,7 +26,7 @@ class FetchElasticSearch(override val sparkSession: SparkSession, override val s
 
   override def define: AtomOperationDefine = {
     val params = Map(
-      "query" -> new AtomOperationParamDefine("es.query", "GET /index/type/_search\n{\n  \"query\": {\n    \"match_all\": {\n    }\n  }\n}", true, stringType),
+      "query" -> new AtomOperationParamDefine("es.query", "GET _cluster/health/?pretty", true, stringType),
       "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, stringType),
       "resource" -> new AtomOperationParamDefine("es.resource", "index/type", true, stringType))
 
