@@ -1,7 +1,7 @@
 package dps.atomic.impl.utils
 
 import org.apache.spark.SparkConf
-import dps.atomic.define.AtomOperationDefine
+import dps.atomic.define.{AtomOperationDefine,AtomOperationParamDefine}
 import org.apache.spark.sql.SparkSession
 import dps.atomic.impl.AbstractAction
 import scala.collection.mutable.Map
