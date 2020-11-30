@@ -1,4 +1,4 @@
-package dps.atomic.impl.utils
+package dps.atomic.impl.store
 
 import scala.collection.mutable.Map
 
@@ -23,8 +23,8 @@ class StoreParquet(override val sparkSession: SparkSession, override val sparkCo
         val path = params.get("storePath").get
         val partitionFields = params.getOrElse("partitionFields", "")
         val saveMode: SaveMode = SaveMode.valueOf(params.get("saveMode").getOrElse("Append"))
-        if (partitionFields!=null && "".equals(partitionFields)) {
-            dataset.repartition(partitionNum).write.mode(saveMode).partitionBy(partitionFields.split(","):_*).parquet(path)
+        if (partitionFields != null && !"".equals(partitionFields)) {
+            dataset.repartition(partitionNum).write.mode(saveMode).partitionBy(partitionFields.split(","): _*).parquet(path)
         } else {
             dataset.repartition(partitionNum).write.mode(saveMode).parquet(path)
         }

@@ -1,10 +1,13 @@
 package dps.atomic.impl.rdd
 
-import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
+import scala.collection.mutable.Map
+
+import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
-import scala.collection.mutable.Map
-import org.apache.spark.SparkConf
+
+import dps.atomic.define.AtomOperationDefine
+import dps.atomic.define.AtomOperationParamDefine
 import dps.atomic.impl.AbstractAction
 
 class StringRDD2TupleRDD(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {

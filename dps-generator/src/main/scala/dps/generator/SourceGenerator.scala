@@ -60,7 +60,7 @@ class SourceGenerator(val mission: Mission) {
     })
     import java.util.{Map => JavaMap }
     import java.util.{HashMap => JavaHashMap }
-    val completeActionTemplate = cfg.getTemplate("CompleteAction.flt");
+    val completeActionTemplate = cfg.getTemplate("CompleteAction.ftl");
     val completeActionTemplateParams:JavaMap[String,String] = new JavaHashMap
     
     completeActionTemplateParams.put("packagePath", "dps.mission.action")

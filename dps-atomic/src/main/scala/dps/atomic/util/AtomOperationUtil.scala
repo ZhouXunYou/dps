@@ -12,6 +12,8 @@ import org.apache.spark.sql.SparkSession
 import scala.collection.mutable.ListBuffer
 import dps.atomic.define.AtomOperationHasUdfDefine
 import dps.atomic.define.AtomOperationUdf
+import java.net.URLClassLoader
+import java.net.URL
 
 object AtomOperationUtil {
 
@@ -61,13 +63,14 @@ object AtomOperationUtil {
 
     private def getAtomOperations(path: File, classes: ListBuffer[Class[_]]): Unit = {
         if (path.isFile() && path.getName.endsWith(".class")) {
+            
             val beginIndex = path.getAbsolutePath.indexOf(rootPackage.replace(".", File.separator))
             if (beginIndex.!=(-1)) {
                 val packageFullPath = path.getAbsolutePath.substring(beginIndex);
                 val className = packageFullPath.substring(0, packageFullPath.lastIndexOf("."))
                 val clazz = Class.forName(className.replace(File.separator, "."))
                 if (clazz.getSuperclass == classOf[AbstractAction]) {
-                    print(clazz.getName)
+                    print(path.getAbsoluteFile,clazz.getName)
                     classes.append(clazz)
                 }
             }
@@ -82,6 +85,7 @@ object AtomOperationUtil {
         val url = AtomOperationUtil.getClass.getClassLoader.getResource(rootPackage.replace(".", "/"))
         val classes = new ListBuffer[Class[_]]
         getAtomOperations(new File(url.getFile), classes)
+        println(classes,classes.size)
         classes.toArray
     }
 }
