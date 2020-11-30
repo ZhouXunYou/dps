@@ -13,6 +13,7 @@ class String2Map(override val sparkSession: SparkSession, override val sparkConf
         val result = rdd.map(line => {
             processStringLine(line)
         })
+        
         this.variables.put(outputVariableKey, result);
     }
 
