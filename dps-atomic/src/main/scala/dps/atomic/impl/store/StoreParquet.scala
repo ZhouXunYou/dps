@@ -14,7 +14,7 @@ import dps.atomic.impl.AbstractAction
 
 class StoreParquet(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
 
-    def doIt(params: Map[String, String]): Any = {
+    override def doIt(params: Map[String, String]): Any = {
         val dataset = this.pendingData.asInstanceOf[Dataset[Row]]
         if (dataset != null && dataset.isEmpty) {
             return
