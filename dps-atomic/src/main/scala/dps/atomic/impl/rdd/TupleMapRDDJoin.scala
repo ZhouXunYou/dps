@@ -24,11 +24,10 @@ class TupleMapRDDJoin(override val sparkSession: SparkSession, override val spar
 
   override def define: AtomOperationDefine = {
     val params = Map(
-      "left" -> new AtomOperationParamDefine("left.rdd", "Left RDD", true, stringType),
-      "right" -> new AtomOperationParamDefine("right.rdd", "Right RDD", true, stringType)
+      "left" -> new AtomOperationParamDefine("left.map.rdd", "Left Map RDD", true, stringType),
+      "right" -> new AtomOperationParamDefine("right.map.rdd", "Right Map RDD", true, stringType)
     )
-    val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.flt", params.toMap,classOf[RDD[_]],classOf[RDD[_]],classOf[Tuple2[String, Map[String,Any]]],classOf[Map[String,Any]])
-    atomOperation.id = "rdd_join"
+    val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap,classOf[RDD[_]],classOf[RDD[_]],classOf[Tuple2[String, Map[String,Any]]],classOf[Map[String,Any]])
     return atomOperation
   }
 }

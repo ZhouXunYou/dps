@@ -13,19 +13,17 @@ class StringRDD2TupleRDD(override val sparkSession: SparkSession, override val s
         val separator = params.get("separator").get.toString()
         val index = params.get("index").get.toInt
         val tuple = rdd.map(value => {
-            processString(value, separator,index)
+            processString(value, separator, index)
         })
     }
     def processString(value: String, separator: String, index: Int): Tuple2[String, String] = {
-        (string2Array(value, ",").apply(0), value)
+        (string2Array(value, separator).apply(index), value)
     }
     override def define: AtomOperationDefine = {
         val params = Map(
             "separator" -> new AtomOperationParamDefine("value.separator", "separator", true, stringType),
             "index" -> new AtomOperationParamDefine("split.index", "index", true, integerType))
-
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.flt", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Map[String, Any]])
-        atomOperation.id = "string_2_map"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Tuple2[String, String]])
         return atomOperation
     }
 }

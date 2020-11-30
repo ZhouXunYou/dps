@@ -53,8 +53,8 @@ object AtomOperationUtil {
             for (i <- 0 until udfs.size) {
                 val udf = udfs.apply(i)
                 val seq = i + 1
-                val params = Array[Any](s"${define.id}_udf_${seq}", udf.udfName, udf.params.mkString(","),seq)
-                so.executeUpdate("insert into s_def_operation_udf(id,udf_name,udf_params,seq) values(?,?,?,?)", params)
+                val params = Array[Any](s"${define.id}_udf_${seq}", udf.udfName, udf.params.mkString(","),seq,define.id)
+                so.executeUpdate("insert into s_def_operation_udf(id,udf_name,udf_params,seq,operation_def_id) values(?,?,?,?,?)", params)
             }
         }
     }

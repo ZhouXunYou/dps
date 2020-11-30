@@ -21,9 +21,8 @@ class FetchParquet(override val sparkSession: SparkSession, override val sparkCo
   override def define: AtomOperationDefine = {
     val params = Map(
       "path" -> new AtomOperationParamDefine("parquet.path", "local or distributed file system path", true, stringType),
-      "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, stringType))
-    val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap,classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row])
-    atomOperation.id = "fetch_parquet"
+      "viewName" -> new AtomOperationParamDefine("abstract.view.name", "View Name", true, stringType))
+    val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap,classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row])
     return atomOperation
   }
 }

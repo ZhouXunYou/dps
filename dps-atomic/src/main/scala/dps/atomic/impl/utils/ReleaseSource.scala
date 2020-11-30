@@ -21,8 +21,7 @@ class ReleaseSource(override val sparkSession: SparkSession, override val sparkC
   override def define: AtomOperationDefine = {
       val params = Map(
             "variableKey" -> new AtomOperationParamDefine("variable.key", "Variable Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"utils/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Nothing], classOf[Nothing], classOf[Nothing])
-        atomOperation.id = "release_source"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"utils/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Nothing], classOf[Nothing], classOf[Nothing])
         return atomOperation
   }
 }

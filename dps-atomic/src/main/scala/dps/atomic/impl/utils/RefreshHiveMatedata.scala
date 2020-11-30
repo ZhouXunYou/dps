@@ -18,8 +18,7 @@ class RefreshHiveMatedata(override val sparkSession: SparkSession, override val 
         val params = Map(
             "warehouse" -> new AtomOperationParamDefine("warehouse.name", "default", true, stringType),
             "table" -> new AtomOperationParamDefine("table.name", "Table Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"utils/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Nothing], classOf[Nothing], classOf[Nothing])
-        atomOperation.id = "refresh_hive_matedata"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"utils/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Nothing], classOf[Nothing], classOf[Nothing])
         return atomOperation
     }
 }

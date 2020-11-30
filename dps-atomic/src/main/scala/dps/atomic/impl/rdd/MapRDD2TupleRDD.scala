@@ -23,8 +23,7 @@ class MapRDD2TupleRDD(override val sparkSession: SparkSession, override val spar
             "primaryKey" -> new AtomOperationParamDefine(
                 "primary.key","Primary Key", true, stringType))
 
-        val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.flt", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Map[String, Any]])
-        atomOperation.id = "string_2_map"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Map[String, Any]])
         return atomOperation
     }
 }
