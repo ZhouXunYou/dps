@@ -33,7 +33,10 @@ object AtomOperationUtil {
         val sparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
         getAtomOperations.foreach(atomOperationClass => {
             val action = atomOperationClass.getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[String], classOf[String], classOf[Map[String, Any]]).newInstance(sparkSession, sparkConf, "", "", Map()).asInstanceOf[AbstractAction]
-            initAtomOperationDefin(action.define(), so)
+            val define = action.define()
+            if(define!=null){
+                initAtomOperationDefin(action.define(), so)
+            }
         })
     }
     def initAtomOperationDefin(define: AtomOperationDefine, so: SessionOperation) {
