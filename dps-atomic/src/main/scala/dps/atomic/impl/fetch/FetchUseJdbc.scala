@@ -12,8 +12,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 import scala.collection.mutable.Map
 
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.Dataset
-import org.apache.spark.sql.Row
+import org.apache.spark.sql.{ Row, Dataset }
 import org.apache.spark.sql.SparkSession
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -29,8 +28,8 @@ class FetchUseJdbc(override val sparkSession: SparkSession, override val sparkCo
 
     override def doIt(params: Map[String, String]): Any = {
         val startTime = getTime(params.get("startTime").get)
-        val interval = Integer.valueOf(params.get("interval").getOrElse("0"))
-        val timeunit = TimeUnit.valueOf(params.get("timeunit").getOrElse("HOURS"))
+        val interval = Integer.valueOf(params.getOrElse("interval", "0"))
+        val timeunit = TimeUnit.valueOf(params.getOrElse("timeunit", "HOURS"))
         val sql = s"(select * from dual where d>='${getTimeWithHour(startTime)}' and d<'${getTime(getTimeWithHour(startTime), interval, timeunit)}')"
         val om = new ObjectMapper with ScalaObjectMapper
         val dsParams = om.readValue(sparkConf.get(params.get("dsParamsKey").get), classOf[Map[String, String]])
@@ -103,7 +102,7 @@ class FetchUseJdbc(override val sparkSession: SparkSession, override val sparkCo
         val params = Map(
             "dsParamsKey" -> new AtomOperationParamDefine("ds.params.key", "dsKey", true, stringType), //JDBC
             "sql" -> new AtomOperationParamDefine("sql", "select * from dual", true, sqlType),
-            "viewName" -> new AtomOperationParamDefine("view.name", "dual", true, stringType),
+            "viewName" -> new AtomOperationParamDefine("abstract.view.name", "dual", true, stringType),
             "startTime" -> new AtomOperationParamDefine("start.time", "yyyy-MM-dd HH:mm:ss", false, stringType),
             "interval" -> new AtomOperationParamDefine("interval", "1", false, integerType),
             "timeunit" -> new AtomOperationParamDefine("time.unit", ",DAYS,HOURS,MINUTES,SECONDS", false, listType))
@@ -111,8 +110,7 @@ class FetchUseJdbc(override val sparkSession: SparkSession, override val sparkCo
             new AtomOperationUdf("getTime", Seq(classOf[String].getName)),
             new AtomOperationUdf("getTime", Seq(classOf[String].getName, classOf[Int].getName, classOf[TimeUnit].getName)),
             new AtomOperationUdf("getTimeWithHour", Seq(classOf[String].getName)))
-        val atomOperation = new AtomOperationHasUdfDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row],udfs)
-        atomOperation.id = "fetch_use_jdbc"
+        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row], udfs)
         return atomOperation
     }
 

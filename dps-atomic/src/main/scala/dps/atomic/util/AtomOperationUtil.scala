@@ -12,15 +12,13 @@ import org.apache.spark.sql.SparkSession
 import scala.collection.mutable.ListBuffer
 import dps.atomic.define.AtomOperationHasUdfDefine
 import dps.atomic.define.AtomOperationUdf
+import java.net.URLClassLoader
+import java.net.URL
 
 object AtomOperationUtil {
 
     private val rootPackage = "dps.atomic.impl"
     def main(args: Array[String]): Unit = {
-        //driver: String, ip: String,port:String, user: String, password: String,dbType:String,dbName:String
-        //    val so = new SessionOperation("org.postgresql.Driver", "192.168.36.186","5432", "postgres", "postgres","postgres","dps")
-        //    val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99:5432/dps", "postgres", "postgres")
-        //    val so = new SessionOperation("com.mysql.jdbc.Driver", "jdbc:mysql://39.98.141.108:16606/dps?useUnicode=true&characterEncoding=UTF-8&useSSL=false", "root", "1qaz#EDC")
         val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200", "5432", "postgres", "postgres", "postgres", "dps201")
         so.executeUpdate("truncate table s_def_operation_param", Array())
         so.executeUpdate("truncate table s_def_operation_udf", Array())
@@ -31,7 +29,10 @@ object AtomOperationUtil {
         val sparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
         getAtomOperations.foreach(atomOperationClass => {
             val action = atomOperationClass.getConstructor(classOf[SparkSession], classOf[SparkConf], classOf[String], classOf[String], classOf[Map[String, Any]]).newInstance(sparkSession, sparkConf, "", "", Map()).asInstanceOf[AbstractAction]
-            initAtomOperationDefin(action.define(), so)
+            val define = action.define()
+            if(define!=null){
+                initAtomOperationDefin(action.define(), so)
+            }
         })
     }
     def initAtomOperationDefin(define: AtomOperationDefine, so: SessionOperation) {
@@ -53,21 +54,22 @@ object AtomOperationUtil {
             for (i <- 0 until udfs.size) {
                 val udf = udfs.apply(i)
                 val seq = i + 1
-                val params = Array[Any](s"${define.id}_udf_${seq}", udf.udfName, udf.params.mkString(","),seq)
-                so.executeUpdate("insert into s_def_operation_udf(id,udf_name,udf_params,seq) values(?,?,?,?)", params)
+                val params = Array[Any](s"${define.id}_udf_${seq}", udf.udfName, udf.params.mkString(","),seq,define.id)
+                so.executeUpdate("insert into s_def_operation_udf(id,udf_name,udf_params,seq,operation_def_id) values(?,?,?,?,?)", params)
             }
         }
     }
 
     private def getAtomOperations(path: File, classes: ListBuffer[Class[_]]): Unit = {
         if (path.isFile() && path.getName.endsWith(".class")) {
+            
             val beginIndex = path.getAbsolutePath.indexOf(rootPackage.replace(".", File.separator))
             if (beginIndex.!=(-1)) {
                 val packageFullPath = path.getAbsolutePath.substring(beginIndex);
                 val className = packageFullPath.substring(0, packageFullPath.lastIndexOf("."))
                 val clazz = Class.forName(className.replace(File.separator, "."))
                 if (clazz.getSuperclass == classOf[AbstractAction]) {
-                    print(clazz.getName)
+                    print(path.getAbsoluteFile,clazz.getName)
                     classes.append(clazz)
                 }
             }
@@ -82,6 +84,7 @@ object AtomOperationUtil {
         val url = AtomOperationUtil.getClass.getClassLoader.getResource(rootPackage.replace(".", "/"))
         val classes = new ListBuffer[Class[_]]
         getAtomOperations(new File(url.getFile), classes)
+        println(classes,classes.size)
         classes.toArray
     }
 }

@@ -11,7 +11,7 @@
 			<!-- <outputDirectory>${project.name}</outputDirectory> -->
 			<!-- <useProjectArtifact>true</useProjectArtifact> -->
 			<unpack>true</unpack>
-			<!-- <scope>runtime</scope> -->
+			<!-- <scope>provided</scope> -->
 			<excludes>
 				<exclude>org.scala-lang:*</exclude>
 				<exclude>org.apache.spark:*</exclude>
