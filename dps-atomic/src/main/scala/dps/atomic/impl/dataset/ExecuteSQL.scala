@@ -23,7 +23,8 @@ class ExecuteSQL(override val sparkSession: SparkSession, override val sparkConf
         val params = Map(
             "sql" -> new AtomOperationParamDefine("sql", "select * from dual", true, sqlType),
             "viewName" -> new AtomOperationParamDefine("abstract.view.name", "View Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"dataset/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row])
+        val template = s"dataset/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row],template)
         return atomOperation
     }
 }

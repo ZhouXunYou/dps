@@ -36,7 +36,8 @@ class StoreParquet(override val sparkSession: SparkSession, override val sparkCo
             "saveMode" -> new AtomOperationParamDefine("save.mode", "Append,Overwrite", false, listType),
             "partitionNum" -> new AtomOperationParamDefine("store.path", "hdfs://${host}:${port}/${warehouse}", true, integerType),
             "partitionFields" -> new AtomOperationParamDefine("partition.fields", "filed1,field2", false, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"store/${getClassSimpleName}.ftl", params.toMap, classOf[Dataset[_]], classOf[Nothing], classOf[Row], classOf[Nothing])
+        val template = s"store/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Dataset[_]], classOf[Nothing], classOf[Row], classOf[Nothing],getTemplateContent(template))
         return atomOperation
     }
 }

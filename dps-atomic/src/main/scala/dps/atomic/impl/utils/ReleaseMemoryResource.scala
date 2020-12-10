@@ -23,7 +23,8 @@ class ReleaseMemoryResource(override val sparkSession: SparkSession, override va
     override def define: AtomOperationDefine = {
         val params = Map(
             "variableKey" -> new AtomOperationParamDefine("variable.key", "Variable Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"utils/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Nothing], classOf[Nothing], classOf[Nothing])
+        val template = s"utils/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Nothing], classOf[Nothing], classOf[Nothing], classOf[Nothing],getTemplateContent(template))
         return atomOperation
     }
 }

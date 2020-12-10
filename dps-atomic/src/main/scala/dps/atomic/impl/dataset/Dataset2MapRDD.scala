@@ -32,7 +32,8 @@ class Dataset2MapRDD(override val sparkSession: SparkSession, override val spark
         Map(
             "field1" -> row.get(0),
             "field2" -> row.get(1))""", true, scalaType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"dataset/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row])
+        val template = s"dataset/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row],getTemplateContent(template))
         return atomOperation
     }
 }

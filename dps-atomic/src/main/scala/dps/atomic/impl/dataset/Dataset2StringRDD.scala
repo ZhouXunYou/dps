@@ -25,7 +25,8 @@ class Dataset2StringRDD(override val sparkSession: SparkSession, override val sp
     override def define: AtomOperationDefine = {
         val params = Map(
             "separator" -> new AtomOperationParamDefine("value.separator", ",", false, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"dataset/${getClassSimpleName}.ftl", params.toMap, classOf[Dataset[_]], classOf[RDD[_]], classOf[Row], classOf[String])
+        val template = s"dataset/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Dataset[_]], classOf[RDD[_]], classOf[Row], classOf[String],getTemplateContent(template))
         return atomOperation
     }
 }

@@ -40,8 +40,8 @@ class StringRDDSendKafka(override val sparkSession: SparkSession, override val s
         val params = Map(
             "bootstrapServers" -> new AtomOperationParamDefine("bootstrap.ervers", "127.0.0.1:9092", true, stringType),
             "sendTopicName" -> new AtomOperationParamDefine("send.topic.name", "topic", true, stringType))
-
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[Nothing], classOf[String], classOf[Nothing])
+        val template = s"rdd/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[Nothing], classOf[String], classOf[Nothing],getTemplateContent(template))
         return atomOperation
     }
 }

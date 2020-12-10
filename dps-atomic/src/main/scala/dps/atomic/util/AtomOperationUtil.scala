@@ -36,8 +36,8 @@ object AtomOperationUtil {
         })
     }
     def initAtomOperationDefin(define: AtomOperationDefine, so: SessionOperation) {
-        val operationParams = Array[Any](define.id, define.operationName, define.operationCode, define.template,define.inputType.getName,define.outputType.getName,define.inputGenericType.getName,define.outputGenericType.getName)
-        so.executeUpdate("insert into s_def_operation(id,operation_name,operation_code,template,input_type,output_type,input_generic_type,output_generic_type) values (?,?,?,?,?,?,?,?)", operationParams)
+        val operationParams = Array[Any](define.id, define.operationName, define.operationCode, define.template,define.inputType.getName,define.outputType.getName,define.inputGenericType.getName,define.outputGenericType.getName,define.templateContent)
+        so.executeUpdate("insert into s_def_operation(id,operation_name,operation_code,template,input_type,output_type,input_generic_type,output_generic_type,template_content) values (?,?,?,?,?,?,?,?,?)", operationParams)
         define.operationParams.foreach(operationParam => {
             val operationParamCode = operationParam._1
             val operationParamDefine = operationParam._2

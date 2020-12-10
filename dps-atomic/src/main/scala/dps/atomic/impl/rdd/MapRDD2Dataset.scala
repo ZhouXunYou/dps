@@ -23,7 +23,8 @@ class MapRDD2Dataset(override val sparkSession: SparkSession, override val spark
     override def define: AtomOperationDefine = {
         val params = Map(
             "viewName" -> new AtomOperationParamDefine("abstract.view.name", "View Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[Map[String, Any]], classOf[Row])
+        val template = s"rdd/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[Map[String, Any]], classOf[Row],getTemplateContent(template))
         return atomOperation
     }
 }
