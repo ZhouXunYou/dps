@@ -80,7 +80,7 @@ class MissionLoader(val so: SessionOperation) {
 
     private def getGroupOperations(operationGroupId: String): List[Operation] = {
         var operations = List[Operation]()
-        val operationDatas = so.executeQuery("select mogc.*,od.operation_name,od.operation_code,od.template from b_mission_operation_group_config mogc inner join s_def_operation  od on mogc.operation_def_id = od.id where mogc.operation_group_id = ? order by mogc.seq_num", Array(operationGroupId))
+        val operationDatas = so.executeQuery("select mogc.*,od.operation_name,od.operation_code,od.template,od.template_content from b_mission_operation_group_action mogc inner join s_def_operation  od on mogc.operation_def_id = od.id where mogc.operation_group_id = ? order by mogc.seq_num", Array(operationGroupId))
         operationDatas.foreach(operationData => {
             val id = operationData.get("id").get.asInstanceOf[String]
             val operationName = operationData.get("operation_name").get.asInstanceOf[String]
@@ -89,6 +89,7 @@ class MissionLoader(val so: SessionOperation) {
             val classQualifiedName = operationData.get("class_qualified_name").get.asInstanceOf[String]
             val inVariableKey = operationData.get("in_variable_key").get.asInstanceOf[String]
             val outVariableKey = operationData.get("out_variable_key").get.asInstanceOf[String]
+            val templateContent = operationData.get("template_content").get.asInstanceOf[String]
             val operation = new Operation
             operation.id = id
             operation.operationName = operationName
@@ -97,6 +98,7 @@ class MissionLoader(val so: SessionOperation) {
             operation.classQualifiedName = classQualifiedName
             operation.inVariableKey = inVariableKey
             operation.outVariableKey = outVariableKey
+            operation.templateContent = templateContent
             operation.operationParams = getOperationParams(id)
             operations = operation :: operations
         })
