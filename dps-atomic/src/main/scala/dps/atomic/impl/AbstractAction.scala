@@ -7,6 +7,9 @@ import org.apache.spark.sql.types.{ DataTypes, StructField }
 
 import scala.collection.mutable.Map
 import org.apache.spark.SparkConf
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.nio.charset.Charset
 
 abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf: SparkConf, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
     var pendingData: Any = variables.getOrElse(inputVariableKey, null)
@@ -23,6 +26,7 @@ abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf: Spa
     def define(): AtomOperationDefine = {
         null
     }
+
     var typeMapping = Map(
         "string" -> DataTypes.StringType,
         "int" -> DataTypes.IntegerType,
@@ -57,13 +61,19 @@ abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf: Spa
     def array2String(array: Array[String], separator: String): String = {
         array.mkString(separator)
     }
-    def getClassName:String={
+    def getClassName: String = {
         this.getClass.getName
     }
-    def getClassSimpleName:String={
+    def getClassSimpleName: String = {
         this.getClass.getSimpleName
     }
-    def getId:String={
+    def getId: String = {
         getClassName.replace(".", "_").toLowerCase()
+    }
+    def getTemplateContent(template: String): String = {
+        val in = this.getClass.getClassLoader.getResourceAsStream(template)
+        val values = new Array[Byte](in.available());
+        in.read(values)
+        return new String(values,Charset.forName("utf-8"));
     }
 }

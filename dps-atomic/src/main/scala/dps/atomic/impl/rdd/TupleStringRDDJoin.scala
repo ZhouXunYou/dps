@@ -25,7 +25,8 @@ class TupleStringRDDJoin(override val sparkSession: SparkSession, override val s
         val params = Map(
             "left" -> new AtomOperationParamDefine("left.string.rdd", "Left String RDD", true, stringType),
             "right" -> new AtomOperationParamDefine("right.string.rdd", "Right String RDD", true, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[Tuple2[String, String]], classOf[String])
+        val template = s"rdd/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[Tuple2[String, String]], classOf[String],getTemplateContent(template))
         return atomOperation
     }
 }

@@ -38,7 +38,8 @@ class StoreDatabaseUseJdbc(override val sparkSession: SparkSession, override val
             "dsParamsKey" -> new AtomOperationParamDefine("ds.params.key", "dsKey", true, mapType),
             "table" -> new AtomOperationParamDefine("table.name", "Tablename", true, stringType),
             "saveMode" -> new AtomOperationParamDefine("save.mode", ",Append,Overwrite", false, listType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"store/${getClassSimpleName}.ftl", params.toMap, classOf[Dataset[_]], classOf[Nothing], classOf[Row], classOf[Nothing])
+        val template = s"store/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Dataset[_]], classOf[Nothing], classOf[Row], classOf[Nothing],getTemplateContent(template))
         return atomOperation
     }
 }

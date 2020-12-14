@@ -110,7 +110,8 @@ class FetchUseJdbc(override val sparkSession: SparkSession, override val sparkCo
             new AtomOperationUdf("getTime", Seq(classOf[String].getName)),
             new AtomOperationUdf("getTime", Seq(classOf[String].getName, classOf[Int].getName, classOf[TimeUnit].getName)),
             new AtomOperationUdf("getTimeWithHour", Seq(classOf[String].getName)))
-        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row], udfs)
+        val template = s"fetch/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row], getTemplateContent(template),udfs)
         return atomOperation
     }
 

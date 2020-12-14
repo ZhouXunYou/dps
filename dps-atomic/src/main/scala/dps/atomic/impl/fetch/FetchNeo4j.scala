@@ -25,7 +25,18 @@ class FetchNeo4j(override val sparkSession: SparkSession, override val sparkConf
         val params = Map(
             "graphql" -> new AtomOperationParamDefine("graphql", "match(n:ci) return n limit 1", true, sqlType),
             "viewName" -> new AtomOperationParamDefine("abstract.view.name", "View Name", true, stringType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row])
+        val template = s"fetch/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(
+                getId, 
+                getClassName, 
+                getClassSimpleName, 
+                template, 
+                params.toMap, 
+                classOf[Nothing], 
+                classOf[Dataset[_]], 
+                classOf[Nothing], 
+                classOf[Row],
+                getTemplateContent(template))
         return atomOperation
     }
 }
