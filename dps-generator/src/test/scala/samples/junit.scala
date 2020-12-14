@@ -12,11 +12,11 @@ class AppTest {
   //  val so = new SessionOperation("org.postgresql.Driver", "jdbc:postgresql://10.1.1.99/dps", "postgres", "postgres")
 
 //  val so = new SessionOperation("org.postgresql.Driver", "192.168.36.186", "5432", "postgres", "postgres", "postgres", "dps")
-  val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200", "5432", "postgres", "postgres", "postgres", "dps")
+  val so = new SessionOperation("org.postgresql.Driver", "192.168.11.200", "5432", "postgres", "postgres", "postgres", "dps201")
   val ml = new MissionLoader(so)
   val outputPath = "D:\\source\\others\\dps\\dps-mission";
   val templatePath = "D:\\source\\others\\dps\\dps-atomic\\src\\main\\resources"
-  val missionCode = "DataProcessTask"
+  val missionCode = "yltest"
 //  val outputPath = "E:\\workspace\\scala.workspace\\dps\\dps-mission";
 //  val templatePath = "E:\\workspace\\scala.workspace\\dps\\dps-atomic\\src\\main\\resources"
 //  val missionCode = "DataProcessTask"

@@ -25,10 +25,10 @@ class MissionLoader(val so: SessionOperation) {
             mission.id = missionData.get("id").get.asInstanceOf[String]
             mission.missionName = missionData.get("mission_name").get.toString()
             mission.missionCode = missionName
-            mission.missionType = missionData.get("mission_type").get.asInstanceOf[String]
+        		mission.missionType = missionData.get("mission_type").get.toString()
             mission.missionTypeCode = missionData.get("mission_type_code").get.asInstanceOf[String]
             mission.finishedCode = missionData.get("finished_code").getOrElse("").asInstanceOf[String]
-            mission.streamBatch = missionData.get("stream_batch").getOrElse("").asInstanceOf[String]
+            mission.streamBatch = missionData.get("stream_batch").getOrElse("").toString()
             mission.implClass = missionData.get("impl_class").getOrElse("").asInstanceOf[String]
             //填充任务执行参数
             mission.missionParams = getMissionParams(mission.id)
@@ -80,7 +80,7 @@ class MissionLoader(val so: SessionOperation) {
 
     private def getGroupOperations(operationGroupId: String): List[Operation] = {
         var operations = List[Operation]()
-        val operationDatas = so.executeQuery("select mogc.*,od.operation_name,od.operation_code,od.template from b_mission_operation_group_config mogc inner join s_def_operation  od on mogc.operation_def_id = od.id where mogc.operation_group_id = ? order by mogc.seq_num", Array(operationGroupId))
+        val operationDatas = so.executeQuery("select mogc.*,od.operation_name,od.operation_code,od.template from b_mission_operation_group_action mogc inner join s_def_operation  od on mogc.operation_def_id = od.id where mogc.operation_group_id = ? order by mogc.seq_num", Array(operationGroupId))
         operationDatas.foreach(operationData => {
             val id = operationData.get("id").get.asInstanceOf[String]
             val operationName = operationData.get("operation_name").get.asInstanceOf[String]
@@ -103,8 +103,8 @@ class MissionLoader(val so: SessionOperation) {
         operations.reverse
     }
 
-    private def getOperationParams(operationGroupConfigId: String): Map[String, OperationParam] = {
-        val operationParamValueDatas = so.executeQuery("select mop.id,opd.operation_def_id,opd.operation_param_name,opd.operation_param_code,opd.operation_param_default_value,opd.required,opd.param_type,mop.operation_param_value from b_mission_operation_param mop inner join s_def_operation_param opd on mop.operation_param_def_id = opd.id  where mop.operation_group_config_id = ?", Array(operationGroupConfigId))
+    private def getOperationParams(operationGroupActionId: String): Map[String, OperationParam] = {
+        val operationParamValueDatas = so.executeQuery("select mop.id,opd.operation_def_id,opd.operation_param_name,opd.operation_param_code,opd.operation_param_default_value,opd.required,opd.param_type,mop.operation_param_value from b_mission_operation_param mop inner join s_def_operation_param opd on mop.operation_param_def_id = opd.id  where mop.operation_group_action_id = ?", Array(operationGroupActionId))
 
         val operationParams = Map[String, OperationParam]()
         operationParamValueDatas.foreach(operationParamValueData => {
