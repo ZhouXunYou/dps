@@ -23,7 +23,18 @@ class FetchKafka(override val sparkSession: SparkSession, override val sparkConf
 
     override def define: AtomOperationDefine = {
         val params = Map()
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[Tuple3[String, Int, String]], classOf[String])
+        val template = s"fetch/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(
+                getId, 
+                getClassName, 
+                getClassSimpleName, 
+                template, 
+                params.toMap, 
+                classOf[RDD[_]], 
+                classOf[RDD[_]], 
+                classOf[Tuple3[String, Int, String]], 
+                classOf[String],
+                getTemplateContent(template))
         return atomOperation
     }
 }

@@ -52,7 +52,8 @@ class Correlation(override val sparkSession: SparkSession, override val sparkCon
         val udfs = Seq(
             new AtomOperationUdf("buildSparseVector", Seq(classOf[Int].getName, classOf[Array[Int]].getName, classOf[Array[Double]].getName)),
             new AtomOperationUdf("buildDenseVector", Seq(classOf[Array[Double]].getName)))
-        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, s"ml/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[Map[String, Any]], classOf[Row], udfs)
+        val template = s"ml/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[Map[String, Any]], classOf[Row],getTemplateContent(template),udfs)
         return atomOperation
     }
 }

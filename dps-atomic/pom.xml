@@ -50,6 +50,18 @@
 			<artifactId>dps-utils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.datasyslab</groupId>
+			<artifactId>geospark</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.datasyslab</groupId>
+			<artifactId>geospark-sql_${georefspark.version}</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.datasyslab</groupId>
+			<artifactId>geospark-viz_${georefspark.version}</artifactId>
+		</dependency>
 <!-- 		<dependency> -->
 <!-- 			<groupId>com.typesafe.scala-logging</groupId> -->
 <!-- 			<artifactId>scala-logging_2.11</artifactId> -->

@@ -53,7 +53,8 @@ class StringRDD2MapRDD(override val sparkSession: SparkSession, override val spa
     return map""", true, scalaType))
         val udfs = Seq(
             new AtomOperationUdf("string2Array", Seq(classOf[String].getName, classOf[String].getName)))
-        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Map[String, Any]], udfs)
+        val template = s"rdd/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Map[String, Any]], getTemplateContent(template),udfs)
         return atomOperation
     }
 }

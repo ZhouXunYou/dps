@@ -82,7 +82,8 @@ class StringRDD2Dataset(override val sparkSession: SparkSession, override val sp
             new AtomOperationUdf("fieldBuild", Seq(classOf[String].getName, classOf[String].getName, classOf[Boolean].getName)),
             new AtomOperationUdf("fieldBuild", Seq(classOf[String].getName, classOf[String].getName)),
             new AtomOperationUdf("string2Array", Seq(classOf[String].getName, classOf[String].getName)))
-        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[String], classOf[Row], udfs)
+        val template = s"rdd/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[String], classOf[Row], getTemplateContent(template),udfs)
         return atomOperation
     }
 }

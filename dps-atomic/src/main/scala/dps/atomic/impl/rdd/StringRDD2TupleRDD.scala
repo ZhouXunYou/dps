@@ -26,7 +26,8 @@ class StringRDD2TupleRDD(override val sparkSession: SparkSession, override val s
         val params = Map(
             "separator" -> new AtomOperationParamDefine("value.separator", "separator", true, stringType),
             "index" -> new AtomOperationParamDefine("split.index", "index", true, integerType))
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, s"rdd/${getClassSimpleName}.ftl", params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Tuple2[String, String]])
+        val template = s"rdd/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[RDD[_]], classOf[String], classOf[Tuple2[String, String]],getTemplateContent(template))
         return atomOperation
     }
 }
