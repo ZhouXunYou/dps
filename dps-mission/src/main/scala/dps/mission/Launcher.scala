@@ -50,6 +50,7 @@ object Launcher {
     }
     def main(args: Array[String]): Unit = {
         val params = RunParam.parserArgements(args)
+        
         val requiredKeys = Seq("--missionName", "--driver", "--ip", "--port", "--user", "--password", "--dbType", "--dbName")
         if (!RunParam.validRequiredArgements(params, requiredKeys)) {
             println(s"These params is required ${requiredKeys.mkString(",")}. Params format e.g: ${requiredKeys.mkString(" {value},")} {value}")
