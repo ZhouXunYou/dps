@@ -17,7 +17,8 @@ class CoordinateSystemTransformFroSpatialRDD(override val sparkSession: SparkSes
         val spatialRDD = this.pendingData.asInstanceOf[SpatialRDD[Geometry]]
         val sourceCRS = CRS.decode(params.get("fromEpsgCRSCode").get);
         val targetCRS = CRS.decode(params.get("targetEpsgCRSCode").get);
-        val transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+        val isStrict = params.get("strict").get.toBoolean
+        val transform = CRS.findMathTransform(sourceCRS, targetCRS, isStrict);
         val rdd = spatialRDD.rawSpatialRDD.rdd.map(geom=>{
             JTS.transform(geom, transform)
         })
