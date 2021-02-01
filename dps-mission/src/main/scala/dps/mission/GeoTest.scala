@@ -34,7 +34,7 @@ object GeoTest {
         GeoSparkVizRegistrator.registerAll(sparkSession)
 
         val spatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, "C:\\Users\\ZhouX\\Desktop\\DREP\\01-Dev\\03-需求开发与管理\\需求调研材料\\岚山地质灾害")
-        println(spatialRDD.analyze())
+//        println(spatialRDD.analyze())
         val df = Adapter.toDf(spatialRDD, cnames.slice(0, 34), sparkSession)
         df.createOrReplaceTempView("df")
         //        val df = Adapter.toDf(spatialRDD, s 
