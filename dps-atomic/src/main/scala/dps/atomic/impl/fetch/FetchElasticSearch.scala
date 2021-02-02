@@ -32,6 +32,6 @@ class FetchElasticSearch(override val sparkSession: SparkSession, override val s
 
     val template = s"fetch/${getClassSimpleName}.ftl"
     val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row],getTemplateContent(template))
-    return atomOperation
+    atomOperation
   }
 }
