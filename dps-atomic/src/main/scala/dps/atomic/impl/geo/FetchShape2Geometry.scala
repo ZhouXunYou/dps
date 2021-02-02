@@ -1,7 +1,7 @@
 package dps.atomic.impl.geo
 
 import com.vividsolutions.jts.geom.Geometry
-import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
+import dps.atomic.define.{ AtomOperationDefine, AtomOperationParamDefine }
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import dps.atomic.impl.AbstractAction
@@ -17,9 +17,7 @@ class FetchShape2Geometry(override val sparkSession: SparkSession, override val 
     }
 
     override def define: AtomOperationDefine = {
-        val params = Map(
-            "geometryRDD" -> new AtomOperationParamDefine("geometry.rdd", "Geometry RDD", true, stringType)
-         )
+        val params = Map()
 
         val template = s"rdd/${getClassSimpleName}.ftl"
         val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[Nothing], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
