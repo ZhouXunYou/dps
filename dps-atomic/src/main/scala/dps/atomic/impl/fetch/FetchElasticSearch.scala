@@ -30,8 +30,8 @@ class FetchElasticSearch(override val sparkSession: SparkSession, override val s
       "viewName" -> new AtomOperationParamDefine("view.name", "View Name", true, stringType),
       "resource" -> new AtomOperationParamDefine("es.resource", "index/type", true, stringType))
 
-    val atomOperation = new AtomOperationDefine(getClassName, getClassSimpleName, s"fetch/${getClassSimpleName}.ftl", params.toMap,classOf[Nothing],classOf[Dataset[_]],classOf[Nothing],classOf[Row])
-    atomOperation.id = "fetch_elasticsearch"
+    val template = s"fetch/${getClassSimpleName}.ftl"
+    val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[Nothing], classOf[Dataset[_]], classOf[Nothing], classOf[Row],getTemplateContent(template))
     return atomOperation
   }
 }
