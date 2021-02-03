@@ -28,6 +28,14 @@ class SourceGenerator(val mission: Mission) {
    * 生成代码
    * @param rootPath - 代码输出的根目录
    */
+  def buildScalaFile(template: String): String = {
+    template
+  }
+
+  /**
+   * 生成代码
+   * @param rootPath - 代码输出的根目录
+   */
   def buildScalaFile(templatePath: String, template: String, templateContent: String): String = {
     /**
      * 1.生成模板文件 </br>
@@ -36,17 +44,15 @@ class SourceGenerator(val mission: Mission) {
      *
      */
 
-    val array: Array[String] = template.split("//")
-    val templatName: String = array.last
-    println("templatName:" + templatName)
+    val templateName: String = template.split("\\/").last
 
     // 创建文件
-    val writer = new PrintWriter(new File(templatePath.+("/").+(templatName)))
+    val writer = new PrintWriter(new File(templatePath.+("/").+(templateName)))
 
     writer.write(templateContent)
     writer.close()
 
-    templatName
+    templateName
   }
 
   def produce(outputRootPath: String, templatePath: String) {
@@ -61,7 +67,8 @@ class SourceGenerator(val mission: Mission) {
     cfg.setTemplateLoader(fileTemplateLoader)
     mission.operationGroups.foreach(operationGroup => {
       operationGroup.operations.foreach(operation => {
-        val templatName = buildScalaFile(templatePath, operation.template, operation.templateContent)
+//        val templatName = buildScalaFile(templatePath, operation.template, operation.templateContent)
+    		val templatName = buildScalaFile(operation.template)
         println("templatName:" + templatName)
         if (templatName != null && !"".equals(templatName)) {
           val template = cfg.getTemplate(templatName);
