@@ -1,4 +1,5 @@
-package dps.atomic.impl.geo
+package ${packagePath}
+
 import com.vividsolutions.jts.geom.Geometry
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import dps.atomic.impl.AbstractAction
@@ -17,15 +18,5 @@ class GeoDataFrame2SpatialRDD(override val sparkSession: SparkSession, override 
         val fieldNames = params.get("fieldNames").get.split(",").toList
         val spatialRDD = Adapter.toSpatialRdd(geoDataFrame, spatialFieldName, fieldNames)
         variables.put(outputVariableKey, spatialRDD)
-    }
-
-    override def define(): AtomOperationDefine = {
-        val params = Map(
-            "spatialFieldName" -> new AtomOperationParamDefine("spatial.field.name", "Spatial Field Name", true, stringType),
-            "fieldNames" -> new AtomOperationParamDefine("field.names", "Field Names", true, stringType)
-        )
-        val template = s"geo/${getClassSimpleName}.ftl"
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[DataFrame], classOf[SpatialRDD[_]], classOf[Nothing], classOf[Geometry], getTemplateContent(template))
-        atomOperation
     }
 }

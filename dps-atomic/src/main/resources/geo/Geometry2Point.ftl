@@ -1,4 +1,4 @@
-package dps.atomic.impl.geo
+package ${packagePath}
 
 import com.vividsolutions.jts.geom.Geometry
 import dps.atomic.define.AtomOperationDefine
@@ -14,11 +14,5 @@ class Geometry2Point(override val sparkSession: SparkSession, override val spark
     override def doIt(params: Map[String, String]): Any = {
         val pointSpatialRDD = ShapefileReader.geometryToPoint(this.pendingData.asInstanceOf[SpatialRDD[Geometry]])
         variables.put(outputVariableKey, pointSpatialRDD)
-    }
-    override def define(): AtomOperationDefine = {
-        val params = Map()
-        val template = s"geo/${getClassSimpleName}.ftl"
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[PointRDD], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
-        atomOperation
     }
 }

@@ -1,4 +1,4 @@
-package dps.atomic.impl.geo
+package ${packagePath}
 
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
 import dps.atomic.impl.AbstractAction
@@ -17,19 +17,5 @@ class CoordinateSystemTransformFroDataFrame(override val sparkSession: SparkSess
     val useLongitudeLatitudeOrder = params.get("targetEpsgCRSCode").getOrElse("false")
     val isStrict = params.get("strict").get.toBoolean
     sparkSession.sql(s"select ST_Transform(${geoField},${fromEpsgCRSCode},${targetEpsgCRSCode},${useLongitudeLatitudeOrder},${isStrict}),* from ${geoViewName}")
-  }
-
-  override def define: AtomOperationDefine = {
-    val params = Map(
-      "geoField" -> new AtomOperationParamDefine("geo.field", "Field", true, stringType),
-      "geoViewName" -> new AtomOperationParamDefine("geo.view.name", "View Name", true, stringType),
-      "fromEpsgCRSCode" -> new AtomOperationParamDefine("from.epsgCRS.code", "From EpsgCRS Code", true, stringType),
-      "targetEpsgCRSCode" -> new AtomOperationParamDefine("target.epsgCRS.code", "From EpsgCRS Code", true, stringType),
-      "useLongitudeLatitudeOrder" -> new AtomOperationParamDefine("use.longitude.latitude.order", "Use Longitude Latitude Order", true, stringType)
-    )
-
-    val template = s"geo/${getClassSimpleName}.ftl"
-    val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[DataFrame], classOf[Nothing], classOf[Nothing], classOf[Nothing], getTemplateContent(template))
-    return atomOperation
   }
 }

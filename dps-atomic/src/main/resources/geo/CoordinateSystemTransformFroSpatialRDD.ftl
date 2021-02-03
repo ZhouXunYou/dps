@@ -1,4 +1,4 @@
-package dps.atomic.impl.geo
+package ${packagePath}
 
 import com.vividsolutions.jts.geom.Geometry
 import dps.atomic.define.{AtomOperationDefine, AtomOperationParamDefine}
@@ -22,17 +22,5 @@ class CoordinateSystemTransformFroSpatialRDD(override val sparkSession: SparkSes
       JTS.transform(geom, transform)
     })
     spatialRDD.rawSpatialRDD = rdd.toJavaRDD()
-  }
-
-  override def define: AtomOperationDefine = {
-    val params = Map(
-      "fromEpsgCRSCode" -> new AtomOperationParamDefine("from.epsgCRS.code", "From EpsgCRS Code", true, stringType),
-      "targetEpsgCRSCode" -> new AtomOperationParamDefine("target.epsgCRS.code", "From EpsgCRS Code", true, stringType),
-      "isStrict" -> new AtomOperationParamDefine("is.strict", "Is Strict", true, stringType)
-    )
-
-    val template = s"geo/${getClassSimpleName}.ftl"
-    val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[Nothing], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
-    atomOperation
   }
 }
