@@ -15,6 +15,8 @@ import dps.utils.RunParam
 import dps.utils.SessionOperation
 import org.apache.spark.SparkConf
 import dps.atomic.model.Mission
+import org.datasyslab.geosparkviz.sql.utils.GeoSparkVizRegistrator
+import org.datasyslab.geosparksql.utils.GeoSparkSQLRegistrator
 
 object Launcher {
     def buildConf(mission: Mission, runParams: Map[String, String]): SparkConf = {
@@ -50,7 +52,7 @@ object Launcher {
     }
     def main(args: Array[String]): Unit = {
         val params = RunParam.parserArgements(args)
-        
+
         val requiredKeys = Seq("--missionName", "--driver", "--ip", "--port", "--user", "--password", "--dbType", "--dbName")
         if (!RunParam.validRequiredArgements(params, requiredKeys)) {
             println(s"These params is required ${requiredKeys.mkString(",")}. Params format e.g: ${requiredKeys.mkString(" {value},")} {value}")
@@ -64,6 +66,8 @@ object Launcher {
         so.close()
         val sparkConf = buildConf(mission, params)
         val sparkSession = buildSparkSession(sparkConf, missionCode)
+        GeoSparkSQLRegistrator.registerAll(sparkSession)
+        GeoSparkVizRegistrator.registerAll(sparkSession)
         //用于原子操作输出的容器
         val missionVariables = Map[String, Any]()
         val operator = new Operator(mission.operationGroups, sparkSession, sparkConf, missionVariables)
