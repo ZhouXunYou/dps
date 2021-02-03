@@ -66,6 +66,7 @@ object Launcher {
         so.close()
         val sparkConf = buildConf(mission, params)
         val sparkSession = buildSparkSession(sparkConf, missionCode)
+        //GeoSpark相关函数注册
         GeoSparkSQLRegistrator.registerAll(sparkSession)
         GeoSparkVizRegistrator.registerAll(sparkSession)
         //用于原子操作输出的容器
