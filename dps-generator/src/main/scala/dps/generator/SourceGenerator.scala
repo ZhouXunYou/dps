@@ -20,14 +20,6 @@ class SourceGenerator(val mission: Mission) {
    * 生成代码
    * @param rootPath - 代码输出的根目录
    */
-  def buildScalaFile(baseDir: File, templateContent: String): String = {
-    null
-  }
-
-  /**
-   * 生成代码
-   * @param rootPath - 代码输出的根目录
-   */
   def buildScalaFile(templatePath: String, template: String, templateContent: String): String = {
     /**
      * 1.生成模板文件 </br>
@@ -36,17 +28,16 @@ class SourceGenerator(val mission: Mission) {
      *
      */
 
-    val array: Array[String] = template.split("//")
-    val templatName: String = array.last
-    println("templatName:" + templatName)
+    val templateName: String = template.split("\\/").last
 
     // 创建文件
-    val writer = new PrintWriter(new File(templatePath.+("/").+(templatName)))
+    val writer = new PrintWriter(new File(templatePath.+("/").+(templateName)))
 
     writer.write(templateContent)
+    writer.flush()
     writer.close()
 
-    templatName
+    templateName
   }
 
   def produce(outputRootPath: String, templatePath: String) {
