@@ -16,8 +16,9 @@ class Geometry2Point(override val sparkSession: SparkSession, override val spark
         variables.put(outputVariableKey, pointSpatialRDD)
     }
     override def define(): AtomOperationDefine = {
-        val template = s"rdd/${getClassSimpleName}.ftl"
-        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, null, classOf[SpatialRDD[_]], classOf[PointRDD], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
+        val params = Map()
+        val template = s"geo/${getClassSimpleName}.ftl"
+        val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[PointRDD], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
         atomOperation
     }
 }

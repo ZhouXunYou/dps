@@ -30,7 +30,7 @@ class SpatialRDD2GeoDataFrame(override val sparkSession: SparkSession, override 
       "geoViewName" -> new AtomOperationParamDefine("geo.view.name", "Geo View Name", true, stringType),
       "spatialFieldOriginalName" -> new AtomOperationParamDefine("spatial.field.original.name", "Spatial Field Original Name", true, stringType))
 
-    val template = s"rdd/${getClassSimpleName}.ftl"
+    val template = s"geo/${getClassSimpleName}.ftl"
     val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[DataFrame], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
     atomOperation
   }

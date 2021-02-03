@@ -28,7 +28,7 @@ class CoordinateSystemTransformFroDataFrame(override val sparkSession: SparkSess
       "useLongitudeLatitudeOrder" -> new AtomOperationParamDefine("use.longitude.latitude.order", "Use Longitude Latitude Order", true, stringType)
     )
 
-    val template = s"rdd/${getClassSimpleName}.ftl"
+    val template = s"geo/${getClassSimpleName}.ftl"
     val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[DataFrame], classOf[Nothing], classOf[Nothing], classOf[Nothing], getTemplateContent(template))
     return atomOperation
   }

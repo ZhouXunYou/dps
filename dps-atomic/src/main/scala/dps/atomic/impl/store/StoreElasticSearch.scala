@@ -18,11 +18,11 @@ class StoreElasticSearch(override val sparkSession: SparkSession, override val s
         val resource = params.get("resource").get
         EsSparkSQL.saveToEs(dataset, resource)
     }
-    override def define: AtomOperationDefine = {
-        val params = Map(
-            "resource" -> new AtomOperationParamDefine("es.resource", "index/type", true, stringType))
-        val template = s"store/${getClassSimpleName}.ftl"
-        val atomOperation = new AtomOperationDefine(getId,getClassName, getClassSimpleName, s"store/${getClassSimpleName}.ftl", params.toMap, classOf[Dataset[_]], classOf[Nothing], classOf[Row], classOf[Nothing], getTemplateContent(template))
-        return atomOperation
-    }
+//    override def define: AtomOperationDefine = {
+//        val params = Map(
+//            "resource" -> new AtomOperationParamDefine("es.resource", "index/type", true, stringType))
+//        val template = s"store/${getClassSimpleName}.ftl"
+//        val atomOperation = new AtomOperationDefine(getId,getClassName, getClassSimpleName, s"store/${getClassSimpleName}.ftl", params.toMap, classOf[Dataset[_]], classOf[Nothing], classOf[Row], classOf[Nothing], getTemplateContent(template))
+//        return atomOperation
+//    }
 }

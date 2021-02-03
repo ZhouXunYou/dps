@@ -31,7 +31,7 @@ class CoordinateSystemTransformFroSpatialRDD(override val sparkSession: SparkSes
       "isStrict" -> new AtomOperationParamDefine("is.strict", "Is Strict", true, stringType)
     )
 
-    val template = s"rdd/${getClassSimpleName}.ftl"
+    val template = s"geo/${getClassSimpleName}.ftl"
     val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[Nothing], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
     atomOperation
   }

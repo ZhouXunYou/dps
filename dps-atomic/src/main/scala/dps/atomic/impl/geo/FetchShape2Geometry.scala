@@ -19,7 +19,7 @@ class FetchShape2Geometry(override val sparkSession: SparkSession, override val 
     override def define: AtomOperationDefine = {
         val params = Map()
 
-        val template = s"rdd/${getClassSimpleName}.ftl"
+        val template = s"geo/${getClassSimpleName}.ftl"
         val atomOperation = new AtomOperationDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[SpatialRDD[_]], classOf[Nothing], classOf[Geometry], classOf[Nothing], getTemplateContent(template))
         return atomOperation
     }
