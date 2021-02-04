@@ -37,6 +37,7 @@ class Correlation(override val sparkSession: SparkSession, override val sparkCon
     private def buildDenseVector(values: Array[Double]): Vector = {
         Vectors.dense(values)
     }
+    /*
     override def define: AtomOperationDefine = {
         val params = Map(
             "correlationCode" -> new AtomOperationParamDefine("correlation.code", """
@@ -56,4 +57,5 @@ class Correlation(override val sparkSession: SparkSession, override val sparkCon
         val atomOperation = new AtomOperationHasUdfDefine(getId, getClassName, getClassSimpleName, template, params.toMap, classOf[RDD[_]], classOf[Dataset[_]], classOf[Map[String, Any]], classOf[Row],getTemplateContent(template),udfs)
         return atomOperation
     }
+    */
 }
