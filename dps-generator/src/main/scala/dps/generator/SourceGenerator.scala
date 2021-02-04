@@ -31,15 +31,13 @@ class SourceGenerator(val mission: Mission) {
 //    val templateName: String = template.split("\\/").last
 
     // 创建文件
-    val writer = new PrintWriter(new File(templatePath.+(template)))
-
-    writer.write(templateContent)
-    writer.flush()
-    writer.close()
-
-//    templateName
+    var fos = new FileOutputStream(new File(templatePath.+(template)))
+    
+    fos.write(templateContent.getBytes)
+    fos.flush()
+    fos.close()
   }
-
+  
   def produce(outputRootPath: String, templatePath: String) {
     val cfg = new Configuration(Configuration.VERSION_2_3_23);
     cfg.setDefaultEncoding("UTF-8")
