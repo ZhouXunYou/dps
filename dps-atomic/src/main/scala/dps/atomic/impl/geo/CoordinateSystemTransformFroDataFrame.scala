@@ -25,7 +25,7 @@ class CoordinateSystemTransformFroDataFrame(override val sparkSession: SparkSess
       "geoViewName" -> new AtomOperationParamDefine("geo.view.name", "View Name", true, stringType),
       "fromEpsgCRSCode" -> new AtomOperationParamDefine("from.epsgCRS.code", "From EpsgCRS Code", true, stringType),
       "targetEpsgCRSCode" -> new AtomOperationParamDefine("target.epsgCRS.code", "From EpsgCRS Code", true, stringType),
-      "useLongitudeLatitudeOrder" -> new AtomOperationParamDefine("use.longitude.latitude.order", "Use Longitude Latitude Order", true, stringType)
+      "useLongitudeLatitudeOrder" -> new AtomOperationParamDefine("use.longitude.latitude.order", "Use Longitude Latitude Order", false, stringType)
     )
 
     val template = s"geo/${getClassSimpleName}.ftl"
