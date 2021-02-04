@@ -29,7 +29,7 @@ class SourceGenerator(val mission: Mission) {
      */
 
 //    val templateName: String = template.split("\\/").last
-    val file = new File(templatePath.+("/").+(template));
+    val file = new File(templatePath.+(File.pathSeparator).+(template));
     if(!file.getParentFile.exists()){
         file.getParentFile.mkdirs()
     }
