@@ -29,9 +29,12 @@ class SourceGenerator(val mission: Mission) {
      */
 
 //    val templateName: String = template.split("\\/").last
-
+    val file = new File(templatePath.+("/").+(template));
+    if(!file.getParentFile.exists()){
+        file.getParentFile.mkdirs()
+    }
     // 创建文件
-    var fos = new FileOutputStream(new File(templatePath.+(template)))
+    var fos = new FileOutputStream(file);
     
     fos.write(templateContent.getBytes)
     fos.flush()
