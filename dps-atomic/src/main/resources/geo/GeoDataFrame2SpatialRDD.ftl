@@ -11,7 +11,7 @@ import org.datasyslab.geosparksql.utils.Adapter
 import scala.collection.mutable.Map
 
 
-class GeoDataFrame2SpatialRDD(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
+class ${className}(override val sparkSession: SparkSession, override val sparkConf: SparkConf, override val inputVariableKey: String, override val outputVariableKey: String, override val variables: Map[String, Any]) extends AbstractAction(sparkSession, sparkConf, inputVariableKey, outputVariableKey, variables) with Serializable {
     override def doIt(params: Map[String, String]): Any = {
         val geoDataFrame = this.pendingData.asInstanceOf[DataFrame]
         val spatialFieldName = params.get("spatialFieldName").get
