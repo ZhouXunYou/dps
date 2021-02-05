@@ -27,6 +27,7 @@ object GeoTest {
         conf.setAppName("GeoSparkRunnableExample") // Change this to a proper name
         conf.setMaster("local[*]") // Delete this if run in cluster mode
         // Enable GeoSpark custom Kryo serializer
+        println(classOf[KryoSerializer].getName,classOf[GeoSparkKryoRegistrator].getName)
         conf.set("spark.serializer", classOf[KryoSerializer].getName)
         conf.set("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName)
         val sparkSession = SparkSession.builder().config(conf).getOrCreate()
