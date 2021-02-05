@@ -21,7 +21,8 @@ class ${className}(override val sparkSession: SparkSession, override val sparkCo
 	    dataFrame.createOrReplaceTempView(geoViewName)
 	    val spatialFieldOriginalName = params.get("spatialFieldOriginalName").get
 	    val spatialFieldAliasName = params.get("spatialFieldAliasName").getOrElse(spatialFieldOriginalName)
-	    val geomDataFrame = sparkSession.sql(s"select ST_GeomFromWKT(${spatialFieldOriginalName}) as ${spatialFieldAliasName},${fieldNames.mkString(",")} from ${geoViewName}")
+	    val names = ${fieldNames}
+	    val geomDataFrame = sparkSession.sql(s"select ST_GeomFromWKT(${spatialFieldOriginalName}) as ${spatialFieldAliasName},<#noparse>${names.mkString(",")}</#noparse> from ${geoViewName}")
 	    geomDataFrame.createOrReplaceTempView(geoViewName)
 	    variables.put(outputVariableKey, geomDataFrame)
     }
