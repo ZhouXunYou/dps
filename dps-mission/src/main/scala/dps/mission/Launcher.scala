@@ -65,6 +65,7 @@ object Launcher {
         val mission = ml.getMission(missionCode)
         so.close()
         val sparkConf = buildConf(mission, params)
+        sparkConf.setMaster("local[*]")
         val sparkSession = buildSparkSession(sparkConf, missionCode)
         //GeoSpark相关函数注册
         GeoSparkSQLRegistrator.registerAll(sparkSession)
@@ -80,7 +81,8 @@ object Launcher {
         if (datasourceInstance.isInstanceOf[StreamDatasource]) {
             datasourceInstance.asInstanceOf[StreamDatasource].start()
         } else {
-            val completeAction = Class.forName(s"dps.mission.action.${mission.missionCode}CompleteAction").newInstance().asInstanceOf[CompleteAction]
+            val complateActionName = s"dps.mission.action.${mission.missionCode.substring(0,1).+(mission.missionCode.substring(1))}CompleteAction".stripMargin
+            val completeAction = Class.forName(complateActionName).newInstance().asInstanceOf[CompleteAction]
             completeAction.finished(mission, params)
         }
     }
