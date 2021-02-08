@@ -15,12 +15,12 @@ import org.apache.sedona.core.serde.SedonaKryoRegistrator
 object GeoTest {
     def main(args: Array[String]): Unit = {
 
-        var cnames = List[String]();
-        for (i <- 0 to 999) {
-            cnames = cnames :+ "c" + i
-        }
-        println(cnames)
-        System.setProperty("geospark.global.charset", "UTF8")
+        var cnames = List[String]("zht","zh_1","zh_2","zhtms","ywb","snb","sheng","shi","xian","xiang","dlw","lng","lat","x","y","z","pdz_1","pdz_2","zlq","dxs","gzb","dzl","mqw","jhb","wxr","wxc","zhd","xqd","fzj","yhd","jcj","hhf","hl","hq","guid");
+//        for (i <- 0 to 999) {
+//            cnames = cnames :+ "c" + i
+//        }
+//        println(cnames)
+        System.setProperty("sedona.global.charset", "UTF8")
         val conf = new SparkConf()
         conf.setAppName("GeoSparkRunnableExample") // Change this to a proper name
         conf.setMaster("local[*]") // Delete this if run in cluster mode
@@ -31,10 +31,10 @@ object GeoTest {
         val sparkSession = SparkSession.builder().config(conf).getOrCreate()
         SedonaSQLRegistrator.registerAll(sparkSession)
         SedonaVizRegistrator.registerAll(sparkSession)
-
+        
         val spatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, "C:\\Users\\ZhouX\\Desktop\\DREP\\01-Dev\\03-需求开发与管理\\需求调研材料\\岚山地质灾害")
 //        println(spatialRDD.analyze())
-        val df = Adapter.toDf(spatialRDD, sparkSession)
+        val df = Adapter.toDf(spatialRDD, cnames,sparkSession)
         df.createOrReplaceTempView("df")
         df.show()
 //        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
