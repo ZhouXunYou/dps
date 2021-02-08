@@ -82,7 +82,7 @@ object Launcher {
         if (datasourceInstance.isInstanceOf[StreamDatasource]) {
             datasourceInstance.asInstanceOf[StreamDatasource].start()
         } else {
-            val complateActionName = s"dps.mission.action.${mission.missionCode.substring(0,1).+(mission.missionCode.substring(1))}CompleteAction".stripMargin
+            val complateActionName = s"dps.mission.action.${mission.missionCode.substring(0,1).toUpperCase().+(mission.missionCode.substring(1))}CompleteAction".stripMargin
             val completeAction = Class.forName(complateActionName).newInstance().asInstanceOf[CompleteAction]
             completeAction.finished(mission, params)
         }
