@@ -14,7 +14,8 @@ import java.nio.charset.Charset
 abstract class AbstractAction(val sparkSession: SparkSession, val sparkConf: SparkConf, val inputVariableKey: String, val outputVariableKey: String, val variables: Map[String, Any]) extends Action with Serializable {
     var pendingData: Any = variables.getOrElse(inputVariableKey, null)
 
-    //1:数字类型; 2:字符类型; 3:列表类型; 4:文本类型->sql; 5:文本类型->scala; 6:文本类型->javascript
+    //0:布尔类型; 1:数字类型; 2:字符类型; 3:列表类型; 4:文本类型->sql; 5:文本类型->scala; 6:文本类型->javascript
+    val booleanType: String = "0"
     val integerType: String = "1"
     val stringType: String = "2"
     val listType: String = "3"

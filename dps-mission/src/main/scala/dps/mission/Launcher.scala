@@ -15,8 +15,8 @@ import dps.utils.RunParam
 import dps.utils.SessionOperation
 import org.apache.spark.SparkConf
 import dps.atomic.model.Mission
-import org.datasyslab.geosparkviz.sql.utils.GeoSparkVizRegistrator
-import org.datasyslab.geosparksql.utils.GeoSparkSQLRegistrator
+import org.apache.sedona.sql.utils.SedonaSQLRegistrator
+import org.apache.sedona.viz.sql.utils.SedonaVizRegistrator
 
 object Launcher {
     def buildConf(mission: Mission, runParams: Map[String, String]): SparkConf = {
@@ -68,8 +68,8 @@ object Launcher {
         sparkConf.setMaster("local[*]")
         val sparkSession = buildSparkSession(sparkConf, missionCode)
         //GeoSpark相关函数注册
-        GeoSparkSQLRegistrator.registerAll(sparkSession)
-        GeoSparkVizRegistrator.registerAll(sparkSession)
+        SedonaSQLRegistrator.registerAll(sparkSession)
+        SedonaVizRegistrator.registerAll(sparkSession)
         //用于原子操作输出的容器
         val missionVariables = Map[String, Any]()
         val operator = new Operator(mission.operationGroups, sparkSession, sparkConf, missionVariables)

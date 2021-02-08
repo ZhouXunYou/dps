@@ -5,14 +5,12 @@ package dps.mission
 import org.apache.spark.SparkConf
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SparkSession
-import org.datasyslab.geospark.formatMapper.shapefileParser.ShapefileReader
-import org.datasyslab.geospark.serde.GeoSparkKryoRegistrator
-import org.datasyslab.geosparksql.utils.Adapter
-import org.datasyslab.geosparksql.utils.GeoSparkSQLRegistrator
-import org.datasyslab.geosparkviz.core.ImageGenerator
-import org.datasyslab.geosparkviz.core.ImageSerializableWrapper
-import org.datasyslab.geosparkviz.sql.utils.GeoSparkVizRegistrator
-import org.datasyslab.geosparkviz.utils.ImageType
+import org.apache.sedona.core.formatMapper.shapefileParser.ShapefileReader
+import org.apache.sedona.sql.utils.Adapter
+import org.apache.sedona.sql.utils.SedonaSQLRegistrator
+import org.apache.sedona.viz.sql.utils.SedonaVizRegistrator
+import org.apache.sedona.core.serde.SedonaKryoRegistrator
+
 
 object GeoTest {
     def main(args: Array[String]): Unit = {
@@ -27,32 +25,32 @@ object GeoTest {
         conf.setAppName("GeoSparkRunnableExample") // Change this to a proper name
         conf.setMaster("local[*]") // Delete this if run in cluster mode
         // Enable GeoSpark custom Kryo serializer
-        println(classOf[KryoSerializer].getName,classOf[GeoSparkKryoRegistrator].getName)
+        println(classOf[KryoSerializer].getName,classOf[SedonaKryoRegistrator].getName)
         conf.set("spark.serializer", classOf[KryoSerializer].getName)
-        conf.set("spark.kryo.registrator", classOf[GeoSparkKryoRegistrator].getName)
+        conf.set("spark.kryo.registrator", classOf[SedonaKryoRegistrator].getName)
         val sparkSession = SparkSession.builder().config(conf).getOrCreate()
-        GeoSparkSQLRegistrator.registerAll(sparkSession)
-        GeoSparkVizRegistrator.registerAll(sparkSession)
+        SedonaSQLRegistrator.registerAll(sparkSession)
+        SedonaVizRegistrator.registerAll(sparkSession)
 
         val spatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, "C:\\Users\\ZhouX\\Desktop\\DREP\\01-Dev\\03-需求开发与管理\\需求调研材料\\岚山地质灾害")
 //        println(spatialRDD.analyze())
-        val df = Adapter.toDf(spatialRDD, cnames.slice(0, 34), sparkSession)
+        val df = Adapter.toDf(spatialRDD, sparkSession)
         df.createOrReplaceTempView("df")
-        //        val df = Adapter.toDf(spatialRDD, s 
-        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
-        pointDf.printSchema()
-        pointDf.show()
-        println(pointDf.count())
-        pointDf.createOrReplaceTempView("point")
-        val circleDf = sparkSession.sql("SELECT ST_Buffer(pointshapes,0.1) circleshapes,* FROM point where c11<=118.877778")
-        circleDf.printSchema()
-        circleDf.show()
-        println(circleDf.count())
-        circleDf.createOrReplaceTempView("circle")
-        
-        val result = sparkSession.sql("SELECT point.* FROM point, circle WHERE ST_Within(point.pointshapes,circle.circleshapes)")
-        result.show()
-        println(result.count())
+        df.show()
+//        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
+//        pointDf.printSchema()
+//        pointDf.show()
+//        println(pointDf.count())
+//        pointDf.createOrReplaceTempView("point")
+//        val circleDf = sparkSession.sql("SELECT ST_Buffer(pointshapes,0.1) circleshapes,* FROM point where c11<=118.877778")
+//        circleDf.printSchema()
+//        circleDf.show()
+//        println(circleDf.count())
+//        circleDf.createOrReplaceTempView("circle")
+//        
+//        val result = sparkSession.sql("SELECT point.* FROM point, circle WHERE ST_Within(point.pointshapes,circle.circleshapes)")
+//        result.show()
+//        println(result.count())
         
         
         
