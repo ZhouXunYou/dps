@@ -51,6 +51,7 @@ object Launcher {
         builder.getOrCreate()
     }
     def main(args: Array[String]): Unit = {
+        System.setProperty("sedona.global.charset", "UTF8")
         val params = RunParam.parserArgements(args)
 
         val requiredKeys = Seq("--missionName", "--driver", "--ip", "--port", "--user", "--password", "--dbType", "--dbName")
