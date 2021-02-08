@@ -38,9 +38,12 @@
 		<quartz.version>2.3.2</quartz.version>
 		<kafka-clients.version>0.10.0.1</kafka-clients.version>
 		<geotools.version>23.2</geotools.version>
-		<jts.version>1.17.1</jts.version>
-		<geospark.version>1.3.1</geospark.version>
-		<georefspark.version>2.3</georefspark.version>
+		<jts.version>1.18.0</jts.version>
+		<sedona.version>1.0.0-incubating</sedona.version>
+		<sedonarefspark.version>2.4</sedonarefspark.version>
+		<jts2geojson.version>0.14.3</jts2geojson.version>
+		<geotools.version>24.0</geotools.version>
+		<sernetcdf.version>0.1.0</sernetcdf.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -170,7 +173,52 @@
 				<artifactId>gt-geojson</artifactId>
 				<version>${geotools.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.geotools/gt-geometry -->
+			<dependency>
+				<groupId>com.typesafe.scala-logging</groupId>
+				<artifactId>scala-logging_2.11</artifactId>
+				<version>3.9.2</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.2.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.sedona</groupId>
+				<artifactId>sedona-core-${sedonarefspark.version}_${scala.compat.version}</artifactId>
+				<version>${sedona.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.sedona</groupId>
+				<artifactId>sedona-sql-${sedonarefspark.version}_${scala.compat.version}</artifactId>
+				<version>${sedona.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.sedona</groupId>
+				<artifactId>sedona-viz-${sedonarefspark.version}_${scala.compat.version}</artifactId>
+				<version>${sedona.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wololo</groupId>
+				<artifactId>jts2geojson</artifactId>
+				<version>${jts2geojson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-main</artifactId>
+				<version>${geotools.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-referencing</artifactId>
+				<version>${geotools.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-epsg-hsql</artifactId>
+				<version>${geotools.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-geometry</artifactId>
@@ -182,29 +230,9 @@
 				<version>${jts.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.typesafe.scala-logging</groupId>
-				<artifactId>scala-logging_2.11</artifactId>
-				<version>3.9.2</version>
-			</dependency>
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>1.2.3</version>
-			</dependency>
-			<dependency>
 				<groupId>org.datasyslab</groupId>
-				<artifactId>geospark</artifactId>
-				<version>${geospark.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.datasyslab</groupId>
-				<artifactId>geospark-sql_${georefspark.version}</artifactId>
-				<version>${geospark.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.datasyslab</groupId>
-				<artifactId>geospark-viz_${georefspark.version}</artifactId>
-				<version>${geospark.version}</version>
+				<artifactId>sernetcdf</artifactId>
+				<version>${sernetcdf.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
