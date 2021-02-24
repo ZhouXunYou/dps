@@ -41,7 +41,9 @@ object Launcher {
             val value = kv._2
             conf.set(key, value)
         })
-        conf.setAppName(mission.missionCode)
+        if(runParams.get("--master").isDefined){
+            conf.setMaster(runParams.get("--master").get)
+        }
         return conf
     }
     def buildSparkSession(conf: SparkConf, missionCode: String): SparkSession = {
@@ -66,7 +68,7 @@ object Launcher {
         val mission = ml.getMission(missionCode)
         so.close()
         val sparkConf = buildConf(mission, params)
-        sparkConf.setMaster("local[*]")
+//        sparkConf.setMaster("local[*]")
         val sparkSession = buildSparkSession(sparkConf, missionCode)
         //GeoSpark相关函数注册
         SedonaSQLRegistrator.registerAll(sparkSession)

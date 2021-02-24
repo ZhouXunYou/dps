@@ -34,17 +34,20 @@ object GeoTest {
         
         val spatialRDD = ShapefileReader.readToGeometryRDD(sparkSession.sparkContext, "C:\\Users\\ZhouX\\Desktop\\DREP\\01-Dev\\03-需求开发与管理\\需求调研材料\\岚山地质灾害")
 //        println(spatialRDD.analyze())
+//        spatialRDD.saveAsGeoJSON("d:\\aaaaa")
         val df = Adapter.toDf(spatialRDD, cnames,sparkSession)
         df.createOrReplaceTempView("df")
         df.show()
-//        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
-//        pointDf.printSchema()
-//        pointDf.show()
-//        println(pointDf.count())
-//        pointDf.createOrReplaceTempView("point")
-//        val circleDf = sparkSession.sql("SELECT ST_Buffer(pointshapes,0.1) circleshapes,* FROM point where c11<=118.877778")
+        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
+        pointDf.printSchema()
+        pointDf.show()
+        println(pointDf.count())
+        pointDf.createOrReplaceTempView("point")
+        val circleDf = sparkSession.sql("SELECT ST_Buffer(pointshapes,0.1) circleshapes,* FROM point where c11<=118.877778")
 //        circleDf.printSchema()
 //        circleDf.show()
+        
+        
 //        println(circleDf.count())
 //        circleDf.createOrReplaceTempView("circle")
 //        

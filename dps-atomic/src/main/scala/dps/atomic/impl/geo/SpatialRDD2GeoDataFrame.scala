@@ -20,11 +20,7 @@ class SpatialRDD2GeoDataFrame(override val sparkSession: SparkSession, override 
         val dataFrame = Adapter.toDf(spatialRDD, fieldNames, sparkSession)
         val geoViewName = params.get("geoViewName").get
         dataFrame.createOrReplaceTempView(geoViewName)
-        val spatialFieldOriginalName = params.get("spatialFieldOriginalName").get
-        val spatialFieldAliasName = params.get("spatialFieldAliasName").getOrElse(spatialFieldOriginalName)
-        val geomDataFrame = sparkSession.sql(s"select ST_GeomFromWKT(${spatialFieldOriginalName}) as ${spatialFieldAliasName},${fieldNames.mkString(",")} from ${geoViewName}")
-        geomDataFrame.createOrReplaceTempView(geoViewName)
-        variables.put(outputVariableKey, geomDataFrame)
+        variables.put(outputVariableKey, dataFrame)
     }
 
     override def define: AtomOperationDefine = {
