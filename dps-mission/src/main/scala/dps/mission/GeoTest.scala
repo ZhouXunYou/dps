@@ -10,6 +10,9 @@ import org.apache.sedona.sql.utils.Adapter
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.sql.utils.SedonaVizRegistrator
 import org.apache.sedona.core.serde.SedonaKryoRegistrator
+import org.apache.sedona.viz.core.ImageGenerator
+import org.apache.sedona.viz.utils.ImageType
+import org.apache.sedona.viz.core.ImageSerializableWrapper
 
 
 object GeoTest {
@@ -36,40 +39,40 @@ object GeoTest {
 //        println(spatialRDD.analyze())
 //        spatialRDD.saveAsGeoJSON("d:\\aaaaa")
         val df = Adapter.toDf(spatialRDD, cnames,sparkSession)
-        df.createOrReplaceTempView("df")
+        df.createOrReplaceTempView("point")
         df.show()
-        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
-        pointDf.printSchema()
-        pointDf.show()
-        println(pointDf.count())
-        pointDf.createOrReplaceTempView("point")
-        val circleDf = sparkSession.sql("SELECT ST_Buffer(pointshapes,0.1) circleshapes,* FROM point where c11<=118.877778")
-//        circleDf.printSchema()
-//        circleDf.show()
+        df.printSchema()
+//        val pointDf = sparkSession.sql("SELECT ST_GeomFromWKT(geometry) pointshapes,* FROM df")
+//        pointDf.printSchema()
+//        pointDf.show()
+//        println(pointDf.count())
+//        pointDf.createOrReplaceTempView("point")
+        val circleDf = sparkSession.sql("SELECT ST_Buffer(geometry,0.1) circleshapes,* FROM point where lng<=118.877778")
+        circleDf.printSchema()
+        circleDf.show()
         
         
-//        println(circleDf.count())
-//        circleDf.createOrReplaceTempView("circle")
-//        
-//        val result = sparkSession.sql("SELECT point.* FROM point, circle WHERE ST_Within(point.pointshapes,circle.circleshapes)")
-//        result.show()
-//        println(result.count())
+        println(circleDf.count())
+        circleDf.createOrReplaceTempView("circle")
+        val result = sparkSession.sql("SELECT point.* FROM point, circle WHERE ST_Within(point.geometry,circle.circleshapes)")
+        result.show()
+        println(result.count())
         
         
         
-//        val bound = sparkSession.sql("select ST_Envelope_Aggr(circle.circleshapes) as bound FROM circle")
-//        bound.show()
-//        bound.createOrReplaceTempView("bound")
-//        val pixels = sparkSession.sql("SELECT pixel, circleshapes FROM circle LATERAL VIEW ST_Pixelize(circleshapes, 256, 256, (select bound from bound)) AS pixel")
-//        pixels.show()
-//        pixels.createOrReplaceTempView("pixels")
-//        val pc = sparkSession.sql("SELECT ST_Colorize(11, 11, 'red') as color,pixel FROM pixels");
-//        pc.createOrReplaceTempView("pc")
-//        val image = sparkSession.sql("SELECT ST_Render(pixel, color) AS image, (SELECT ST_AsText(bound) FROM bound) AS boundary FROM pc")
-//        image.createOrReplaceTempView("image")
-//        val img = sparkSession.table("image").take(1)(0)(0).asInstanceOf[ImageSerializableWrapper].getImage
-//        val imageGenerator = new ImageGenerator
-//        imageGenerator.SaveRasterImageAsLocalFile(img, "d:/out", ImageType.PNG)
+        val bound = sparkSession.sql("select ST_Envelope_Aggr(circle.circleshapes) as bound FROM circle")
+        bound.show()
+        bound.createOrReplaceTempView("bound")
+        val pixels = sparkSession.sql("SELECT pixel, circleshapes FROM circle LATERAL VIEW ST_Pixelize(circleshapes, 256, 256, (select bound from bound)) AS pixel")
+        pixels.show()
+        pixels.createOrReplaceTempView("pixels")
+        val pc = sparkSession.sql("SELECT ST_Colorize(11, 11, 'red') as color,pixel FROM pixels");
+        pc.createOrReplaceTempView("pc")
+        val image = sparkSession.sql("SELECT ST_Render(pixel, color) AS image, (SELECT ST_AsText(bound) FROM bound) AS boundary FROM pc")
+        image.createOrReplaceTempView("image")
+        val img = sparkSession.table("image").take(1)(0)(0).asInstanceOf[ImageSerializableWrapper].getImage
+        val imageGenerator = new ImageGenerator
+        imageGenerator.SaveRasterImageAsLocalFile(img, "d:/out", ImageType.PNG)
         
         
         sparkSession.stop()
