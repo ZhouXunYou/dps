@@ -84,7 +84,14 @@ class SourceGenerator(val mission: Mission) {
     })
     import java.util.{ HashMap => JavaHashMap }
     import java.util.{ Map => JavaMap }
-    val completeActionTemplate = cfg.getTemplate("CompleteAction.ftl");
+
+    val config = new Configuration(Configuration.VERSION_2_3_23)
+    config.setDefaultEncoding("UTF-8")
+    config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
+    val completeFileTemplateLoader = new FileTemplateLoader(baseDir.getParentFile());
+    config.setTemplateLoader(completeFileTemplateLoader)
+
+    val completeActionTemplate = config.getTemplate("CompleteAction.flt");
     val completeActionTemplateParams: JavaMap[String, String] = new JavaHashMap
 
     completeActionTemplateParams.put("packagePath", "dps.mission.action")
